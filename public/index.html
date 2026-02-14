@@ -31,7 +31,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUCHks8Q3smU6dMruN-otcpEWCamOOWPA",
@@ -66,6 +66,9 @@
             doc,
             setDoc,
             getDoc,
+            getDocs,
+            query, 
+            where,
             onSnapshot,
             updateDoc,
             arrayUnion
@@ -237,7 +240,6 @@
                 enterPin: "Enter 4-Digit PIN",
                 go: "Go",
                 invalidPin: "Invalid PIN",
-                bypass: "Bypass (Debug)",
                 challenge: "Challenge",
                 memories: "Memories Unlocked!",
                 readStories: "Read stories from past students",
@@ -271,7 +273,7 @@
                 grandSuccessTitle: "GRAND SUCCESS!",
                 grandSuccessMsg: "You have conquered all 10 locations! Thank you for exploring PolyU.",
                 qrTab: "QR Codes",
-                scanError: "Scanner Error. Try entering PIN.",
+                scanError: "Camera Error. Ensure HTTPS.",
                 wrongLocation: "Wrong Location! This QR code belongs to",
                 giftTitle: "Grand Prize Claim",
                 giftAsk: "You have completed the map! Would you like a souvenir gift sent to you?",
@@ -282,7 +284,8 @@
                 giftSubmitted: "Request Received! We will contact you soon.",
                 submitClaim: "Submit Claim",
                 authError: "Authentication Error. Running in Offline Mode.",
-                statsTab: "Stats"
+                statsTab: "Stats",
+                welcomeBack: "Welcome Back!"
             },
             tc: {
                 appTitle: "理大尋寶",
@@ -322,7 +325,6 @@
                 enterPin: "輸入 4 位 PIN",
                 go: "確定",
                 invalidPin: "PIN 無效",
-                bypass: "略過 (除錯)",
                 challenge: "挑戰",
                 memories: "解鎖回憶！",
                 readStories: "閱讀校友的故事",
@@ -367,7 +369,8 @@
                 giftSubmitted: "已收到請求！我們稍後會聯絡你。",
                 submitClaim: "提交申請",
                 authError: "驗證錯誤。正在以離線模式運行。",
-                statsTab: "數據分析"
+                statsTab: "數據分析",
+                welcomeBack: "歡迎回來!"
             },
             sc: {
                 appTitle: "理大寻宝",
@@ -407,7 +410,6 @@
                 enterPin: "输入 4 位 PIN",
                 go: "确定",
                 invalidPin: "PIN 无效",
-                bypass: "略过 (除错)",
                 challenge: "挑战",
                 memories: "解锁回忆！",
                 readStories: "阅读校友的故事",
@@ -452,7 +454,8 @@
                 giftSubmitted: "已收到请求！我们稍后会联络你。",
                 submitClaim: "提交申请",
                 authError: "验证错误。正在以离线模式运行。",
-                statsTab: "数据分析"
+                statsTab: "数据分析",
+                welcomeBack: "欢迎回来!"
             }
         };
 
@@ -518,7 +521,7 @@
             'default': [
                 { user: 'PolyU Alum', text: {en:"This place holds so many memories.", tc:"這個地方充滿了回憶。", sc:"这个地方充满了回忆。"} },
                 { user: 'Class of 2018', text: {en:"One of my favorite spots.", tc:"我最喜歡的地點之一。", sc:"我最喜欢的地点之一。"} },
-                { user: 'Mike', text: {en:"Always crowded but full of energy.", tc:"總是很多人，但充滿活力。", sc:"总是很多人，但充满活力。"} }
+                { user: 'Mike', text: {en:"Always crowded but full of energy.", tc:"總是充滿活力。", sc:"总是充满活力。"} }
             ]
         };
 
@@ -533,15 +536,16 @@
         // --- Components ---
 
         const LanguageSwitcher = ({ lang, setLang, light = false }) => {
+            const labels = { en: 'EN', tc: '繁', sc: '簡' };
             return (
-                <div className={`flex rounded-lg overflow-hidden border ${light ? 'border-white/30' : 'border-gray-300'}`}>
+                <div className={`flex w-fit rounded-lg overflow-hidden border ${light ? 'border-white/30' : 'border-gray-300'}`}>
                     {['en', 'tc', 'sc'].map(l => (
                         <button key={l} onClick={() => setLang(l)} 
-                            className={`px-3 py-1 text-xs font-bold transition-colors
+                            className={`px-2 py-1 text-xs font-bold transition-colors
                             ${lang === l 
                                 ? (light ? 'bg-white text-[#A6192E]' : 'bg-[#A6192E] text-white') 
                                 : (light ? 'bg-transparent text-white hover:bg-white/10' : 'bg-white text-gray-500 hover:bg-gray-100')}`}>
-                            {l.toUpperCase()}
+                            {labels[l]}
                         </button>
                     ))}
                 </div>
@@ -877,22 +881,23 @@
 
             return (
                 <div className="flex flex-col h-screen bg-gray-50">
-                    <header className="bg-white shadow-sm p-4 z-10 flex justify-between items-center flex-shrink-0">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-sm">P</div>
-                            <div>
-                                <h1 className="font-bold text-gray-800 leading-tight">{t.appTitle}</h1>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-[10px] text-gray-500">{user.role === 'admin' ? t.adminMode : t.findConquer}</p>
-                                    {user.version === 'overseas' && <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded font-bold">{t.overseas}</span>}
-                                    {user.version === 'local' && <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded font-bold">{t.local}</span>}
+                    <header className="bg-white shadow-sm p-4 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch">
+                        <div className="flex flex-col gap-2 justify-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">P</div>
+                                <div>
+                                    <h1 className="font-bold text-gray-800 leading-none mb-1 text-lg">{t.appTitle}</h1>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold whitespace-nowrap ${user.version==='overseas'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}`}>{user.role==='admin'?t.adminMode:t[user.version]}</span>
                                 </div>
                             </div>
+                            <div>
+                                <LanguageSwitcher lang={lang} setLang={setLang} />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <LanguageSwitcher lang={lang} setLang={setLang} />
-                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-yellow-200 transition shadow-sm border border-yellow-200">
-                                <i className="fa fa-book-open"></i> 
+                        
+                        <div className="flex items-center">
+                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-4 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 border border-yellow-200 shadow-sm h-full w-24">
+                                <i className="fa fa-book-open text-2xl"></i> 
                                 <span>{clearedLocations.length} {t.stamps}</span>
                             </button>
                         </div>
@@ -980,14 +985,27 @@
             };
 
             const startScanner = () => {
+                // HTTPS check
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                    alert(t.scanError);
+                    return;
+                }
+
                 setScanStatus('scanning');
-                const html5QrcodeScanner = new Html5QrcodeScanner(
-                    "reader",
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
-                    /* verbose= */ false);
                 
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-                scannerRef.current = html5QrcodeScanner;
+                // Use Html5Qrcode class (not Scanner UI) for custom element
+                const html5QrCode = new Html5Qrcode("reader");
+                html5QrCodeRef.current = html5QrCode;
+
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                
+                // Prefer back camera
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+                .catch(err => {
+                    console.error("Error starting scanner", err);
+                    alert("Camera access denied or error. Please check permissions.");
+                    setScanStatus('idle');
+                });
             };
 
             const handleCodeVerify = () => {
@@ -1030,11 +1048,8 @@
                                 </button>
                             )}
                             
-                            {scanStatus === 'scanning' && (
-                                <div className="rounded-xl overflow-hidden bg-black">
-                                    <div id="reader" width="100%"></div>
-                                </div>
-                            )}
+                            {/* Reader Element */}
+                            <div id="reader" className={`rounded-xl overflow-hidden bg-black ${scanStatus === 'scanning' ? 'block' : 'hidden'}`} style={{width: '100%'}}></div>
 
                             {scanStatus === 'success' && (
                                 <div className="w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-3 bg-green-600 text-white">
@@ -1066,10 +1081,6 @@
                                 </button>
                             </div>
                             {codeError && <div className="text-red-500 text-xs mt-2 font-bold"><i className="fa fa-times-circle"></i> {t.invalidPin}</div>}
-                        </div>
-
-                        <div className="border-t pt-4 text-center">
-                            <button onClick={onDebugTeleport} className="text-xs text-gray-400 hover:text-gray-600">🔧 {t.bypass}</button>
                         </div>
                     </div>
                 </div>
@@ -1399,11 +1410,10 @@
             };
 
             const handleRegister = async (formData) => {
-                const { db, doc, setDoc, auth, appId } = window.FB;
+                const { db, doc, setDoc, getDocs, collection, query, where, auth, appId } = window.FB;
                 
-                // Check if auth is valid
+                // Offline Fallback
                 if (!auth || !auth.currentUser) {
-                    console.warn("Offline Mode: Skipping Firestore write");
                     const offlineUser = {
                         ...formData,
                         uid: 'offline-user',
@@ -1421,16 +1431,44 @@
                 }
 
                 const uid = auth.currentUser.uid;
-                
-                const newUser = {
-                    ...formData,
-                    uid,
-                    clearedLocations: [],
-                    joinedAt: new Date().toISOString()
-                };
 
-                await setDoc(doc(db, 'artifacts', appId, 'participants', uid), newUser);
-                // The onSnapshot in useEffect will pick this up and set User state
+                try {
+                    // EMAIL CHECK LOGIC
+                    // Query for existing user by email
+                    const participantsRef = collection(db, 'artifacts', appId, 'participants');
+                    const q = query(participantsRef, where("email", "==", formData.email));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        // USER EXISTS: RECOVER DATA
+                        
+                        const oldUserData = querySnapshot.docs[0].data();
+                        
+                        // Copy old data to current UID location so the listener picks it up
+                        await setDoc(doc(db, 'artifacts', appId, 'participants', uid), {
+                            ...oldUserData,
+                            uid: uid, // Update UID to current session
+                            lastLogin: new Date().toISOString()
+                        });
+                        
+                        showNotify(t.welcomeBack, "Recovered your progress from previous session!", "success");
+
+                    } else {
+                        // NEW USER
+                        const newUser = {
+                            ...formData,
+                            uid,
+                            clearedLocations: [],
+                            joinedAt: new Date().toISOString()
+                        };
+                        await setDoc(doc(db, 'artifacts', appId, 'participants', uid), newUser);
+                    }
+                } catch (e) {
+                    console.error("Registration/Recovery Error:", e);
+                    // Fallback to just creating new if query fails (e.g. permissions)
+                    const newUser = { ...formData, uid, clearedLocations: [], joinedAt: new Date().toISOString() };
+                    await setDoc(doc(db, 'artifacts', appId, 'participants', uid), newUser);
+                }
             };
 
             const handleAdminLogin = async () => {
