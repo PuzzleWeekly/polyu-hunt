@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PolyU Hunt</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- QR Code Generator (QRious) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <!-- QR Code Scanner (html5-qrcode) -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- Chart.js for Admin Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- FIREBASE SETUP -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUCHks8Q3smU6dMruN-otcpEWCamOOWPA",
+            authDomain: "polyu-hunt.firebaseapp.com",
+            projectId: "polyu-hunt",
+            storageBucket: "polyu-hunt.firebasestorage.app",
+            messagingSenderId: "958809195745",
+            appId: "1:958809195745:web:1be0bc46e7cdf88a6e63a0",
+            measurementId: "G-S3HQ8XDE59"
+        };
+
+        // Initialize Firebase
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+        }
+        
+        const appId = "polyu_hunt_game_v1";
+
+        // Expose to window for React to use
+        window.FB = {
+            auth,
+            db,
+            appId,
+            signInAnonymously,
+            onAuthStateChanged,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            onSnapshot,
+            updateDoc,
+            arrayUnion
+        };
+        
+        console.log("Firebase Initialized");
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior-y: none;
+            /* Background Image Setup */
+            background-color: #f3f4f6; /* Fallback */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://upload.wikimedia.org/wikipedia/commons/c/c6/Hong_Kong_Polytechnic_University_Main_Campus_202206.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .polyu-red { color: #A6192E; }
+        .bg-polyu-red { background-color: #A6192E; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .slide-up { animation: slideUp 0.4s ease-out forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { 
+            from { opacity: 0; transform: scale(0.9); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        
+        .map-container {
+            background-color: #f8f8f8;
+            background-image: url('CampusMap.pdf.jpg'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            min-height: 500px; 
+        }
+        
+        .map-pin {
+            transform: translate(-50%, -100%);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute;
+        }
+        .map-pin:hover {
+            transform: translate(-50%, -120%) scale(1.1);
+            z-index: 20;
+        }
+        .map-pin.locked {
+            filter: grayscale(100%);
+            opacity: 0.8;
+        }
+        
+        .pin-label {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-top: 2px;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .stamp-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid;
+            font-size: 24px;
+            position: relative;
+        }
+        .stamp-earned {
+            border-color: #A6192E;
+            color: #A6192E;
+            background-color: #fff0f0;
+            box-shadow: 0 4px 6px rgba(166, 25, 46, 0.2);
+        }
+        .stamp-locked {
+            border-color: #e5e7eb;
+            color: #d1d5db;
+            background-color: #f9fafb;
+        }
+        
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #A6192E;
+            box-shadow: 0 0 4px #A6192E;
+            animation: scan 1.5s linear infinite;
+        }
+
+        /* Chart Container Constraint */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- Localization Database ---
+        const TRANSLATIONS = {
+            en: {
+                appTitle: "PolyU Hunt",
+                welcome: "Welcome to PolyU Hunt",
+                subtitle: "Join the campus adventure",
+                adminLogin: "Admin Login",
+                fullName: "Full Name",
+                email: "PolyU Email",
+                mode: "Participation Mode",
+                local: "Local (Campus)",
+                overseas: "Overseas",
+                role: "Role",
+                visitor: "Visitor",
+                student: "Current Student",
+                grad: "Graduate",
+                staff: "Staff",
+                prog: "Programme",
+                gradYear: "Graduation Year",
+                startBtn: "Start Hunting",
+                adminBtn: "Login as Admin",
+                adminMode: "Admin Mode",
+                findConquer: "Find & Conquer",
+                stamps: "Stamps",
+                goToLoc: "Go to location to unlock stamp",
+                earnStamp: "Earn the Stamp!",
+                gpsVerify: "GPS Verification",
+                checkGps: "Check GPS",
+                locating: "Locating...",
+                verified: "Verified!",
+                tooFar: "Too far!",
+                gpsError: "GPS Error",
+                or: "OR",
+                scanQr: "Scan QR Code / Enter PIN",
+                findCode: "Find the code at the location.",
+                scanBtn: "Scan QR Code",
+                scanning: "Scanning...",
+                enterPin: "Enter 4-Digit PIN",
+                go: "Go",
+                invalidPin: "Invalid PIN",
+                bypass: "Bypass (Debug)",
+                challenge: "Challenge",
+                memories: "Memories Unlocked!",
+                readStories: "Read stories from past students",
+                collectClose: "Collect Stamp & Close",
+                adminPortal: "Admin Portal",
+                totalUsers: "Total Users",
+                totalStamps: "Total Stamps Awarded",
+                userActivity: "User Activity Record",
+                overseasActivation: "Overseas Activation",
+                enterEventCode: "Enter the Global Event Code to unlock the entire campus map from your location.",
+                unlockCampus: "Unlock Campus",
+                invalidEventCode: "Invalid Event Code. Try 8888.",
+                myStamps: "My Stamp Collection",
+                collectAll: "Collect all visual stamps!",
+                clue: "Clue to find the code:",
+                incorrect: "Incorrect! Try again next time.",
+                alreadyClearedTitle: "Already Cleared",
+                alreadyClearedMsg: "You've already collected this stamp!",
+                stampCollectedTitle: "STAMP COLLECTED!",
+                stampCollectedMsg: "You earned the Stamp!",
+                password: "Password",
+                login: "Login",
+                tutorialTitle: "How to Play",
+                tutorialIntro: "Welcome to the PolyU 85th Anniversary Hunt!",
+                tutorialLocal: "📍 Local Mode: Visit locations on campus, scan the specific QR code for each location, and answer questions to unlock stamps.",
+                tutorialOverseas: "🌏 Overseas Mode: Enter the event code to unlock the virtual map and explore from home.",
+                tutorialGoal: "🏆 Goal: Collect all 10 stamps to win the Grand Prize!",
+                tutorialStart: "Got it, let's play!",
+                lockedTitle: "Location Locked",
+                lockedMsg: "You must clear the other 9 locations before you can challenge the final boss!",
+                grandSuccessTitle: "GRAND SUCCESS!",
+                grandSuccessMsg: "You have conquered all 10 locations! Thank you for exploring PolyU.",
+                qrTab: "QR Codes",
+                scanError: "Scanner Error. Try entering PIN.",
+                wrongLocation: "Wrong Location! This QR code belongs to",
+                giftTitle: "Grand Prize Claim",
+                giftAsk: "You have completed the map! Would you like a souvenir gift sent to you?",
+                giftYes: "Yes, send it!",
+                giftNo: "No, thanks",
+                confirmEmail: "Confirm Email",
+                shippingAddr: "Mailing Address",
+                giftSubmitted: "Request Received! We will contact you soon.",
+                submitClaim: "Submit Claim",
+                authError: "Authentication Error. Running in Offline Mode.",
+                statsTab: "Stats"
+            },
+            tc: {
+                appTitle: "理大尋寶",
+                welcome: "歡迎來到理大尋寶",
+                subtitle: "參與校園探索之旅",
+                adminLogin: "管理員登入",
+                fullName: "全名",
+                email: "理大電郵",
+                mode: "參與模式",
+                local: "本地 (校園)",
+                overseas: "海外",
+                role: "身分",
+                visitor: "訪客",
+                student: "在讀學生",
+                grad: "畢業生",
+                staff: "教職員",
+                prog: "課程",
+                gradYear: "畢業年份",
+                startBtn: "開始尋寶",
+                adminBtn: "管理員登入",
+                adminMode: "管理員模式",
+                findConquer: "探索與征服",
+                stamps: "印章",
+                goToLoc: "前往地點解鎖印章",
+                earnStamp: "贏取印章！",
+                gpsVerify: "GPS 定位驗證",
+                checkGps: "檢查 GPS",
+                locating: "定位中...",
+                verified: "驗證成功！",
+                tooFar: "距離太遠！",
+                gpsError: "GPS 錯誤",
+                or: "或",
+                scanQr: "掃描 QR Code / 輸入 PIN",
+                findCode: "在該地點尋找代碼。",
+                scanBtn: "掃描 QR Code",
+                scanning: "掃描中...",
+                enterPin: "輸入 4 位 PIN",
+                go: "確定",
+                invalidPin: "PIN 無效",
+                bypass: "略過 (除錯)",
+                challenge: "挑戰",
+                memories: "解鎖回憶！",
+                readStories: "閱讀校友的故事",
+                collectClose: "領取印章並關閉",
+                adminPortal: "管理員平台",
+                totalUsers: "總用戶",
+                totalStamps: "總發出印章",
+                userActivity: "用戶活動記錄",
+                overseasActivation: "海外版啟用",
+                enterEventCode: "輸入全球活動代碼以解鎖校園地圖。",
+                unlockCampus: "解鎖校園",
+                invalidEventCode: "代碼無效。請嘗試 8888。",
+                myStamps: "我的印章集",
+                collectAll: "收集所有視覺印章！",
+                clue: "尋找代碼的提示：",
+                incorrect: "答案錯誤！下次再試。",
+                alreadyClearedTitle: "已完成",
+                alreadyClearedMsg: "你已經收集了這個印章！",
+                stampCollectedTitle: "獲得印章！",
+                stampCollectedMsg: "你贏得了印章！",
+                password: "密碼",
+                login: "登入",
+                tutorialTitle: "遊戲玩法",
+                tutorialIntro: "歡迎參加理大尋寶活動！",
+                tutorialLocal: "📍 本地模式：親身前往校園地點，掃描該地點的 QR Code 並回答問題以解鎖印章。",
+                tutorialOverseas: "🌏 海外模式：輸入活動代碼解鎖虛擬地圖，在家中也能探索。",
+                tutorialGoal: "🏆 目標：收集全部 10 個印章以贏取大獎！",
+                tutorialStart: "明白了，開始！",
+                lockedTitle: "地點已鎖定",
+                lockedMsg: "你必須先完成其他 9 個地點，才能挑戰最終關卡！",
+                grandSuccessTitle: "大獲全勝！",
+                grandSuccessMsg: "恭喜！你已成功征服所有 10 個地點！感謝你探索理大。",
+                qrTab: "QR 碼",
+                scanError: "掃描器錯誤。請嘗試輸入 PIN。",
+                wrongLocation: "地點錯誤！此 QR 碼屬於",
+                giftTitle: "領取大獎",
+                giftAsk: "你已完成地圖！想要我們寄送紀念品給你嗎？",
+                giftYes: "好，請寄給我！",
+                giftNo: "不用了，謝謝",
+                confirmEmail: "確認電郵",
+                shippingAddr: "郵寄地址",
+                giftSubmitted: "已收到請求！我們稍後會聯絡你。",
+                submitClaim: "提交申請",
+                authError: "驗證錯誤。正在以離線模式運行。",
+                statsTab: "數據分析"
+            },
+            sc: {
+                appTitle: "理大寻宝",
+                welcome: "欢迎来到理大寻宝",
+                subtitle: "参与校园探索之旅",
+                adminLogin: "管理员登入",
+                fullName: "全名",
+                email: "理大电邮",
+                mode: "参与模式",
+                local: "本地 (校园)",
+                overseas: "海外",
+                role: "身分",
+                visitor: "访客",
+                student: "在读学生",
+                grad: "毕业生",
+                staff: "教职员",
+                prog: "课程",
+                gradYear: "毕业年份",
+                startBtn: "开始寻宝",
+                adminBtn: "管理员登入",
+                adminMode: "管理员模式",
+                findConquer: "探索与征服",
+                stamps: "印章",
+                goToLoc: "前往地点解锁印章",
+                earnStamp: "赢取印章！",
+                gpsVerify: "GPS 定位验证",
+                checkGps: "检查 GPS",
+                locating: "定位中...",
+                verified: "验证成功！",
+                tooFar: "距离太远！",
+                gpsError: "GPS 错误",
+                or: "或",
+                scanQr: "扫描 QR Code / 输入 PIN",
+                findCode: "在该地点寻找代码。",
+                scanBtn: "扫描 QR Code",
+                scanning: "扫描中...",
+                enterPin: "输入 4 位 PIN",
+                go: "确定",
+                invalidPin: "PIN 无效",
+                bypass: "略过 (除错)",
+                challenge: "挑战",
+                memories: "解锁回忆！",
+                readStories: "阅读校友的故事",
+                collectClose: "领取印章并关闭",
+                adminPortal: "管理员平台",
+                totalUsers: "总用户",
+                totalStamps: "总发出印章",
+                userActivity: "用户活动记录",
+                overseasActivation: "海外版启用",
+                enterEventCode: "输入全球活动代码以解锁校园地图。",
+                unlockCampus: "解锁校园",
+                invalidEventCode: "代码无效。请尝试 8888。",
+                myStamps: "我的印章集",
+                collectAll: "收集所有视觉印章！",
+                clue: "寻找代码的提示：",
+                incorrect: "答案错误！下次再试。",
+                alreadyClearedTitle: "已完成",
+                alreadyClearedMsg: "你已经收集了这个印章！",
+                stampCollectedTitle: "获得印章！",
+                stampCollectedMsg: "你赢得了印章！",
+                password: "密码",
+                login: "登入",
+                tutorialTitle: "游戏玩法",
+                tutorialIntro: "欢迎参加理大寻宝活动！",
+                tutorialLocal: "📍 本地模式：亲身前往校园地点，扫描该地点的 QR Code 并回答问题以解锁印章。",
+                tutorialOverseas: "🌏 海外模式：输入活动代码解锁虚拟地图，在家中也能探索。",
+                tutorialGoal: "🏆 目标：收集全部 10 个印章以赢取大奖！",
+                tutorialStart: "明白了，开始！",
+                lockedTitle: "地点已锁定",
+                lockedMsg: "你必须先完成其他 9 个地点，才能挑战最终关卡！",
+                grandSuccessTitle: "大获全胜！",
+                grandSuccessMsg: "恭喜！你已成功征服所有 10 个地点！感谢你探索理大。",
+                qrTab: "QR 码",
+                scanError: "扫描器错误。请尝试输入 PIN。",
+                wrongLocation: "地点错误！此 QR 码属于",
+                giftTitle: "领取大奖",
+                giftAsk: "你已完成地图！想要我们寄送纪念品给你吗？",
+                giftYes: "好，请寄给我！",
+                giftNo: "不用了，谢谢",
+                confirmEmail: "确认电邮",
+                shippingAddr: "邮寄地址",
+                giftSubmitted: "已收到请求！我们稍后会联络你。",
+                submitClaim: "提交申请",
+                authError: "验证错误。正在以离线模式运行。",
+                statsTab: "数据分析"
+            }
+        };
+
+        // --- Configuration & Constants ---
+        
+        const LOCATIONS = [
+            { id: 'core_z', name: {en:'Core Z (Block Z)', tc:'Z 座 (Core Z)', sc:'Z 座 (Core Z)'}, lat: 22.3050, lng: 114.1780, mapX: 15, mapY: 20, icon: 'fa-cube', code: '1234', hint: {en:'On the pillar near the canteen entrance.', tc:'在飯堂入口附近的柱子上。', sc:'在食堂入口附近的柱子上。'} },
+            { id: 'core_m', name: {en:'Core M (Li Ka Shing)', tc:'李嘉誠樓 (Core M)', sc:'李嘉诚楼 (Core M)'}, lat: 22.3045, lng: 114.1785, mapX: 25, mapY: 45, icon: 'fa-building', code: '1234', hint: {en:'Near the nursing labs entrance.', tc:'在護理實驗室入口附近。', sc:'在护理实验室入口附近。'} },
+            { id: 'core_v', name: {en:'Core V (JCIT)', tc:'賽馬會創新樓 (Core V)', sc:'赛马会创新楼 (Core V)'}, lat: 22.3060, lng: 114.1790, mapX: 85, mapY: 15, icon: 'fa-drafting-compass', code: '1234', hint: {en:'Next to the escalator on the ground floor.', tc:'在地下扶手電梯旁。', sc:'在地下扶手电梯旁。'} },
+            { id: 'lib', name: {en:'Main Library', tc:'包玉剛圖書館', sc:'包玉刚图书馆'}, lat: 22.3043, lng: 114.1796, mapX: 50, mapY: 35, icon: 'fa-book', code: '1234', hint: {en:'It is in the corner of the reading zone in 1/F and near the green sofa.', tc:'在1樓閱讀區的角落，靠近綠色沙發。', sc:'在1楼阅读区的角落，靠近绿色沙发。'} },
+            { id: 'core_s', name: {en:'Core S (Communal)', tc:'文康大樓 (Core S)', sc:'文康大楼 (Core S)'}, lat: 22.3038, lng: 114.1805, mapX: 50, mapY: 55, icon: 'fa-users', code: '1234', hint: {en:'On the notice board near the SU office.', tc:'在學生會辦公室附近的告示板上。', sc:'在学生会办公室附近的告示板上。'} },
+            { id: 'core_g', name: {en:'Core G (Wing On)', tc:'永安廣場 (Core G)', sc:'永安广场 (Core G)'}, lat: 22.3038, lng: 114.1810, mapX: 60, mapY: 55, icon: 'fa-flask', code: '1234', hint: {en:'Beside the chemistry lab safety poster.', tc:'在化學實驗室安全海報旁邊。', sc:'在化学实验室安全海报旁边。'} },
+            { id: 'core_h', name: {en:'Core H', tc:'H 座 (Core H)', sc:'H 座 (Core H)'}, lat: 22.3035, lng: 114.1812, mapX: 65, mapY: 60, icon: 'fa-laptop-code', code: '1234', hint: {en:'On the wall near the podium exit.', tc:'在平台出口附近的牆上。', sc:'在平台出口附近的墙上。'} },
+            { id: 'core_y', name: {en:'Core Y (Lee Shau Kee)', tc:'李兆基樓 (Core Y)', sc:'李兆基楼 (Core Y)'}, lat: 22.3030, lng: 114.1815, mapX: 75, mapY: 70, icon: 'fa-chalkboard-teacher', code: '1234', hint: {en:'Near the auditorium ticket counter.', tc:'在綜藝館售票處附近。', sc:'在综艺馆售票处附近。'} },
+            { id: 'core_u', name: {en:'Core U (Industry Ctr)', tc:'工業中心 (Core U)', sc:'工业中心 (Core U)'}, lat: 22.3040, lng: 114.1820, mapX: 85, mapY: 50, icon: 'fa-tools', code: '1234', hint: {en:'Next to the 3D printing workshop door.', tc:'在 3D 打印工作室門口旁邊。', sc:'在 3D 打印工作室门口旁边。'} },
+            // 10th Location - Final Boss
+            { id: 'core_a', name: {en:'Core A (Chung Sze Yuen)', tc:'鍾士元樓 (Core A)', sc:'钟士元楼 (Core A)'}, lat: 22.3033, lng: 114.1793, mapX: 20, mapY: 85, icon: 'fa-university', code: '1234', hint: {en:'Near the main entrance fountain.', tc:'在正門噴水池附近。', sc:'在正门喷水池附近。'} },
+        ];
+
+        const QUESTIONS = {
+            'lib': { 
+                text: {en:'How many floors does the Main Library have?', tc:'包玉剛圖書館共有多少層？', sc:'包玉刚图书馆共有多少层？'}, 
+                options: {en:['4', '5', '6', '7'], tc:['4', '5', '6', '7'], sc:['4', '5', '6', '7']}, 
+                answer: {en:'6', tc:'6', sc:'6'} 
+            },
+            'core_z': { 
+                text: {en:'What is Block Z famous for?', tc:'Z 座以什麼聞名？', sc:'Z 座以什么闻名？'}, 
+                options: {en:['Design', 'Food', 'Construction', 'Gardens'], tc:['設計', '美食', '建築', '花園'], sc:['设计', '美食', '建筑', '花园']}, 
+                answer: {en:'Food', tc:'美食', sc:'美食'} 
+            },
+            'core_a': {
+                text: {en:'What year was PolyU established?', tc:'理大是哪一年成立的？', sc:'理大是哪一年成立的？'},
+                options: {en:['1937', '1972', '1994', '2000'], tc:['1937', '1972', '1994', '2000'], sc:['1937', '1972', '1994', '2000']},
+                answer: {en:'1937', tc:'1937', sc:'1937'}
+            },
+            'default': {
+                text: {en:'Who designed this building?', tc:'這座建築是誰設計的？', sc:'这座建筑是谁设计的？'},
+                options: {en:['Zaha Hadid', 'Norman Foster', 'IM Pei', 'Frank Gehry'], tc:['Zaha Hadid', 'Norman Foster', 'IM Pei', 'Frank Gehry'], sc:['Zaha Hadid', 'Norman Foster', 'IM Pei', 'Frank Gehry']},
+                answer: {en:'Zaha Hadid', tc:'Zaha Hadid', sc:'Zaha Hadid'}
+            }
+        };
+
+        const getQuestion = (id, lang) => {
+            const q = QUESTIONS[id] || QUESTIONS['default'];
+            return {
+                text: q.text[lang] || q.text['en'],
+                options: q.options[lang] || q.options['en'],
+                answer: q.answer[lang] || q.answer['en']
+            };
+        };
+
+        const ALUMNI_STORIES = {
+            'lib': [
+                { user: 'Sarah (Grad 2019)', text: {en:"I spent 3 nights straight in the 24h reading room.", tc:"我在 24 小時閱覽室連續熬了 3 個晚上。", sc:"我在 24 小时阅览室连续熬了 3 个晚上。"} },
+                { user: 'Jason (Grad 2021)', text: {en:"The LibCafe mocha kept me alive.", tc:"LibCafe 的摩卡咖啡救了我一命。", sc:"LibCafe 的摩卡咖啡救了我一命。"} },
+                { user: 'Emily (Grad 2015)', text: {en:"I met my husband on the 4th floor quiet zone.", tc:"我在 4 樓靜音區遇見了我丈夫。", sc:"我在 4 楼静音区遇见的丈夫。"} }
+            ],
+            'core_a': [
+                { user: 'Dr. Lee', text: {en:"The red bricks represent our heritage.", tc:"紅磚代表了我們的傳承。", sc:"红砖代表了我们的传承。"} },
+                { user: 'Alumni 85', text: {en:"Taking graduation photos at the fountain is a must.", tc:"在噴水池拍畢業照是必須的。", sc:"在喷水池拍毕业照是必须的。"} },
+                { user: 'Jane', text: {en:"The entrance always feels welcoming.", tc:"入口總是給人親切的感覺。", sc:"入口总是给人亲切的感觉。"} }
+            ],
+            'default': [
+                { user: 'PolyU Alum', text: {en:"This place holds so many memories.", tc:"這個地方充滿了回憶。", sc:"这个地方充满了回忆。"} },
+                { user: 'Class of 2018', text: {en:"One of my favorite spots.", tc:"我最喜歡的地點之一。", sc:"我最喜欢的地点之一。"} },
+                { user: 'Mike', text: {en:"Always crowded but full of energy.", tc:"總是很多人，但充滿活力。", sc:"总是很多人，但充满活力。"} }
+            ]
+        };
+
+        const getStories = (locId, lang) => {
+            const stories = ALUMNI_STORIES[locId] || ALUMNI_STORIES['default'];
+            return stories.map(s => ({
+                user: s.user,
+                text: s.text[lang] || s.text['en']
+            }));
+        };
+
+        // --- Components ---
+
+        const LanguageSwitcher = ({ lang, setLang, light = false }) => {
+            return (
+                <div className={`flex rounded-lg overflow-hidden border ${light ? 'border-white/30' : 'border-gray-300'}`}>
+                    {['en', 'tc', 'sc'].map(l => (
+                        <button key={l} onClick={() => setLang(l)} 
+                            className={`px-3 py-1 text-xs font-bold transition-colors
+                            ${lang === l 
+                                ? (light ? 'bg-white text-[#A6192E]' : 'bg-[#A6192E] text-white') 
+                                : (light ? 'bg-transparent text-white hover:bg-white/10' : 'bg-white text-gray-500 hover:bg-gray-100')}`}>
+                            {l.toUpperCase()}
+                        </button>
+                    ))}
+                </div>
+            );
+        };
+
+        // NEW: Gift Claim Modal
+        const GiftClaimModal = ({ user, onClose, lang, onSubmit }) => {
+            const [step, setStep] = useState(1); // 1: Ask, 2: Form, 3: Done
+            const [formData, setFormData] = useState({ 
+                email: user.email, 
+                address: '' 
+            });
+            const t = TRANSLATIONS[lang];
+
+            const handleSubmit = () => {
+                onSubmit(formData);
+                setStep(3);
+            };
+
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center pop-in border-t-8 border-[#A6192E]">
+                        
+                        {/* Step 1: Ask */}
+                        {step === 1 && (
+                            <>
+                                <div className="w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                                    <i className="fa fa-gift"></i>
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">{t.giftTitle}</h3>
+                                <p className="text-gray-600 mb-6">{t.giftAsk}</p>
+                                <div className="flex flex-col gap-3">
+                                    <button onClick={() => setStep(2)} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">
+                                        {t.giftYes}
+                                    </button>
+                                    <button onClick={onClose} className="w-full bg-gray-100 text-gray-500 py-3 rounded-xl font-bold hover:bg-gray-200 transition">
+                                        {t.giftNo}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Step 2: Form */}
+                        {step === 2 && (
+                            <>
+                                <h3 className="text-lg font-bold text-gray-800 mb-4">{t.giftTitle}</h3>
+                                <div className="text-left space-y-3 mb-6">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 block mb-1">{t.confirmEmail}</label>
+                                        <input type="email" className="w-full p-2 border rounded bg-gray-50" 
+                                            value={formData.email} 
+                                            onChange={e => setFormData({...formData, email: e.target.value})}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 block mb-1">{t.shippingAddr}</label>
+                                        <textarea className="w-full p-2 border rounded" rows="3"
+                                            value={formData.address}
+                                            onChange={e => setFormData({...formData, address: e.target.value})}
+                                        ></textarea>
+                                    </div>
+                                </div>
+                                <button onClick={handleSubmit} disabled={!formData.address} className="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 transition disabled:opacity-50">
+                                    {t.submitClaim}
+                                </button>
+                            </>
+                        )}
+
+                        {/* Step 3: Success */}
+                        {step === 3 && (
+                            <>
+                                <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                                    <i className="fa fa-check"></i>
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">Success!</h3>
+                                <p className="text-gray-600 mb-6">{t.giftSubmitted}</p>
+                                <button onClick={onClose} className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-black transition">
+                                    Close
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const NotificationModal = ({ title, message, type, customIcon, onClose, lang }) => {
+            const t = TRANSLATIONS[lang];
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center pop-in border-t-4 border-[#A6192E]">
+                        <div className="flex justify-center mb-4">
+                            {customIcon ? (
+                                <div className="stamp-circle stamp-earned w-20 h-20 text-3xl">
+                                    <i className={`fa ${customIcon}`}></i>
+                                </div>
+                            ) : (
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl 
+                                    ${type === 'success' ? 'bg-green-100 text-green-600' : 
+                                      type === 'error' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    <i className={`fa ${type === 'success' ? 'fa-trophy' : type === 'error' ? 'fa-lock' : 'fa-info'}`}></i>
+                                </div>
+                            )}
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
+                        <p className="text-gray-600 mb-6">{message}</p>
+                        <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">
+                            {t.go}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const TutorialModal = ({ onClose, lang }) => {
+            const t = TRANSLATIONS[lang];
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md pop-in">
+                        <div className="text-center mb-4">
+                            <div className="w-12 h-12 bg-[#A6192E] rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-3">
+                                <i className="fa fa-question"></i>
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-800">{t.tutorialTitle}</h2>
+                            <p className="text-sm text-gray-500">{t.tutorialIntro}</p>
+                        </div>
+                        <div className="space-y-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl mb-6">
+                            <p>{t.tutorialLocal}</p>
+                            <p>{t.tutorialOverseas}</p>
+                            <p className="font-bold text-[#A6192E]">{t.tutorialGoal}</p>
+                        </div>
+                        <button onClick={onClose} className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-black transition">
+                            {t.tutorialStart}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const OverseasUnlockModal = ({ onUnlock, lang }) => {
+            const [code, setCode] = useState('');
+            const [error, setError] = useState(false);
+            const MASTER_CODE = '8888';
+            const t = TRANSLATIONS[lang];
+
+            const handleUnlock = () => {
+                if (code === MASTER_CODE) {
+                    onUnlock();
+                } else {
+                    setError(true);
+                }
+            };
+
+            return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center pop-in border-t-4 border-blue-600">
+                        <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                            <i className="fa fa-globe"></i>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-2">{t.overseasActivation}</h3>
+                        <p className="text-gray-500 mb-6">{t.enterEventCode}</p>
+                        <input 
+                            type="text" 
+                            className="w-full text-center text-2xl tracking-[0.5em] font-bold border-2 border-gray-300 rounded-lg p-3 mb-2 uppercase focus:border-blue-600 outline-none" 
+                            placeholder="CODE"
+                            maxLength="4"
+                            value={code}
+                            onChange={(e) => { setCode(e.target.value); setError(false); }}
+                        />
+                        {error && <p className="text-red-500 text-sm font-bold mb-4">{t.invalidEventCode}</p>}
+                        <button onClick={handleUnlock} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition mt-2">
+                            {t.unlockCampus}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const StampBook = ({ locations, clearedLocations, onClose, lang }) => {
+            const earnedCount = clearedLocations.length;
+            const total = locations.length;
+            const progress = (earnedCount / total) * 100;
+            const t = TRANSLATIONS[lang];
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 fade-in">
+                     <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                            <i className="fa fa-times text-xl"></i>
+                        </button>
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-bold text-[#A6192E] mb-1">{t.myStamps}</h2>
+                            <p className="text-gray-500 text-sm">{t.collectAll}</p>
+                            <div className="mt-4 flex items-center gap-2 max-w-xs mx-auto">
+                                <div className="flex-grow h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#A6192E] transition-all duration-500" style={{width: `${progress}%`}}></div>
+                                </div>
+                                <span className="text-xs font-bold text-gray-600">{earnedCount}/{total}</span>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            {locations.map(loc => {
+                                const isEarned = clearedLocations.includes(loc.id);
+                                return (
+                                    <div key={loc.id} className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all
+                                        ${isEarned ? 'border-[#A6192E] bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
+                                        <div className={`stamp-circle mb-2 ${isEarned ? 'stamp-earned' : 'stamp-locked'}`}>
+                                            <i className={`fa ${loc.icon}`}></i>
+                                            {isEarned && (
+                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white">
+                                                    <i className="fa fa-check"></i>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className={`text-[10px] font-bold text-center leading-tight ${isEarned ? 'text-[#A6192E]' : 'text-gray-400'}`}>
+                                            {loc.name[lang]}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                     </div>
+                </div>
+            );
+        };
+
+        const Register = ({ onRegister, onAdminLogin, lang, setLang }) => {
+            const [role, setRole] = useState('none');
+            const [version, setVersion] = useState('local');
+            const [formData, setFormData] = useState({ name: '', email: '', programme: '', gradYear: '' });
+            const [adminPass, setAdminPass] = useState('');
+            const [showTutorial, setShowTutorial] = useState(true); 
+            
+            const t = TRANSLATIONS[lang];
+            const isAdminInput = formData.name.trim().toLowerCase() === 'admin';
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                
+                if (isAdminInput) {
+                    if (adminPass === 'pwadmin') {
+                        onAdminLogin();
+                    } else {
+                        alert('Invalid Admin Password');
+                    }
+                } else {
+                    if (!formData.name || !formData.email) return alert('Name and Email required');
+                    onRegister({ ...formData, role, version });
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
+                    {/* Tutorial Modal Overlay */}
+                    {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} lang={lang} />}
+
+                    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-md border-t-8 border-[#A6192E] relative">
+                        <div className="absolute top-4 right-4">
+                            <LanguageSwitcher lang={lang} setLang={setLang} />
+                        </div>
+
+                        <div className="text-center mb-6 pt-6">
+                            <div className="bg-[#A6192E] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">P</div>
+                            <h1 className="text-2xl font-bold text-gray-800">{t.appTitle}</h1>
+                            <p className="text-sm text-gray-500">{t.subtitle}</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4 fade-in">
+                            <input required placeholder={t.fullName} className="input-field" 
+                                value={formData.name} 
+                                onChange={e => setFormData({...formData, name: e.target.value})} 
+                            />
+                            
+                            {isAdminInput ? (
+                                <div className="pop-in">
+                                    <input required type="password" placeholder={t.password} className="input-field bg-gray-50 border-gray-300"
+                                        value={adminPass}
+                                        onChange={e => setAdminPass(e.target.value)}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="space-y-4 fade-in">
+                                    <input required placeholder={t.email} type="email" className="input-field" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                                    <div>
+                                        <label className="label">{t.mode}</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button type="button" onClick={() => setVersion('local')} 
+                                                className={`p-2 rounded-lg border-2 font-bold text-sm ${version === 'local' ? 'border-[#A6192E] bg-red-50 text-[#A6192E]' : 'border-gray-200 text-gray-400'}`}>
+                                                <i className="fa fa-map-marker-alt mr-2"></i> {t.local}
+                                            </button>
+                                            <button type="button" onClick={() => setVersion('overseas')} 
+                                                className={`p-2 rounded-lg border-2 font-bold text-sm ${version === 'overseas' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-200 text-gray-400'}`}>
+                                                <i className="fa fa-globe mr-2"></i> {t.overseas}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <select className="input-field" value={role} onChange={e => setRole(e.target.value)}>
+                                        <option value="none">{t.visitor}</option>
+                                        <option value="student">{t.student}</option>
+                                        <option value="grad">{t.grad}</option>
+                                        <option value="staff">{t.staff}</option>
+                                    </select>
+                                    {(role === 'student' || role === 'grad') && (
+                                        <input required placeholder={t.prog} className="input-field fade-in" value={formData.programme} onChange={e => setFormData({...formData, programme: e.target.value})} />
+                                    )}
+                                    {(role === 'grad') && (
+                                        <input required placeholder={t.gradYear} type="number" className="input-field fade-in" value={formData.gradYear} onChange={e => setFormData({...formData, gradYear: e.target.value})} />
+                                    )}
+                                </div>
+                            )}
+
+                            <button type="submit" className={`w-full text-white py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg ${isAdminInput ? 'bg-gray-800' : 'bg-[#A6192E]'}`}>
+                                {isAdminInput ? t.login : t.startBtn}
+                            </button>
+                            
+                            {!isAdminInput && (
+                                <button type="button" onClick={() => setShowTutorial(true)} className="w-full text-xs text-gray-400 hover:text-[#A6192E] underline mt-2">
+                                    {t.tutorialTitle}
+                                </button>
+                            )}
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const MapScreen = ({ user, locations, clearedLocations, onOpenStampBook, onSelectLocation, onSimulateTime, onOpenAdmin, lang, setLang }) => {
+            const t = TRANSLATIONS[lang];
+            const isLocal = user.version === 'local';
+            // 10th location (index 9) requires 9 stamps
+            const canAccess10th = !isLocal || clearedLocations.length >= 9;
+
+            return (
+                <div className="flex flex-col h-screen bg-gray-50">
+                    <header className="bg-white shadow-sm p-4 z-10 flex justify-between items-center flex-shrink-0">
+                        <div className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-sm">P</div>
+                            <div>
+                                <h1 className="font-bold text-gray-800 leading-tight">{t.appTitle}</h1>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-[10px] text-gray-500">{user.role === 'admin' ? t.adminMode : t.findConquer}</p>
+                                    {user.version === 'overseas' && <span className="text-[10px] bg-blue-100 text-blue-700 px-1 rounded font-bold">{t.overseas}</span>}
+                                    {user.version === 'local' && <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded font-bold">{t.local}</span>}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <LanguageSwitcher lang={lang} setLang={setLang} />
+                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-yellow-200 transition shadow-sm border border-yellow-200">
+                                <i className="fa fa-book-open"></i> 
+                                <span>{clearedLocations.length} {t.stamps}</span>
+                            </button>
+                        </div>
+                    </header>
+                    <main className="flex-grow relative overflow-hidden p-4 md:p-8">
+                        <div className="w-full h-full max-w-5xl mx-auto map-container shadow-inner relative border border-gray-300">
+                            {locations.map(loc => {
+                                const isCleared = clearedLocations.includes(loc.id);
+                                // Core A is the 10th location
+                                const is10th = loc.id === 'core_a';
+                                const isLocked = is10th && !canAccess10th && !isCleared;
+
+                                return (
+                                    <div key={loc.id}
+                                        className={`absolute cursor-pointer flex flex-col items-center group map-pin 
+                                            ${isCleared ? 'opacity-75' : ''} ${isLocked ? 'locked grayscale' : ''}`}
+                                        style={{ left: `${loc.mapX}%`, top: `${loc.mapY}%` }}
+                                        onClick={() => onSelectLocation(loc, isLocked)}
+                                    >
+                                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 flex items-center justify-center shadow-lg transition-transform 
+                                            ${isCleared ? 'bg-green-500 border-white text-white' : (isLocked ? 'bg-gray-400 border-white text-white' : 'bg-[#A6192E] border-white text-white group-hover:scale-110')}`}>
+                                            <i className={`fa ${isCleared ? 'fa-check' : (isLocked ? 'fa-lock' : loc.icon)} text-sm`}></i>
+                                        </div>
+                                        <div className="pin-label">
+                                            {loc.name[lang]}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </main>
+                    <div className="bg-white border-t p-4 flex-shrink-0 safe-area-bottom">
+                        <div className="max-w-md mx-auto grid grid-cols-2 gap-4">
+                            {user.role === 'admin' ? (
+                                <button onClick={onOpenAdmin} className="bg-blue-800 text-white py-3 rounded-lg font-bold text-sm shadow hover:bg-blue-700 relative col-span-2">
+                                    <i className="fa fa-chart-bar mr-2"></i> {t.adminPortal}
+                                </button>
+                            ) : (
+                                <div className="text-xs text-center text-gray-400 col-span-2 flex items-center justify-center italic">
+                                    {t.goToLoc}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const LocationModal = ({ location, onClose, onStartQuiz, onDebugTeleport, lang, onScanError }) => {
+            const [scanStatus, setScanStatus] = useState('idle'); 
+            const [inputCode, setInputCode] = useState('');
+            const [codeError, setCodeError] = useState(false);
+            const t = TRANSLATIONS[lang];
+            const scannerRef = useRef(null);
+
+            useEffect(() => {
+                return () => {
+                    if (scannerRef.current) {
+                        scannerRef.current.clear();
+                    }
+                };
+            }, []);
+
+            const onScanSuccess = (decodedText) => {
+                // Expected format: "POLYU_HUNT:location_id"
+                const expectedCode = `POLYU_HUNT:${location.id}`;
+                if (decodedText === expectedCode) {
+                    if (scannerRef.current) scannerRef.current.clear();
+                    setScanStatus('success');
+                    setTimeout(onStartQuiz, 1000);
+                } else {
+                    // Wrong Location Scanned
+                    // If user scanned another valid QR but not this one
+                    if (decodedText.startsWith("POLYU_HUNT:")) {
+                        alert(`${t.wrongLocation} ${decodedText.split(':')[1]}`);
+                    } else {
+                        alert("Invalid QR Code");
+                    }
+                }
+            };
+
+            const onScanFailure = (error) => {
+                // handle scan failure, usually better to ignore frame errors to keep UI clean
+                // console.warn(`Code scan error = ${error}`);
+            };
+
+            const startScanner = () => {
+                setScanStatus('scanning');
+                const html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader",
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    /* verbose= */ false);
+                
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+                scannerRef.current = html5QrcodeScanner;
+            };
+
+            const handleCodeVerify = () => {
+                if(inputCode.trim() === location.code) {
+                    onStartQuiz();
+                } else {
+                    setCodeError(true);
+                }
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4 fade-in">
+                    <div className="bg-white w-full md:max-w-md rounded-t-2xl md:rounded-2xl p-6 shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800">{location.name[lang]}</h2>
+                                <p className="text-sm text-gray-500 font-bold text-[#A6192E]">{t.earnStamp}</p>
+                            </div>
+                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"><i className="fa fa-times text-gray-600"></i></button>
+                        </div>
+                        
+                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
+                            <div className="flex items-start">
+                                <i className="fa fa-lightbulb text-yellow-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 className="font-bold text-yellow-800 text-sm">{t.clue}</h4>
+                                    <p className="text-sm text-yellow-700 italic">"{location.hint[lang]}"</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Scanner Area */}
+                        <div className="mb-4">
+                            {scanStatus === 'idle' && (
+                                <button 
+                                    onClick={startScanner} 
+                                    className="w-full py-4 rounded-xl font-bold shadow-lg transition flex items-center justify-center gap-3 bg-gray-900 text-white hover:bg-black">
+                                    <i className="fa fa-qrcode text-xl"></i>
+                                    <span>{t.scanBtn}</span>
+                                </button>
+                            )}
+                            
+                            {scanStatus === 'scanning' && (
+                                <div className="rounded-xl overflow-hidden bg-black">
+                                    <div id="reader" width="100%"></div>
+                                </div>
+                            )}
+
+                            {scanStatus === 'success' && (
+                                <div className="w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-3 bg-green-600 text-white">
+                                    <i className="fa fa-check-circle text-xl"></i>
+                                    <span>{t.verified}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-center my-4">
+                            <div className="flex-grow h-px bg-gray-200"></div>
+                            <span className="px-3 text-xs font-bold text-gray-400 uppercase">{t.or}</span>
+                            <div className="flex-grow h-px bg-gray-200"></div>
+                        </div>
+
+                        <div className="bg-white border rounded-xl p-4 mb-4">
+                            <h3 className="font-bold text-gray-700 mb-2 text-sm">{t.enterPin}</h3>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    className="input-field py-2 text-center tracking-widest font-bold uppercase" 
+                                    placeholder="PIN"
+                                    maxLength="4"
+                                    value={inputCode}
+                                    onChange={e => { setInputCode(e.target.value); setCodeError(false); }}
+                                />
+                                <button onClick={handleCodeVerify} className="bg-gray-100 text-gray-800 border border-gray-300 px-4 rounded-lg font-bold hover:bg-gray-200 transition">
+                                    {t.go}
+                                </button>
+                            </div>
+                            {codeError && <div className="text-red-500 text-xs mt-2 font-bold"><i className="fa fa-times-circle"></i> {t.invalidPin}</div>}
+                        </div>
+
+                        <div className="border-t pt-4 text-center">
+                            <button onClick={onDebugTeleport} className="text-xs text-gray-400 hover:text-gray-600">🔧 {t.bypass}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuizScreen = ({ location, question, onBack, onComplete, onAnswerLog, lang }) => {
+            const [view, setView] = useState('question'); 
+            const [feedback, setFeedback] = useState(null); 
+            const [userAnswer, setUserAnswer] = useState(null);
+            const t = TRANSLATIONS[lang];
+            
+            const stories = getStories(location.id, lang);
+
+            const handleAnswer = (opt) => {
+                if (userAnswer) return;
+                setUserAnswer(opt);
+                const isCorrect = opt === question.answer;
+                setFeedback(isCorrect ? 'correct' : 'wrong');
+                onAnswerLog(location.id);
+                
+                if (isCorrect) {
+                    setTimeout(() => setView('stories'), 1500);
+                }
+            };
+
+            if (view === 'question') {
+                return (
+                    <div className="fixed inset-0 z-50 bg-white flex flex-col h-screen">
+                        <div className="p-4 border-b flex items-center justify-between">
+                            <button onClick={onBack} className="text-gray-500 p-2"><i className="fa fa-times"></i></button>
+                            <div className="font-bold text-gray-800">{t.challenge}</div>
+                            <div className="w-8"></div>
+                        </div>
+
+                        <div className="flex-grow overflow-y-auto p-6 max-w-2xl mx-auto w-full">
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
+                                {question.text}
+                            </h3>
+
+                            <div className="space-y-3">
+                                {question.options.map((opt, i) => (
+                                    <button key={i} onClick={() => handleAnswer(opt)} 
+                                        className={`w-full p-4 text-left border-2 rounded-xl transition font-medium
+                                        ${userAnswer === opt 
+                                            ? (opt === question.answer ? 'bg-green-100 border-green-500 text-green-700' : 'bg-red-100 border-red-500 text-red-700')
+                                            : 'border-gray-100 hover:border-[#A6192E] hover:bg-red-50'
+                                        }`}>
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            {feedback === 'wrong' && (
+                                <div className="mt-6 p-4 bg-red-50 text-red-600 rounded-xl text-center font-bold fade-in">
+                                    {t.incorrect}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="fixed inset-0 z-50 bg-white flex flex-col h-screen fade-in">
+                    <div className="bg-[#A6192E] text-white p-8 text-center rounded-b-3xl shadow-lg relative">
+                        <div className="text-4xl mb-2">🎉</div>
+                        <h2 className="text-2xl font-bold">{t.memories}</h2>
+                        <p className="opacity-90 text-sm">{t.readStories}</p>
+                    </div>
+
+                    <div className="flex-grow overflow-y-auto p-6 max-w-2xl mx-auto w-full -mt-4">
+                        {stories.map((story, i) => (
+                            <div key={i} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-4 slide-up" style={{animationDelay: `${i*0.1}s`}}>
+                                <p className="text-gray-600 italic mb-3">"{story.text}"</p>
+                                <div className="text-right">
+                                    <span className="text-xs font-bold text-[#A6192E] bg-red-50 px-2 py-1 rounded">
+                                        <i className="fa fa-user mr-1"></i> {story.user}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="p-4 bg-white border-t safe-area-bottom">
+                        <button onClick={() => onComplete(true)} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-black max-w-md mx-auto block">
+                            {t.collectClose}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const AdminDashboard = ({ onReview, onBack, stats, allUsers, lang }) => {
+            const t = TRANSLATIONS[lang];
+            const [tab, setTab] = useState('qr'); // Default to QR tab to show generator
+
+            return (
+                <div className="fixed inset-0 z-50 bg-gray-100 flex flex-col h-screen overflow-y-auto">
+                    <div className="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-10">
+                        <div className="flex items-center">
+                            <button onClick={onBack} className="text-gray-500 mr-4"><i className="fa fa-arrow-left"></i></button>
+                            <h2 className="font-bold text-xl">{t.adminPortal}</h2>
+                        </div>
+                        <div className="flex bg-gray-100 rounded p-1">
+                            <button onClick={()=>setTab('qr')} className={`px-4 py-1 rounded text-sm font-bold ${tab==='qr' ? 'bg-white shadow text-[#A6192E]' : 'text-gray-500'}`}>{t.qrTab}</button>
+                            <button onClick={()=>setTab('stats')} className={`px-4 py-1 rounded text-sm font-bold ${tab==='stats' ? 'bg-white shadow text-[#A6192E]' : 'text-gray-500'}`}>Stats</button>
+                        </div>
+                    </div>
+                    
+                    <div className="p-4 max-w-4xl mx-auto w-full space-y-4">
+                        {tab === 'qr' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in">
+                                {LOCATIONS.map(loc => (
+                                    <div key={loc.id} className="bg-white p-6 rounded-xl shadow-sm text-center">
+                                        <h3 className="font-bold text-lg text-gray-800 mb-2">{loc.name[lang]}</h3>
+                                        <div className="flex justify-center my-4">
+                                            <canvas ref={(el) => {
+                                                if(el) {
+                                                    new QRious({
+                                                        element: el,
+                                                        value: `POLYU_HUNT:${loc.id}`,
+                                                        size: 200
+                                                    });
+                                                }
+                                            }}></canvas>
+                                        </div>
+                                        <p className="text-xs text-gray-400 font-mono">POLYU_HUNT:{loc.id}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {tab === 'stats' && (
+                            <div className="space-y-6 fade-in">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                                        <p className="text-xs text-gray-500 uppercase">{t.totalUsers}</p>
+                                        <p className="text-2xl font-bold text-[#A6192E]">{allUsers.length}</p>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                                        <p className="text-xs text-gray-500 uppercase">{t.totalStamps}</p>
+                                        <p className="text-2xl font-bold text-[#A6192E]">
+                                            {Object.values(stats.userAnswers).reduce((a,b)=>a+b, 0)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                                    <div className="p-4 border-b bg-gray-50 font-bold text-gray-700">{t.userActivity}</div>
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
+                                            <tr>
+                                                <th className="px-6 py-3">{t.fullName}</th>
+                                                <th className="px-6 py-3">{t.role}</th>
+                                                <th className="px-6 py-3">{t.stamps}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {allUsers.map((u, i) => (
+                                                <tr key={i} className="bg-white border-b hover:bg-gray-50">
+                                                    <td className="px-6 py-4 font-medium text-gray-900">{u.name}</td>
+                                                    <td className="px-6 py-4">{u.role}</td>
+                                                    <td className="px-6 py-4 font-bold text-[#A6192E]">{stats.userAnswers[u.email] || 0}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('register');
+            const [lang, setLang] = useState('en'); // 'en', 'tc', 'sc'
+            const [activeLoc, setActiveLoc] = useState(null);
+            const [modalOpen, setModalOpen] = useState(false);
+            const [notification, setNotification] = useState(null); 
+            const [stampBookOpen, setStampBookOpen] = useState(false);
+            const [overseasUnlocked, setOverseasUnlocked] = useState(false);
+            const [giftClaimOpen, setGiftClaimOpen] = useState(false); // Gift modal state
+            
+            // Firebase State
+            const [allUsers, setAllUsers] = useState([]);
+            const [stats, setStats] = useState({ userAnswers: {}, questionAnswers: {} });
+            const [cleared, setCleared] = useState([]);
+
+            const t = TRANSLATIONS[lang];
+
+            // 1. Initial Auth
+            useEffect(() => {
+                const initAuth = async () => {
+                    const { auth, signInAnonymously } = window.FB;
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (error) {
+                        console.error("Firebase Auth failed, falling back to offline mode", error);
+                        // Optionally show a toast
+                    }
+                };
+                initAuth();
+
+                const { auth, onAuthStateChanged, db, collection, doc, onSnapshot, appId } = window.FB;
+                const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+                    if (authUser) {
+                        // 2. Listen to user profile
+                        const userRef = doc(db, 'artifacts', appId, 'participants', authUser.uid);
+                        onSnapshot(userRef, (docSnap) => {
+                            if (docSnap.exists()) {
+                                const userData = docSnap.data();
+                                setUser({ ...userData, uid: authUser.uid });
+                                setCleared(userData.clearedLocations || []);
+                                setView('map');
+                            } else {
+                                // No profile yet, user stays on register screen
+                                setUser(null); 
+                            }
+                        });
+                    }
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // 3. Listen for Admin Stats (if user is admin)
+            useEffect(() => {
+                if (user?.role === 'admin') {
+                    const { db, collection, onSnapshot, appId } = window.FB;
+                    // Guard if db not initialized
+                    if (!db) return;
+
+                    const q = collection(db, 'artifacts', appId, 'participants');
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        const users = [];
+                        const userAnswers = {};
+                        
+                        snapshot.forEach(doc => {
+                            const u = doc.data();
+                            users.push(u);
+                            userAnswers[u.email] = (u.clearedLocations || []).length;
+                        });
+                        setAllUsers(users);
+                        setStats({ userAnswers, questionAnswers: {} });
+                    });
+                    return () => unsubscribe();
+                }
+            }, [user?.role]);
+
+            const showNotify = (title, message, type = 'info', customIcon = null) => {
+                setNotification({ title, message, type, customIcon });
+            };
+
+            const handleAnswerLog = (qId) => {
+                // In real app, increment question stats in DB
+            };
+
+            const handleQuizComplete = async (success) => {
+                if (success) {
+                    const { db, doc, updateDoc, arrayUnion, appId } = window.FB;
+                    const { auth } = window.FB;
+                    
+                    if (cleared.includes(activeLoc.id)) {
+                        showNotify(t.alreadyClearedTitle, t.alreadyClearedMsg, "info", activeLoc.icon);
+                    } else {
+                        // Optimistic update
+                        const newCleared = [...cleared, activeLoc.id];
+                        setCleared(newCleared);
+
+                        // DB Update if online
+                        if (auth && auth.currentUser && db) {
+                            const userRef = doc(db, 'artifacts', appId, 'participants', auth.currentUser.uid);
+                            await updateDoc(userRef, {
+                                clearedLocations: arrayUnion(activeLoc.id)
+                            });
+                        }
+                        
+                        // Check for Grand Success (10 Locations)
+                        if (newCleared.length === 10) {
+                            if (user.version === 'overseas') {
+                                setGiftClaimOpen(true);
+                            } else {
+                                showNotify(t.grandSuccessTitle, t.grandSuccessMsg, "success", "fa-crown");
+                            }
+                        } else {
+                            showNotify(
+                                t.stampCollectedTitle, 
+                                t.stampCollectedMsg + ` (${activeLoc.name[lang]})`, 
+                                "success", 
+                                activeLoc.icon
+                            );
+                        }
+                    }
+                }
+                setActiveLoc(null);
+                setView('map');
+            };
+
+            const handleGiftSubmit = async (giftData) => {
+                const { db, doc, updateDoc, appId, auth } = window.FB;
+                if (auth && auth.currentUser && db) {
+                    const userRef = doc(db, 'artifacts', appId, 'participants', auth.currentUser.uid);
+                    await updateDoc(userRef, {
+                        giftRequest: giftData
+                    });
+                }
+            };
+
+            const handleSelectLocation = (loc, isLocked) => {
+                // Check lock status
+                if (isLocked) {
+                    showNotify(t.lockedTitle, t.lockedMsg, 'error');
+                    return;
+                }
+
+                if (user.version === 'overseas') {
+                    if (!overseasUnlocked) return; 
+                    setActiveLoc(loc);
+                    setView('quiz'); 
+                } else {
+                    setActiveLoc(loc);
+                    setModalOpen(true);
+                }
+            };
+
+            const handleRegister = async (formData) => {
+                const { db, doc, setDoc, auth, appId } = window.FB;
+                
+                // Check if auth is valid
+                if (!auth || !auth.currentUser) {
+                    console.warn("Offline Mode: Skipping Firestore write");
+                    const offlineUser = {
+                        ...formData,
+                        uid: 'offline-user',
+                        clearedLocations: [],
+                        role: formData.name.toLowerCase() === 'admin' ? 'admin' : formData.role || 'student'
+                    };
+                    setUser(offlineUser);
+                    if (offlineUser.role === 'admin') {
+                         // Mock admin data
+                         setAllUsers([{name: 'Demo User', role: 'student', email: 'demo@test.com'}]);
+                         setStats({ userAnswers: {'demo@test.com': 5}, questionAnswers: {} });
+                    }
+                    setView('map');
+                    return;
+                }
+
+                const uid = auth.currentUser.uid;
+                
+                const newUser = {
+                    ...formData,
+                    uid,
+                    clearedLocations: [],
+                    joinedAt: new Date().toISOString()
+                };
+
+                await setDoc(doc(db, 'artifacts', appId, 'participants', uid), newUser);
+                // The onSnapshot in useEffect will pick this up and set User state
+            };
+
+            const handleAdminLogin = async () => {
+                const { db, doc, setDoc, auth, appId } = window.FB;
+                
+                if (!auth || !auth.currentUser) {
+                    // Offline Admin
+                    setUser({ name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
+                    setAllUsers([{name: 'Demo User', role: 'student', email: 'demo@test.com'}]);
+                    setStats({ userAnswers: {'demo@test.com': 5}, questionAnswers: {} });
+                    setView('map');
+                    return;
+                }
+
+                const uid = auth.currentUser.uid;
+                
+                // Set admin profile
+                await setDoc(doc(db, 'artifacts', appId, 'participants', uid), {
+                    name: 'Administrator',
+                    email: 'admin@system',
+                    role: 'admin',
+                    clearedLocations: []
+                });
+            };
+
+            useEffect(() => {
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .input-field { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; outline: none; transition: all 0.2s; }
+                    .input-field:focus { border-color: #A6192E; ring: 2px solid #A6192E; }
+                    .label { display: block; font-size: 0.75rem; font-weight: 700; color: #374151; margin-bottom: 0.25rem; }
+                `;
+                document.head.appendChild(style);
+            }, []);
+
+            if(!user) return <Register onRegister={handleRegister} onAdminLogin={handleAdminLogin} lang={lang} setLang={setLang} />;
+
+            return (
+                <div className="text-gray-800">
+                    {/* Notification Overlay */}
+                    {notification && (
+                        <NotificationModal 
+                            title={notification.title} 
+                            message={notification.message} 
+                            type={notification.type} 
+                            customIcon={notification.customIcon}
+                            onClose={() => setNotification(null)} 
+                            lang={lang}
+                        />
+                    )}
+
+                    {/* Stamp Book Overlay */}
+                    {stampBookOpen && (
+                        <StampBook 
+                            locations={LOCATIONS} 
+                            clearedLocations={cleared} 
+                            onClose={() => setStampBookOpen(false)} 
+                            lang={lang}
+                        />
+                    )}
+
+                    {/* Gift Claim Overlay (Overseas) */}
+                    {giftClaimOpen && (
+                        <GiftClaimModal 
+                            user={user} 
+                            onClose={() => setGiftClaimOpen(false)} 
+                            onSubmit={handleGiftSubmit}
+                            lang={lang} 
+                        />
+                    )}
+
+                    {/* Overseas Activation Overlay */}
+                    {view === 'map' && user.version === 'overseas' && !overseasUnlocked && (
+                        <OverseasUnlockModal onUnlock={() => setOverseasUnlocked(true)} lang={lang} />
+                    )}
+
+                    {view === 'map' && (
+                        <>
+                            <MapScreen 
+                                user={user} locations={LOCATIONS} clearedLocations={cleared} 
+                                stamps={cleared.length}
+                                onOpenStampBook={() => setStampBookOpen(true)}
+                                onSelectLocation={handleSelectLocation}
+                                onOpenAdmin={() => setView('admin')}
+                                onSimulateTime={() => {}}
+                                lang={lang}
+                                setLang={setLang}
+                            />
+                            {modalOpen && activeLoc && (
+                                <LocationModal 
+                                    location={activeLoc} 
+                                    onClose={() => setModalOpen(false)}
+                                    onStartQuiz={() => { setModalOpen(false); setView('quiz'); }}
+                                    onDebugTeleport={() => { setModalOpen(false); setView('quiz'); }} 
+                                    lang={lang}
+                                />
+                            )}
+                        </>
+                    )}
+
+                    {view === 'quiz' && activeLoc && (
+                        <QuizScreen 
+                            location={activeLoc} 
+                            question={getQuestion(activeLoc.id, lang)}
+                            onBack={() => setView('map')}
+                            onComplete={handleQuizComplete}
+                            onAnswerLog={handleAnswerLog}
+                            lang={lang}
+                        />
+                    )}
+
+                    {view === 'admin' && (
+                        <AdminDashboard 
+                            onReview={()=>{}}
+                            onBack={() => setView('map')}
+                            stats={stats}
+                            allUsers={allUsers}
+                            lang={lang}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
