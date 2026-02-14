@@ -14,28 +14,30 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// Your Firebase config (safe to keep on frontend)
+// 1️⃣ PASTE YOUR OWN FIREBASE CONFIG HERE
+// Get this from Firebase console: Project Settings → General → Your apps → Web app
 const firebaseConfig = {
-  apiKey: "AIzaSyDUCHks8Q3smU6dMruN-otcpEWCamOOWPA",
-  authDomain: "polyu-hunt.firebaseapp.com",
-  projectId: "polyu-hunt",
-  storageBucket: "polyu-hunt.firebasestorage.app",
-  messagingSenderId: "958809195745",
-  appId: "1:958809195745:web:1be0bc46e7cdf88a6e63a0",
-  measurementId: "G-S3HQ8XDE59"
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID" // optional, ok to remove if not used
 };
 
-// Initialize Firebase
+// 2️⃣ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Expose simple helpers for your app code
-// Attach to window so existing scripts can call window.dbUtil.*
+// 3️⃣ Expose simple helpers for your app code
+// Attach to window so index.html can call window.dbUtil.*
 window.dbUtil = {
   // Create or overwrite a user document, keyed by email
   async saveUser(userData) {
     const now = Timestamp.fromDate(new Date());
     const ref = doc(db, "users", userData.email);
+
     await setDoc(
       ref,
       {
@@ -51,6 +53,7 @@ window.dbUtil = {
       },
       { merge: true }
     );
+
     return { success: true };
   },
 
@@ -112,7 +115,7 @@ window.dbUtil = {
   }
 };
 
-// Optional: expose app/db for debugging
+// Optional: expose app/db for debugging in console
 window.firebaseApp = app;
 window.firestoreDb = db;
 
