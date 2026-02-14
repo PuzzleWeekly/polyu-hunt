@@ -452,56 +452,9 @@
         
         // ==================== DATABASE UTILITIES ====================
         
-        const db = {
-            async saveUser(userData) {
-                try {
-                    const response = await fetch(`${BACKEND.url}/users`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${BACKEND.apiKey}`
-                        },
-                        body: JSON.stringify(userData)
-                    });
-                    return await response.json();
-                } catch (error) {
-                    console.error('Error saving user:', error);
-                    throw error;
-                }
-            },
-            
-            async updateStamps(email, stamps) {
-                try {
-                    const response = await fetch(`${BACKEND.url}/users/${email}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${BACKEND.apiKey}`
-                        },
-                        body: JSON.stringify({ stamps })
-                    });
-                    return await response.json();
-                } catch (error) {
-                    console.error('Error updating stamps:', error);
-                    throw error;
-                }
-            },
-            
-            async logQuizAnswer(email, locationId, correct) {
-                try {
-                    await fetch(`${BACKEND.url}/quizzes`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${BACKEND.apiKey}`
-                        },
-                        body: JSON.stringify({ email, locationId, correct, timestamp: new Date() })
-                    });
-                } catch (error) {
-                    console.error('Error logging quiz:', error);
-                }
-            }
-        };
+       // DATABASE UTILITIES – Firebase version
+        const db = window.dbUtil;
+
         
         // ==================== COMPONENTS ====================
         
@@ -1496,3 +1449,4 @@
 </body>
 
 </html>
+
