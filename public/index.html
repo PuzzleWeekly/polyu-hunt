@@ -624,6 +624,37 @@
             );
         };
 
+        const TutorialModal = ({ onClose, lang, setLang, onOpenTC }) => {
+            const t = TRANSLATIONS[lang];
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 fade-in">
+                    <div className="bg-white rounded-2xl shadow-xl p-6 pt-14 w-full max-w-md pop-in text-center relative">
+                        <div className="absolute top-4 left-4">
+                            <LanguageSwitcher lang={lang} setLang={setLang} />
+                        </div>
+                        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
+                            <i className="fa fa-times"></i>
+                        </button>
+                        
+                        <div className="text-center mb-4 pt-4">
+                            <h2 className="text-2xl font-bold text-gray-800">{t.tutorialTitle}</h2>
+                        </div>
+                        <div className="text-left space-y-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl mb-6">
+                            <p>{t.tutorialLocal}</p>
+                            <p>{t.tutorialOverseas}</p>
+                            <p className="font-bold text-[#A6192E]">{t.tutorialGoal}</p>
+                        </div>
+                        <button onClick={onClose} className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-black transition">
+                            {t.tutorialStart}
+                        </button>
+                        <div className="mt-4 text-center">
+                            <button type="button" onClick={onOpenTC} className="text-sm text-gray-500 hover:text-[#A6192E] underline">{t.readTC}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const Register = ({ onRegister, onCheckUser, onAdminLogin, lang, setLang, onOpenTC, adminConfig }) => {
             const [step, setStep] = useState(1);
             const [version, setVersion] = useState('local');
@@ -815,16 +846,13 @@
                 const video = videoRef.current;
                 const canvas = canvasRef.current;
                 
-                // Set canvas to actual video resolution
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 const ctx = canvas.getContext('2d');
                 
-                // Draw Video feed onto Canvas
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
-                // Draw Custom Game Overlay
-                ctx.fillStyle = "rgba(166, 25, 46, 0.9)"; // PolyU Red Banner
+                ctx.fillStyle = "rgba(166, 25, 46, 0.9)";
                 const barHeight = Math.max(100, canvas.height * 0.15);
                 ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
                 
@@ -837,7 +865,6 @@
                 ctx.font = `${Math.floor(barHeight * 0.25)}px Inter`;
                 ctx.fillText(location.name[lang], canvas.width / 2, canvas.height - barHeight * 0.25);
                 
-                // Output image
                 setCapturedImg(canvas.toDataURL('image/jpeg', 0.9));
             };
 
@@ -861,7 +888,6 @@
                             files: [file]
                         });
                     } else {
-                        // Fallback to direct download if sharing isn't supported
                         downloadImage();
                     }
                 } catch (e) {
@@ -890,8 +916,6 @@
                         <>
                             <div className="relative flex-grow overflow-hidden flex items-center justify-center">
                                 <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover"></video>
-                                
-                                {/* Live Visual Overlay */}
                                 <div className="absolute bottom-0 left-0 w-full bg-[#A6192E]/90 text-white p-5 text-center">
                                     <h2 className="text-2xl font-bold tracking-wide">PolyU Hunt 2026</h2>
                                     <p className="text-sm opacity-90 mt-1">{location.name[lang]}</p>
@@ -902,7 +926,7 @@
                                 <button onClick={capture} className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center hover:bg-gray-200 transition transform hover:scale-105">
                                     <i className="fa fa-camera text-2xl text-black"></i>
                                 </button>
-                                <div className="w-16"></div> {/* Spacer for perfect centering */}
+                                <div className="w-16"></div> 
                             </div>
                         </>
                     ) : (
@@ -923,7 +947,6 @@
                             </div>
                         </>
                     )}
-                    {/* Hidden canvas for image processing */}
                     <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
                 </div>
             );
@@ -933,7 +956,6 @@
             const [view, setView] = useState('q');
             const [userAnswer, setUserAnswer] = useState(null);
             
-            // Track positional and click state of wrong options
             const [wrongOpts, setWrongOpts] = useState({});
             
             const [storyIndex, setStoryIndex] = useState(0);
@@ -947,11 +969,9 @@
                 if (!isCorrect && userAnswer === null) {
                     setWrongOpts(prev => {
                         const current = prev[o] || { x: 0, y: 0 };
-                        // Calculate a random jump within the container bounds
                         let newX = current.x + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 40);
                         let newY = current.y + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 40);
                         
-                        // Soft clamping to prevent the button from completely flying off-screen
                         if (newX > 80) newX = 80; 
                         if (newX < -80) newX = -80;
                         if (newY > 80) newY = 80; 
@@ -969,14 +989,12 @@
                 const isCorrect = String(o).trim() === String(qData.answer).trim();
                 if (isCorrect) {
                     setUserAnswer(o);
-                    // Move to Camera Challenge on Correct Answer
                     setTimeout(() => setView('camera'), 800); 
                 } else {
                     handleEvade(o);
                 }
             };
 
-            // Switch sub-components based on internal state
             if (view === 'camera') {
                 return <CameraBooth location={location} lang={lang} onComplete={() => setView('s')} />;
             }
@@ -1032,7 +1050,6 @@
                 </div>
             );
 
-            // Memories/Stories View
             return (
                 <div className="fixed inset-0 z-50 bg-gray-100 h-screen flex flex-col fade-in">
                     <div className="bg-[#A6192E] text-white p-4 md:p-6 text-center rounded-b-3xl shadow-lg relative z-10 flex-shrink-0">
@@ -1635,9 +1652,10 @@
             const [initializing, setInitializing] = useState(true);
             const t = TRANSLATIONS[lang];
 
-            // Progressive unlock logic mapped to the Admin Config Start Date
+            // --- PROGRESSIVE UNLOCK LOGIC ---
             const visibleLocations = useMemo(() => {
                 const startDateStr = adminConfig?.startDate || getLocalYYYYMMDD();
+                
                 const start = new Date(startDateStr);
                 start.setHours(0, 0, 0, 0); 
                 
@@ -1645,6 +1663,7 @@
                 now.setHours(0, 0, 0, 0);
                 
                 const diffDays = Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24)));
+                
                 return LOCATIONS.slice(0, Math.min(LOCATIONS.length, 1 + diffDays));
             }, [adminConfig?.startDate]);
 
@@ -1659,7 +1678,9 @@
                         if(db) {
                             const ref = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main');
                             const snap = await getDoc(ref);
-                            if (snap.exists()) {
+                            
+                            // FIX applied here: Check if property exists first to support compat layer
+                            if (snap.exists || (typeof snap.exists === 'function' && snap.exists())) {
                                 setContent(snap.data());
                             } else {
                                 await setDoc(ref, { questions: DEFAULT_QUESTIONS, stories: ALUMNI_STORIES }, { merge: true });
@@ -1668,12 +1689,14 @@
 
                             const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2');
                             const configSnap = await getDoc(configRef);
-                            if (!configSnap.exists()) {
+                            
+                            // FIX applied here too
+                            if (!configSnap.exists && !(typeof configSnap.exists === 'function' && configSnap.exists())) {
                                 await setDoc(configRef, { passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD() });
                             }
                             
                             onSnapshot(configRef, (docSnap) => {
-                                if (docSnap.exists()) {
+                                if (docSnap.exists || (typeof docSnap.exists === 'function' && docSnap.exists())) {
                                     setAdminConfig(docSnap.data());
                                 }
                             });
@@ -1690,7 +1713,7 @@
                     const { db, doc, onSnapshot, appId } = window.FB;
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', user.uid);
                     const unsubscribe = onSnapshot(userRef, (docSnap) => {
-                        if (docSnap.exists()) {
+                        if (docSnap.exists || (typeof docSnap.exists === 'function' && docSnap.exists())) {
                             const data = docSnap.data();
                             setCleared(data.clearedLocations || []);
                             setUser(prev => ({...prev, ...data}));
@@ -1746,7 +1769,7 @@
                 if (!initializing) autoLogin();
             }, [initializing]);
 
-            // 5. URL Params Watcher
+            // 5. Watch for URL "scan" param
             useEffect(() => {
                 if (user && !initializing) {
                     const params = new URLSearchParams(window.location.search);
