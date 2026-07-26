@@ -222,7 +222,6 @@
         
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- Helper Function: Time Formatting ---
         const formatDuration = (startIso, endIso) => {
             if (!startIso || !endIso) return '-';
             const diffMs = new Date(endIso) - new Date(startIso);
@@ -247,47 +246,42 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         };
 
-        // --- Localization ---
         const TRANSLATIONS = {
             en: {
-                appTitle: "Puzzle Hunt Game", welcome: "Welcome", subtitle: "PolyU Homecoming 2026", adminLogin: "Admin Login", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Please select your role:", visitor: "Visitor", student: "Current Student", alumni: "Alumni", staff: "Staff", prog: "Programme", gradYear: "Graduation Year", startBtn: "Next", registerBtn: "Complete Registration", adminBtn: "Login as Admin", adminMode: "Admin Mode", findConquer: "Find & Conquer", stamps: "Stamp(s)", goToLoc: "Go to location to unlock stamp", earnStamp: "Earn the Stamp!", scanQr: "Scan QR / Enter PIN", findCode: "Find code at location.", scanBtn: "Scan QR Code", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Go", invalidPin: "Invalid PIN", bypass: "Bypass", challenge: "Challenge", memories: "Memories Unlocked!", readStories: "Read stories", collectClose: "Collect Stamp & Close", adminPortal: "Admin Portal", totalUsers: "Total Users", totalStamps: "Total Stamps Awarded", userActivity: "User Activity", overseasActivation: "Overseas Activation", enterEventCode: "Enter Global Event Code", unlockCampus: "Unlock Campus", invalidEventCode: "Invalid Code. Try 1937.", myStamps: "My Stamps", collectAll: "Collect all stamps!", clue: "Clue:", incorrect: "Incorrect! Try again.", alreadyClearedTitle: "Already Cleared", alreadyClearedMsg: "Already collected!", stampCollectedTitle: "STAMP COLLECTED!", stampCollectedMsg: "You earned the Stamp!", password: "Password", login: "Login", tutorialTitle: "How to Play", tutorialIntro: "", tutorialLocal: "📍 On-campus: Visit locations, Scan QR code and Answer questions", tutorialOverseas: "🌏 Off-campus: Enter player code to unlock the map", tutorialGoal: "🏆 Goal: Collect all 7 stamps!", tutorialStart: "Let's Play!", lockedTitle: "Location Locked", lockedMsg: "Clear other 6 locations first!", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All 7 locations conquered!", qrTab: "QR Codes", scanError: "Camera Error. Ensure HTTPS.", wrongLocation: "Wrong Location! Please scan the correct QR code.", giftTitle: "Grand Prize Claim", giftAsk: "Map completed! Send souvenir gift?", giftYes: "Yes, send it!", giftNo: "No, thanks", confirmEmail: "Confirm Email", shippingAddr: "Mailing Address", giftSubmitted: "Request Received! We will contact you soon.", submitClaim: "Submit Claim", authError: "Offline Mode", statsTab: "Stats & Users", welcomeBack: "Welcome Back!", scanFail: "Incorrect Code", tryAgain: "Try Again", logout: "Logout", questionsTab: "Questions", giftsTab: "Gifts", save: "Save", export: "Export CSV", claimed: "Already Claimed", exportOverseas: "Export Overseas Gifts", exportLocal: "Export Local Users", editorTab: "Editor", usersTab: "Users",
+                appTitle: "Puzzle Hunt Game", welcome: "Welcome", subtitle: "PolyU Homecoming Week", adminLogin: "Admin Login", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Please select your role:", visitor: "Visitor", student: "Current Student", alumni: "Alumni", staff: "Staff", prog: "Programme", gradYear: "Graduation Year", startBtn: "Next", registerBtn: "Complete Registration", adminBtn: "Login as Admin", adminMode: "Admin Mode", findConquer: "Find & Conquer", stamps: "Stamp(s)", points: "Point(s)", goToLoc: "Go to location to unlock stamp", earnStamp: "Earn the Stamp!", scanQr: "Scan QR / Enter PIN", findCode: "Find code at location.", scanBtn: "Scan QR Code", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Go", invalidPin: "Invalid PIN", bypass: "Bypass", challenge: "Challenge", memories: "Memories Unlocked!", readStories: "Read stories", collectClose: "Collect Stamp & Close", adminPortal: "Admin Portal", totalUsers: "Total Users", totalStamps: "Total Points Awarded", userActivity: "User Activity", overseasActivation: "Overseas Activation", enterEventCode: "Enter Global Event Code", unlockCampus: "Unlock Campus", invalidEventCode: "Invalid Code. Try 1937.", myStamps: "My Stamps", collectAll: "Collect all stamps!", clue: "Clue:", incorrect: "Incorrect! Try again.", alreadyClearedTitle: "Already Cleared", alreadyClearedMsg: "Already collected!", stampCollectedTitle: "MISSION CLEARED!", stampCollectedMsg: "You successfully cleared the mission!", password: "Password", login: "Login", tutorialTitle: "How to Play", tutorialIntro: "", tutorialLocal: "📍 On-campus: Visit locations, Scan QR code and Answer questions", tutorialOverseas: "🌏 Off-campus: Enter player code to unlock the map", tutorialGoal: "🏆 Goal: Collect all stamps!", tutorialStart: "Let's Play!", lockedTitle: "Location Locked", lockedMsg: "This mission is not available yet!", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", qrTab: "QR Codes", scanError: "Camera Error. Ensure HTTPS.", wrongLocation: "Wrong Location! Please scan the correct QR code.", giftTitle: "Grand Prize Claim", giftAsk: "Map completed! Send souvenir gift?", giftYes: "Yes, send it!", giftNo: "No, thanks", confirmEmail: "Confirm Email", shippingAddr: "Mailing Address", giftSubmitted: "Request Received! We will contact you soon.", submitClaim: "Submit Claim", authError: "Offline Mode", statsTab: "Stats & Users", welcomeBack: "Welcome Back!", scanFail: "Incorrect Code", tryAgain: "Try Again", logout: "Logout", questionsTab: "Questions", giftsTab: "Gifts", save: "Save", export: "Export CSV", claimed: "Already Claimed", exportOverseas: "Export Overseas Gifts", exportLocal: "Export Local Users", editorTab: "Editor", usersTab: "Users",
                 qText: "Question", qOpt: "Option", storyUser: "User", storyText: "Story", setAnswer: "Set as Answer", cancelScan: "Cancel Scan", processing: "Processing...", required: "Name and Email required", myProfile: "My Profile", editRole: "Edit Role", updateProfile: "Update Profile", wrongAnswer: "Incorrect Answer", wait: "Wait", tcTitle: "Terms & Conditions", readTC: "Read Terms & Conditions",
                 timeTaken: "Time taken: ", startTime: "Start Time", finishTime: "Finish Time", durationTime: "Duration", modeMismatch: "Account already registered in another mode. Continuing in:", scannedLoginMsg: "📍 Location scanned! Please login to claim your stamp.", settingsTab: "Settings", changeAdminPass: "Change Admin Password", newPassword: "New Password", updatePass: "Update Password", saveUserDetails: "Save User Details",
                 gameStartDate: "Game Start Date", saveDate: "Save Date", settingsSaved: "Settings updated successfully!",
-                notMe: "Not Me! 🙅‍♂️", camError: "Camera access denied or unavailable.", skip: "Skip", retake: "Retake", share: "Share / Save", continue: "Continue", photoChallenge: "Photo Challenge!"
+                challengeChoice: "Choose your challenge!", scanForBonus: "Scan Location QR (2 Points)", answerForBase: "Answer Question (1 Point)", photoPromptTitle: "Awesome!", photoPromptMsg: "Would you like to take a souvenir photo with the special frame?", takePhoto: "Yes, take photo!", skipPhoto: "Skip to stories", notMe: "Not Me! 🙅‍♂️", camError: "Camera access denied or unavailable.", retake: "Retake", share: "Share / Save", continue: "Continue", photoChallenge: "Photo Challenge!", globalActivateMsg: "Enter ANY location PIN or scan ANY valid QR code to activate your game!"
             },
             tc: {
-                appTitle: "校園解謎遊戲", welcome: "歡迎", subtitle: "理大校友日 2026", adminLogin: "管理員登入", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "你的身份是：", visitor: "訪客", student: "在讀學生", alumni: "校友", staff: "教職員", prog: "課程", gradYear: "畢業年份", startBtn: "下一步", registerBtn: "完成註冊", adminBtn: "管理員", adminMode: "管理員模式", findConquer: "探索與征服", stamps: "印章", goToLoc: "前往地點解鎖", earnStamp: "贏取印章！", scanQr: "掃描 QR / 輸入 PIN", findCode: "尋找代碼", scanBtn: "掃描 QR Code", scanning: "掃描中...", enterPin: "輸入 PIN", go: "確定", invalidPin: "無效 PIN", bypass: "略過", challenge: "挑戰", memories: "解鎖回憶！", readStories: "閱讀故事", collectClose: "領取印章", adminPortal: "管理員平台", totalUsers: "總用戶", totalStamps: "總印章", userActivity: "用戶記錄", overseasActivation: "海外啟用", enterEventCode: "輸入活動代碼", unlockCampus: "解鎖校園", invalidEventCode: "無效代碼 (1937)", myStamps: "我的印章", collectAll: "收集所有印章！", clue: "提示:", incorrect: "錯誤！再試。", alreadyClearedTitle: "已完成", alreadyClearedMsg: "已收集！", stampCollectedTitle: "獲得印章！", stampCollectedMsg: "你贏得了印章！", password: "密碼", login: "登入", tutorialTitle: "遊戲玩法", tutorialIntro: "", tutorialLocal: "📍 校園內：前往地點，掃描 QR Code 並回答問題", tutorialOverseas: "🌏 校園外：輸入玩家代碼解鎖地圖", tutorialGoal: "🏆 目標：收集全部 7 個印章！", tutorialStart: "開始遊戲！", lockedTitle: "已鎖定", lockedMsg: "先完成其他 6 個地點！", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有 7 個地點！", qrTab: "QR 碼", scanError: "相機錯誤", wrongLocation: "地點錯誤！請掃描正確的 QR 碼。", giftTitle: "領取大獎", giftAsk: "完成地圖！寄送紀念品？", giftYes: "好，請寄給我！", giftNo: "不用了", confirmEmail: "確認電郵", shippingAddr: "地址", giftSubmitted: "已收到！", submitClaim: "提交", authError: "離線模式", statsTab: "數據與用戶", welcomeBack: "歡迎回來!", scanFail: "QR 碼錯誤", tryAgain: "重試", logout: "登出", questionsTab: "題目", giftsTab: "禮品", save: "儲存", export: "匯出 CSV", claimed: "已領取", exportOverseas: "匯出海外禮品", exportLocal: "匯出本地用戶", editorTab: "編輯器", usersTab: "用戶",
+                appTitle: "校園解謎遊戲", welcome: "歡迎", subtitle: "理大校友週", adminLogin: "管理員登入", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "你的身份是：", visitor: "訪客", student: "在讀學生", alumni: "校友", staff: "教職員", prog: "課程", gradYear: "畢業年份", startBtn: "下一步", registerBtn: "完成註冊", adminBtn: "管理員", adminMode: "管理員模式", findConquer: "探索與征服", stamps: "印章", points: "積分", goToLoc: "前往地點解鎖", earnStamp: "贏取印章！", scanQr: "掃描 QR / 輸入 PIN", findCode: "尋找代碼", scanBtn: "掃描 QR Code", scanning: "掃描中...", enterPin: "輸入 PIN", go: "確定", invalidPin: "無效 PIN", bypass: "略過", challenge: "挑戰", memories: "解鎖回憶！", readStories: "閱讀故事", collectClose: "領取印章", adminPortal: "管理員平台", totalUsers: "總用戶", totalStamps: "總積分", userActivity: "用戶記錄", overseasActivation: "海外啟用", enterEventCode: "輸入活動代碼", unlockCampus: "解鎖校園", invalidEventCode: "無效代碼 (1937)", myStamps: "我的印章", collectAll: "收集所有印章！", clue: "提示:", incorrect: "錯誤！再試。", alreadyClearedTitle: "已完成", alreadyClearedMsg: "已收集！", stampCollectedTitle: "任務完成！", stampCollectedMsg: "你成功完成了任務！", password: "密碼", login: "登入", tutorialTitle: "遊戲玩法", tutorialIntro: "", tutorialLocal: "📍 校園內：前往地點，掃描 QR Code 並回答問題", tutorialOverseas: "🌏 校園外：輸入玩家代碼解鎖地圖", tutorialGoal: "🏆 目標：收集所有印章！", tutorialStart: "開始遊戲！", lockedTitle: "已鎖定", lockedMsg: "此任務尚未解鎖！", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", qrTab: "QR 碼", scanError: "相機錯誤", wrongLocation: "地點錯誤！請掃描正確的 QR 碼。", giftTitle: "領取大獎", giftAsk: "完成地圖！寄送紀念品？", giftYes: "好，請寄給我！", giftNo: "不用了", confirmEmail: "確認電郵", shippingAddr: "地址", giftSubmitted: "已收到！", submitClaim: "提交", authError: "離線模式", statsTab: "數據與用戶", welcomeBack: "歡迎回來!", scanFail: "QR 碼錯誤", tryAgain: "重試", logout: "登出", questionsTab: "題目", giftsTab: "禮品", save: "儲存", export: "匯出 CSV", claimed: "已領取", exportOverseas: "匯出海外禮品", exportLocal: "匯出本地用戶", editorTab: "編輯器", usersTab: "用戶",
                 qText: "問題", qOpt: "選項", storyUser: "用戶", storyText: "故事", setAnswer: "設為答案", cancelScan: "取消掃描", processing: "處理中...", required: "必須輸入全名和電郵", myProfile: "我的檔案", editRole: "修改身分", updateProfile: "更新檔案", wrongAnswer: "答案錯誤", wait: "請等待", tcTitle: "條款及細則", readTC: "閱讀條款及細則",
                 timeTaken: "所用時間：", startTime: "開始時間", finishTime: "完成時間", durationTime: "總耗時", modeMismatch: "此帳戶已在其他模式註冊。將繼續使用：", scannedLoginMsg: "📍 地點已掃描！請先登入以領取印章。", settingsTab: "設定", changeAdminPass: "更改管理員密碼", newPassword: "新密碼", updatePass: "更新密碼", saveUserDetails: "儲存用戶資料",
                 gameStartDate: "遊戲開始日期", saveDate: "儲存日期", settingsSaved: "設定已儲存！",
-                notMe: "不是我！ 🙅‍♂️", camError: "無法存取相機。", skip: "跳過", retake: "重拍", share: "分享 / 儲存", continue: "繼續", photoChallenge: "拍照挑戰！"
+                challengeChoice: "選擇你的挑戰！", scanForBonus: "掃描地點 QR 碼 (2 分)", answerForBase: "回答問題 (1 分)", photoPromptTitle: "太棒了！", photoPromptMsg: "你想使用特別相框拍攝紀念照嗎？", takePhoto: "好，拍照！", skipPhoto: "跳過並閱讀故事", notMe: "不是我！ 🙅‍♂️", camError: "無法存取相機。", retake: "重拍", share: "分享 / 儲存", continue: "繼續", photoChallenge: "拍照挑戰！", globalActivateMsg: "輸入任何地點 PIN 或掃描任何有效的 QR 碼以啟動遊戲！"
             },
             sc: {
-                appTitle: "校园解谜游戏", welcome: "欢迎", subtitle: "理大校友日 2026", adminLogin: "管理员登入", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "你的身份是：", visitor: "访客", student: "在读学生", alumni: "校友", staff: "教职员", prog: "课程", gradYear: "毕业年份", startBtn: "下一步", registerBtn: "完成注册", adminBtn: "管理员", adminMode: "管理员模式", findConquer: "探索与征服", stamps: "印章", goToLoc: "前往地点解锁", earnStamp: "赢取印章！", scanQr: "扫描 QR / 输入 PIN", findCode: "寻找代码", scanBtn: "扫描 QR Code", scanning: "扫描中...", enterPin: "输入 PIN", go: "确定", invalidPin: "PIN 无效", bypass: "略过", challenge: "挑战", memories: "解锁回忆！", readStories: "阅读校友的故事", collectClose: "领取印章", adminPortal: "管理员平台", totalUsers: "总用户", totalStamps: "总发出印章", userActivity: "用户记录", overseasActivation: "海外启用", enterEventCode: "输入活动代码", unlockCampus: "解锁校园", invalidEventCode: "代码无效。请尝试 1937。", myStamps: "我的印章", collectAll: "收集所有视觉印章！", clue: "寻找代码的提示：", incorrect: "答案错误！下次再试。", alreadyClearedTitle: "已完成", alreadyClearedMsg: "你已经收集了这个印章！", stampCollectedTitle: "获得印章！", stampCollectedMsg: "你赢得了印章！", password: "密码", login: "登入", tutorialTitle: "游戏玩法", tutorialIntro: "", tutorialLocal: "📍 校园内：前往地点，扫描 QR Code 并回答问题",
-                tutorialOverseas: "🌏 校园外：输入玩家代码解锁地图", tutorialGoal: "🏆 目标：收集全部 7 个印章！", tutorialStart: "开始游戏！", lockedTitle: "地点已锁定", lockedMsg: "你必须先完成其他 6 个地点，才能挑战最终关卡！", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "恭喜！你已成功征服所有 7 个地点！感谢你探索理大。", qrTab: "QR 码", scanError: "扫描器错误。请尝试输入 PIN。", wrongLocation: "地点错误！请扫描正确的 QR 码。", giftTitle: "领取大奖", giftAsk: "你已完成地图！想要我们寄送纪念品给你吗？", giftYes: "好，请寄给我！", giftNo: "不用了，谢谢", confirmEmail: "确认电邮", shippingAddr: "邮寄地址", giftSubmitted: "已收到请求！我们稍后会联络你。", submitClaim: "提交申请", authError: "验证错误。正在以离线模式运行。", statsTab: "数据与用户", welcomeBack: "欢迎回来!", scanFail: "QR 码错误", tryAgain: "重试", logout: "登出", questionsTab: "题目", giftsTab: "礼品", save: "保存", export: "汇出 CSV", claimed: "已领取", exportOverseas: "汇出海外礼品", exportLocal: "汇出本地用户", editorTab: "编辑器", usersTab: "用户",
+                appTitle: "校园解谜游戏", welcome: "欢迎", subtitle: "理大校友周", adminLogin: "管理员登入", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "你的身份是：", visitor: "访客", student: "在读学生", alumni: "校友", staff: "教职员", prog: "课程", gradYear: "毕业年份", startBtn: "下一步", registerBtn: "完成注册", adminBtn: "管理员", adminMode: "管理员模式", findConquer: "探索与征服", stamps: "印章", points: "积分", goToLoc: "前往地点解锁", earnStamp: "赢取印章！", scanQr: "扫描 QR / 输入 PIN", findCode: "寻找代码", scanBtn: "扫描 QR Code", scanning: "扫描中...", enterPin: "输入 PIN", go: "确定", invalidPin: "PIN 无效", bypass: "略过", challenge: "挑战", memories: "解锁回忆！", readStories: "阅读校友的故事", collectClose: "领取印章", adminPortal: "管理员平台", totalUsers: "总用户", totalStamps: "总积分", userActivity: "用户记录", overseasActivation: "海外启用", enterEventCode: "输入活动代码", unlockCampus: "解锁校园", invalidEventCode: "代码无效。请尝试 1937。", myStamps: "我的印章", collectAll: "收集所有视觉印章！", clue: "寻找代码的提示：", incorrect: "答案错误！下次再试。", alreadyClearedTitle: "已完成", alreadyClearedMsg: "你已经收集了这个印章！", stampCollectedTitle: "任务完成！", stampCollectedMsg: "你成功完成了任务！", password: "密码", login: "登入", tutorialTitle: "游戏玩法", tutorialIntro: "", tutorialLocal: "📍 校园内：前往地点，扫描 QR Code 并回答问题",
+                tutorialOverseas: "🌏 校园外：输入玩家代码解锁地图", tutorialGoal: "🏆 目标：收集所有印章！", tutorialStart: "开始游戏！", lockedTitle: "地点已锁定", lockedMsg: "此任务尚未解锁！", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "恭喜！征服所有地点！", qrTab: "QR 码", scanError: "扫描器错误。请尝试输入 PIN。", wrongLocation: "地点错误！请扫描正确的 QR 码。", giftTitle: "领取大奖", giftAsk: "你已完成地图！想要我们寄送纪念品给你吗？", giftYes: "好，请寄给我！", giftNo: "不用了，谢谢", confirmEmail: "确认电邮", shippingAddr: "邮寄地址", giftSubmitted: "已收到请求！我们稍后会联络你。", submitClaim: "提交申请", authError: "验证错误。正在以离线模式运行。", statsTab: "数据与用户", welcomeBack: "欢迎回来!", scanFail: "QR 码错误", tryAgain: "重试", logout: "登出", questionsTab: "题目", giftsTab: "礼品", save: "保存", export: "汇出 CSV", claimed: "已领取", exportOverseas: "汇出海外礼品", exportLocal: "汇出本地用户", editorTab: "编辑器", usersTab: "用户",
                 qText: "问题", qOpt: "选项", storyUser: "用户", storyText: "故事", setAnswer: "设为答案", cancelScan: "取消扫描",
                 processing: "处理中...", required: "必须输入全名和电邮", myProfile: "我的档案", editRole: "修改身分", updateProfile: "更新档案",
                 wrongAnswer: "答案错误", wait: "请等待", tcTitle: "条款及细则", readTC: "阅读条款及细则",
                 timeTaken: "所用时间：", startTime: "开始时间", finishTime: "完成时间", durationTime: "总耗时", modeMismatch: "此帐户已在其他模式注册。将继续使用：", scannedLoginMsg: "📍 地点已扫描！请先登入以领取印章。", settingsTab: "设置", changeAdminPass: "更改管理员密码", newPassword: "新密码", updatePass: "更新密码", saveUserDetails: "保存用户资料",
                 gameStartDate: "游戏开始日期", saveDate: "保存日期", settingsSaved: "设置已保存！",
-                notMe: "不是我！ 🙅‍♂️", camError: "无法访问相机。", skip: "跳过", retake: "重拍", share: "分享 / 保存", continue: "继续", photoChallenge: "拍照挑战！"
+                challengeChoice: "选择你的挑战！", scanForBonus: "扫描地点 QR 码 (2 分)", answerForBase: "回答问题 (1 分)", photoPromptTitle: "太棒了！", photoPromptMsg: "你想使用特别相框拍摄纪念照吗？", takePhoto: "好，拍照！", skipPhoto: "跳过并阅读故事", notMe: "不是我！ 🙅‍♂️", camError: "无法访问相机。", retake: "重拍", share: "分享 / 保存", continue: "继续", photoChallenge: "拍照挑战！", globalActivateMsg: "输入任何地点 PIN 或扫描任何有效的 QR 码以启动游戏！"
             }
         };
 
-        // 7 Locations List with user-specified exact coordinates
+        // Reduced to 5 Locations as requested
         const LOCATIONS = [
             { id: 'alumni_atrium', qrId: 'x7K9pM2v', name: {en:'Alumni Atrium', tc:'校友薈', sc:'校友荟'}, lat: 22.3045, lng: 114.1790, mapX: 11.4, mapY: 57.2, icon: 'fa-user-graduate', code: '4829', hint: {en:'The Podium Entrance of the Alumni Atrium. Near the Confucius Institute of Hong Kong', tc:'校友薈平台入口，近香港孔子學院。', sc:'校友荟平台入口，近香港孔子学院。'} },
             { id: 'core_a', qrId: 'b3N8vC1x', name: {en:'Main Entrance', tc:'主校門', sc:'主校门'}, lat: 22.3033, lng: 114.1793, mapX: 10.1, mapY: 94.7, icon: 'fa-building', code: '7153', hint: {en:'On the left side of the Main Entrance', tc:'位於正門入口的左側。', sc:'位于正门入口的左侧。'} },
-            { id: 'activity_booths', qrId: 'q5W2mZ9k', name: {en:'Puzzle Hunt Game Booth', tc:'校園解謎遊戲攤位', sc:'校园解谜游戏摊位'}, lat: 22.3040, lng: 114.1800, mapX: 36, mapY: 96.5, icon: 'fa-tent', code: '2946', hint: {en:'Puzzle Hunt Game Counter.', tc:'校園解謎遊戲攤位。', sc:'主校园解谜游戏摊位。'} },
             { id: 'uni_gallery', qrId: 'p8L4jT6n', name: {en:'University Gallery', tc:'大學展覽館', sc:'大学展览馆'}, lat: 22.3050, lng: 114.1810, mapX: 72.6, mapY: 89.8, icon: 'fa-images', code: '8371', hint: {en:'Outside the Gallery.', tc:'展覽館門外。', sc:'展览馆门外。'} },
             { id: 'logo_square', qrId: 'r2Y7cX5h', name: {en:'Chan Sui Kau and Chan Lam Moon Chun Square (Logo Square)', tc:'陳瑞球林滿珍伉儷廣場', sc:'陈瑞球林满珍伉俪广场'}, lat: 22.3038, lng: 114.1815, mapX: 83.5, mapY: 63.2, icon: 'fa-vector-square', code: '5692', hint: {en:'The Podium Entrance of the Logo Square.', tc:'廣場平台入口。', sc:'广场平台入口。'} },
-            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: {en:'VA Kiosk', tc:'VA Kiosk', sc:'VA Kiosk'}, lat: 22.3055, lng: 114.1820, mapX: 14.2, mapY: 23.2, icon: 'fa-store', code: '3184', hint: {en:'Near the 7-11.', tc:'7-11 便利店附近。', sc:'7-11 便利店附近。'} },
-            // 7th Location - Final Boss
-            { id: 'redemption', qrId: 'm6T1pX4c', name: {en:'Gift Redemption Station', tc:'禮物換領專區', sc:'礼物换领专区'}, lat: 22.3045, lng: 114.1805, mapX: 13.7, mapY: 40.2, icon: 'fa-gift', code: '9427', hint: {en:'HJ202.', tc:'HJ202。', sc:'HJ202。'} },
+            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: {en:'VA Kiosk', tc:'VA Kiosk', sc:'VA Kiosk'}, lat: 22.3055, lng: 114.1820, mapX: 14.2, mapY: 23.2, icon: 'fa-store', code: '3184', hint: {en:'Near the 7-11.', tc:'7-11 便利店附近。', sc:'7-11 便利店附近。'} }
         ];
 
-        // Unique questions strictly matched to instructions
         const DEFAULT_QUESTIONS = {
             'alumni_atrium': { 
                 text: {en:'In which building is the Alumni Atrium located?', tc:'校友薈坐落於哪一座建築內？', sc:'校友荟坐落于哪一座建筑内？'}, 
@@ -298,11 +292,6 @@
                 text: {en:'Walking into the Main Entrance at Block A, which contemporary design feature, showcasing vitality, can be seen alongside the iconic red bricks?', tc:'走進A座主入口，除了經典的紅磚，還能看到哪種展現「生機勃勃」的當代設計？', sc:'走进A座主入口，除了经典的红砖，还能看到哪种展现「生机勃勃」的当代设计？'}, 
                 options: {en:['A giant fountain', 'A vertical green wall', 'Rainbow-coloured floor tiles', 'Solar umbrellas'], tc:['巨大的噴泉', '垂直綠化牆', '彩虹色的地磚', '太陽能雨傘'], sc:['巨大的喷泉', '垂直绿化墙', '彩虹色的地砖', '太阳能雨伞']}, 
                 answer: {en:'A vertical green wall', tc:'垂直綠化牆', sc:'垂直绿化墙'} 
-            },
-            'activity_booths': { 
-                text: {en:'What cutting-edge technologies can alumni experience firsthand at the Innovative Booths during this year\'s Homecoming?', tc:'在今年的校友返校日科研攤位中，校友可親身體驗哪些前沿科技成果？', sc:'在今年的校友返校日科研摊位中，校友可亲身体验哪些前沿科技成果？'}, 
-                options: {en:['AI Racing and Driving Simulators', 'Smart Health Checks', 'AR Devices and Various Robots', 'All of the above'], tc:['AI 賽車與駕駛模擬器', '智能健康檢測', 'AR 設備與各式機械人', '以上皆是'], sc:['AI 赛车与驾驶模拟器', '智能健康检测', 'AR 设备与各式机器人', '以上皆是']}, 
-                answer: {en:'All of the above', tc:'以上皆是', sc:'以上皆是'} 
             },
             'uni_gallery': { 
                 text: {en:'The front wall of the University Gallery features a modern reinterpretation of PolyU’s iconic red brick identity. What special material, developed by PolyU’s researchers, is used to make the hollow blocks in this wall?', tc:'大學展覽館的正門外牆以現代手法重新演繹了理大標誌性的紅磚風格。這面牆上的空心磚是由理大研究人員研發的哪種特殊材料製成的？', sc:'大学展览馆的正门外墙以现代手法重新演绎了理大标志性的红砖风格。这面墙上的空心砖是由理大研究人员研发的哪种特殊材料制成的？'}, 
@@ -319,11 +308,6 @@
                 options: {en:['Above & Beyond', 'U Garden', 'Gourmet Shop', 'U.Green'], tc:['天外天', '花園 理', 'Gourmet Shop', 'U.Green'], sc:['天外天', '花园 理', 'Gourmet Shop', 'U.Green']}, 
                 answer: {en:'Gourmet Shop', tc:'Gourmet Shop', sc:'Gourmet Shop'} 
             },
-            'redemption': { 
-                text: {en:'Which of the following actions allows you to redeem a gift during Homecoming?', tc:'以下哪一項活動可讓你於校友返校日時換領禮品？', sc:'以下哪一项活动可让你于校友返校日时换领礼品？'}, 
-                options: {en:['Joining campus tours', 'Attending AI workshops or creative activities', 'Exploring innovative booths', 'All of the above'], tc:['參加校園導賞團', '參與AI工作坊或創意活動', '參觀科研攤位', '以上皆是'], sc:['参加校园导赏团', '参与AI工作坊或创意活动', '参观科研摊位', '以上皆是']}, 
-                answer: {en:'All of the above', tc:'以上皆是', sc:'以上皆是'} 
-            },
             'default': { text: {en:'Welcome to PolyU!', tc:'歡迎來到理大！', sc:'欢迎来到理大！'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} }
         };
 
@@ -335,10 +319,6 @@
             'core_a': [
                 {user:'', text:{en:'After getting off the train at Hung Hom Station, we used to walk across the footbridge straight into the campus.', tc:'以前每次坐車到紅磡火車站，必定經天橋直達校園。', sc:'以前每次坐车到红磡火车站，必定经天桥直达校园。'}}, 
                 {user:'', text:{en:'The iconic red brick architecture has always been PolyU’s signature. Taking graduation photos at the fountain is a must.', tc:'理大最標誌性嘅，一定係嗰啲紅磚建築。在噴水池拍畢業照是必須的。', sc:'理大最标志性的，一定是那些红砖建筑。在喷水池拍毕业照是必须的。'}}
-            ],
-            'activity_booths': [
-                {user:'', text:{en:'The game booths remind me of the vibrant O-camp days and the passionate club promotions.', tc:'遊戲攤位讓我想起充滿活力的迎新營日子和熱情的學會宣傳。', sc:'游戏摊位让我想起充满活力的迎新营日子和热情的学会宣传。'}}, 
-                {user:'', text:{en:'It’s amazing to see so many innovative projects and energetic students gathering here.', tc:'很高興看到這麼多創新的項目和充滿活力的學生聚集在這裡。', sc:'很高兴看到这么多创新的项目和充满活力的学生聚集在这里。'}}
             ],
             'uni_gallery': [
                 {user:'', text:{en:'Walking past the library, I discovered a new University Gallery. Stepping inside felt like entering a small museum; the stories told by the display panels and old photos predate my own age.', tc:'行過圖書館旁邊發現多咗一個 University Gallery。行入去好似走進一間細小嘅博物館，展板同舊照片講緊嘅故事，比我自己年紀仲要久遠。', sc:'走过图书馆旁边发现多了一个 University Gallery。走进去好像走进一间细小的博物馆，展板和旧照片讲述的故事，比我自己年纪还要久远。'}}, 
@@ -352,65 +332,36 @@
                 {user:'', text:{en:'I usually ate in the PolyU canteens when I was studying here. Many years ago, VA still served teppanyaki beef rice. One time I dropped my bowl, and the canteen auntie kindly gave me a new one.', tc:'我在POLYU讀書的大部分時間都是在食堂吃飯的。很多年前VA還有鐵板牛肉飯，我有一次不小心打翻了碗，食堂阿姨還給我免費盛了一碗飯。', sc:'我在POLYU读书的大部分时间都是在食堂吃饭的。很多年前VA还有铁板牛肉饭，我有一次不小心打翻了碗，食堂阿姨还给我免费盛了一碗饭。'}}, 
                 {user:'', text:{en:'Back then, everyone called me the “King of Big Two”, and those were the happiest days of my life. After class, we would all end up in the canteen, digging into our rice plates while noisily playing Big Dai Dee.', tc:'當年人稱「Dee 王」，那是人生中最開心快活的一段日子。每回下課，大夥兒總不約而同湧入canteen，一邊扒著碟頭飯，一邊熱鬧地玩鋤大 Dee。', sc:'当年人称「Dee 王」，那是人生中最开心快活的一段日子。每回下课，大伙儿总不约同涌入canteen，一边扒着碟头饭，一边热闹地玩锄大 Dee。'}}
             ],
-            'redemption': [
-                {user:'', text:{en:'Finally collected all the stamps! The souvenirs are lovely and bring back great memories.', tc:'終於集齊所有印章了！紀念品很精美，勾起了美好的回憶。', sc:'终于集齐所有印章了！纪念品很精美，勾起了美好的回忆。'}}, 
-                {user:'', text:{en:'A rewarding end to a nostalgic campus tour. Proud to be part of the PolyU family.', tc:'這是一趟充滿情懷的校園遊的完美結尾。為成為理大的一份子感到自豪。', sc:'这是一趟充满情怀的校园游的完美结尾。为成为理大的一份子感到自豪。'}}
-            ],
             'default': [
                 {user:'', text:{en:'Nice place.', tc:'好地方。', sc:'好地方。'}}, 
                 {user:'', text:{en:'Study hard.', tc:'努力學習。', sc:'努力学习。'}}
             ]
         };
 
-        const getStories = (locId, lang) => {
-            const stories = ALUMNI_STORIES[locId] || ALUMNI_STORIES['default'];
-            return stories.map(s => ({ user: s.user, text: s.text[lang] || s.text['en'] }));
-        };
-
         const getQuestionData = (content, id, lang) => {
             const dbQ = content?.questions?.[id];
             const defQ = DEFAULT_QUESTIONS[id] || DEFAULT_QUESTIONS['default'];
-            
-            let text = dbQ?.text?.[lang];
-            if (!text || text.trim() === '') text = defQ.text[lang] || defQ.text['en'];
-            
-            let opts = dbQ?.options?.[lang];
-            if (!opts || opts.length === 0 || !opts[0] || opts[0].trim() === '') opts = defQ.options[lang] || defQ.options['en'] || [];
-            
-            let answer = dbQ?.answer?.[lang];
-            if (!answer || answer.trim() === '') answer = defQ.answer[lang] || defQ.answer['en'];
-
+            let text = dbQ?.text?.[lang] || defQ.text[lang] || defQ.text['en'];
+            let opts = dbQ?.options?.[lang] || defQ.options[lang] || defQ.options['en'] || [];
+            let answer = dbQ?.answer?.[lang] || defQ.answer[lang] || defQ.answer['en'];
             const safeOpts = [...opts];
             while (safeOpts.length < 4) safeOpts.push('');
-            
             return { text, options: safeOpts, answer };
         };
 
         const getStoriesData = (content, id, lang) => {
             const dbS = content?.stories?.[id];
             const defS = ALUMNI_STORIES[id] || ALUMNI_STORIES['default'];
-            
             let list = dbS && dbS.length > 0 ? dbS : defS;
             if (dbS && dbS.length > 0) {
                  const firstText = typeof dbS[0].text === 'object' ? dbS[0].text[lang] : dbS[0].text;
                  if (!firstText || firstText.trim() === '') list = defS;
             }
-
             const safeList = [...list];
             while (safeList.length < 2) safeList.push({user:'', text:{en:'',tc:'',sc:''}});
-            
-            const limitedList = safeList.slice(0, 2);
-            
-            return limitedList.map((s, i) => {
+            return safeList.slice(0, 2).map((s, i) => {
                 const defStory = defS[i] || { user: '', text: {} };
-                let t = '';
-                if (typeof s.text === 'object') {
-                    t = s.text?.[lang];
-                    if (!t || t.trim() === '') t = defStory.text?.[lang] || defStory.text?.['en'] || '';
-                } else {
-                    t = s.text;
-                    if (!t || t.trim() === '') t = defStory.text?.[lang] || defStory.text?.['en'] || '';
-                }
+                let t = typeof s.text === 'object' ? (s.text?.[lang] || defStory.text?.[lang] || defStory.text?.['en'] || '') : (s.text || defStory.text?.[lang] || defStory.text?.['en'] || '');
                 return { user: s.user || defStory.user || '', text: t };
             });
         };
@@ -427,11 +378,11 @@
             en: {
                 title: "Puzzle Hunt Game",
                 sections: [
-                    { title: "Background", content: ["This activity adopts a digital campus orienteering format, enabling participants to explore designated University landmarks using their mobile devices. Through a series of puzzle-based tasks, participants will engage with stories representing different generations of PolyU alumni.", "The activity is open to on-campus participants (during PolyU Homecoming 2026), as well as overseas and off-campus participants, allowing alumni from various locations to take part. Participants who complete the required tasks and successfully accumulate points will be eligible to redeem designated prizes, subject to availability. Prizes for overseas and off-campus participants will be delivered by mail."] },
-                    { title: "Eligibility", content: ["• On-campus participants: All attendees or alumni participants of PolyU Homecoming 2026", "• Overseas and off-campus participants: Participants must provide a non-Hong Kong mailing address."] },
+                    { title: "Background", content: ["This activity adopts a digital campus orienteering format, enabling participants to explore designated University landmarks using their mobile devices. Through a series of puzzle-based tasks, participants will engage with stories representing different generations of PolyU alumni.", "The activity is open to on-campus participants (during PolyU Homecoming Week), as well as overseas and off-campus participants, allowing alumni from various locations to take part. Participants who complete the required tasks and successfully accumulate points will be eligible to redeem designated prizes, subject to availability. Prizes for overseas and off-campus participants will be delivered by mail."] },
+                    { title: "Eligibility", content: ["• On-campus participants: All attendees or alumni participants of PolyU Homecoming Week", "• Overseas and off-campus participants: Participants must provide a non-Hong Kong mailing address."] },
                     { title: "Event period and venue", content: ["• On-campus participants: Time: Homecoming Day (12 April) 13:00 – 17:00 | Venue: Entire campus", "• Overseas and off-campus participants: Time: Homecoming Day (12 April) 13:00 (Hong Kong time) | Venue: Designated webpage (Note: The designated game webpage will remain assessable for 24 hours from the start time.)"] },
                     { title: "Registration", content: ["• On-campus participants: On-campus participants may scan the game QR code at the Homecoming Day reception counter or at all checkpoints within the game. After entering the game, participants can start the game upon successful registration of the accounts.", "• Overseas and off-campus participants: Alumni will receive an invitation email before the event. Invited alumni are required to complete a form and share a PolyU story before the event day. After submitting the registration and story, alumni will receive a game access code. Participants use the access code to log in to the game on the event day."] },
-                    { title: "Competition Details", content: ["• On-campus participants: Participants may follow the in-game instructions to visit different PolyU landmarks to locate the puzzles. Upon finding a puzzle, they may either scan the QR code on the clue board or enter the four-digit code displayed on the board to access the question. Participants may start from any checkpoint in the game. There are a total of seven checkpoints in the game. Participants must first complete six of these checkpoints; upon completion of six checkpoints, the final checkpoint (Gift Redemption Station) will be unlocked. The participant who completes all puzzles in the shortest time will receive the Grand Prize. Participants who finish second to fifth will each receive a Merit Prize. All other participants who complete the game will each receive a mystery gift.", "• Overseas and off-campus participants: Participants may enter the game by using the game access code and may select and answer different puzzles by clicking on the checkpoints on the game map. There are a total of seven checkpoints in the game. Participants must first complete six of these checkpoints; upon completion of six checkpoints, the final checkpoint (Gift Redemption Station) will be unlocked. Upon completion of the game, participants should provide their non-Hong Kong mailing address to receive a mystery gift."] },
+                    { title: "Competition Details", content: ["• On-campus participants: Participants may follow the in-game instructions to visit different PolyU landmarks to locate the puzzles. Upon finding a puzzle, they may either scan the QR code on the clue board or enter the four-digit code displayed on the board to access the question. Participants may start from any checkpoint in the game.", "• Overseas and off-campus participants: Participants may enter the game by using the game access code and may select and answer different puzzles by clicking on the checkpoints on the game map."] },
                     { title: "Awards", content: ["• On-campus participants: One Grand Prize (voucher for GREEN restaurant at Hotel ICON) and four Merit Prizes will be awarded. All other participants who complete the game will each receive a mystery gift.", "• Overseas and off-campus participants: All participants who complete the game will each receive a mystery gift. (The gifts will be sent to participants by mail.)"] },
                     { title: "Announcement of Results and Prize Presentation", content: ["The Grand Prize and Merit Prizes will be presented at the Homecoming Closing Ceremony on 12 April. All prize winners are advised to reserve time to attend."] }
                 ],
@@ -440,11 +391,11 @@
             tc: {
                 title: "校園解謎遊戲",
                 sections: [
-                    { title: "背景", content: ["定向活動並非新穎形式，惟本活動結合數碼技術，讓參加者透過流動裝置體驗校園定向之樂趣。本活動適用於理大校友日2026、以及供海外或校外參加者參與，讓身在不同地方的校友均可參與其中。", "參加者可於校園內或虛擬地圖中探索多個地標，並透過解謎遊戲了解不同地標的故事。回答指定問題並成功累積所需積分後，即可兌換相應獎品。海外校友如獲得獎品，將以郵寄方式寄送。"] },
-                    { title: "參與者資格", content: ["• 校內參加者: 所有出席理大校友日2026 人士或校友", "• 海外及校外參加者: 參與者必須提供非香港地區之郵寄地址"] },
+                    { title: "背景", content: ["定向活動並非新穎形式，惟本活動結合數碼技術，讓參加者透過流動裝置體驗校園定向之樂趣。本活動適用於理大校友週、以及供海外或校外參加者參與，讓身在不同地方的校友均可參與其中。", "參加者可於校園內或虛擬地圖中探索多個地標，並透過解謎遊戲了解不同地標的故事。回答指定問題並成功累積所需積分後，即可兌換相應獎品。海外校友如獲得獎品，將以郵寄方式寄送。"] },
+                    { title: "參與者資格", content: ["• 校內參加者: 所有出席理大校友週人士或校友", "• 海外及校外參加者: 參與者必須提供非香港地區之郵寄地址"] },
                     { title: "活動時間及地點", content: ["• 校內參加者: 時間: 校友日活動（4月12日）13:00 – 17:00 | 地點: 整個校園", "• 海外及校外參加者: 時間: 校友日活動（4月12日）13:00（香港時間） | 地點: 指定網頁（註：指定遊戲網頁將由開始時間起保留上線24小時。）"] },
                     { title: "報名方法", content: ["• 校內參加者: 可於校友日入場接待處或遊戲內各節點掃描遊戲二維碼。進入網頁後登記基本資料，即可開始遊戲。", "• 海外及校外參加者: 校友會在活動前收到邀請電郵。獲邀請的校友需於活動前先填妥網上表格並分享一則理大故事。提交後，校友將獲得一組遊戲通行碼。參加者可在活動當天利用通行碼登入遊戲。"] },
-                    { title: "比賽詳情", content: ["• 校內參加者: 參加者可根據遊戲內的指示去理大的不同地標尋找謎題，找到謎題後，可掃描提示板上的二維碼或輸入提示板的4位數密碼進入問題部份。參加者可任意選擇遊戲內任何節點作為起點。遊戲中總共有7個節點，玩家須先完成當中6個節點，完成6個節點後，即可解鎖最後一個節點（禮物換領處）。最快完成解謎的參加者可獲得大奬，第二至第五名完成的參加者可獲得優異獎。其他完成的參加者均可獲得神秘禮品一份。", "• 海外及校外參加者: 參加者可輸入遊戲通行碼進入遊戲，並可在遊戲地圖中點擊不同謎題進行回答。遊戲中總共有7個節點，玩家須先完成當中6個節點，完成6個個節點後，即可解鎖最後一個節點（禮物換領處）。完成遊戲後，參加者可填寫郵寄地址（非香港地址），即可獲得神秘禮品一份（以郵寄方式寄送）。"] },
+                    { title: "比賽詳情", content: ["• 校內參加者: 參加者可根據遊戲內的指示去理大的不同地標尋找謎題，找到謎題後，可掃描提示板上的二維碼或輸入提示板的4位數密碼進入問題部份。參加者可任意選擇遊戲內任何節點作為起點。", "• 海外及校外參加者: 參加者可輸入遊戲通行碼進入遊戲，並可在遊戲地圖中點擊不同謎題進行回答。"] },
                     { title: "獎項", content: ["• 校內參加者: 比賽設大獎一名（唯港薈GREEN餐廳電子餐飲禮券）及優異獎四名，其他完成遊戲的參加者均可獲得神秘禮品一份。", "• 海外及校外參加者: 完成遊戲者均可獲得神秘禮品一份。（禮品將以郵寄方式寄送給得參加者）"] },
                     { title: "結果公布及頒獎", content: ["大獎及優異獎將於4月12日校友日閉幕禮中頒發，請中獎者預留時間出席。"] }
                 ],
@@ -453,11 +404,11 @@
             sc: {
                 title: "校园解谜遊戏",
                 sections: [
-                    { title: "背景", content: ["定向活动并非新颖形式，惟本活动结合数码技术，让参加者透过流动装置体验校园定向之乐趣。本活动适用於理大校友日2026、以及供海外或校外参加者参与，让身在不同地方的校友均可参与其中。", "参加者可於校园内或虚拟地图中探索多个地标，并透过解谜遊戏了解不同地标的故事。回答指定问题并成功累积所需积分後，即可兑换相应奖品。海外校友如获得奖品，将以邮寄方式寄送。"] },
-                    { title: "参与者资格", content: ["• 校内参加者: 所有出席理大校友日2026 人士或校友", "• 海外及校外参加者: 参与者必须提供非香港地区之邮寄地址"] },
+                    { title: "背景", content: ["定向活动并非新颖形式，惟本活动结合数码技术，让参加者透过流动装置体验校园定向之乐趣。本活动适用於理大校友周、以及供海外或校外参加者参与，让身在不同地方的校友均可参与其中。", "参加者可於校园内或虚拟地图中探索多个地标，并透过解谜遊戏了解不同地标的故事。回答指定问题并成功累积所需积分後，即可兑换相应奖品。海外校友如获得奖品，将以邮寄方式寄送。"] },
+                    { title: "参与者资格", content: ["• 校内参加者: 所有出席理大校友周人士或校友", "• 海外及校外参加者: 参与者必须提供非香港地区之邮寄地址"] },
                     { title: "活动时间及地点", content: ["• 校内参加者: 时间: 校友日活动（4月12日）13:00 – 17:00 | 地点: 整个校园", "• 海外及校外参加者: 时间: 校友日活动（4月12日）13:00（香港时间） | 地点: 指定网页（註：指定遊戏网页将由开始时间起保留上线24小时。）"] },
                     { title: "报名方法", content: ["• 校内参加者: 可於校友日入场接待处或遊戏内各节点扫描遊戏二维码。进入网页後登记基本资料，即可开始遊戏。", "• 海外及校外参加者: 校友会在活动前收到邀请电邮。获邀请的校友需於活动前先填妥网上表格并分享一则理大故事。提交後，校友将获得一组遊戏通行码。参加者可在活动当天利用通行码登入遊戏。"] },
-                    { title: "比赛详情", content: ["• 校内参加者: 参加者可根据遊戏内的指示去理大的不同地标寻找谜题，找到谜题後，可扫描提示板上的二维码或输入提示板的4位数密码进入问题部份。参加者可任意选择遊戏内任何节点作为起点。遊戏中总共有7个节点，玩家须先完成当中6个节点，完成6个节点後，即可解锁最後一个节点（礼物换领处）。最快完成解谜的参加者可获得大奬，第二至第五名完成的参加者可获得优异奖。其他完成的参加者均可获得神秘礼品一份。", "• 海外及校外参加者: 参加者可输入遊戏通行码进入遊戏，并可在遊戏地图中点击不同谜题进行回答。遊戏中总共有7个节点，玩家须先完成当中6个节点，完成6个个节点後，即可解锁最後一个节点（礼物换领处）。完成遊戏后，参加者可填写邮寄地址（非香港地址），即可获得神秘礼品一份（以邮寄方式寄送）。"] },
+                    { title: "比赛详情", content: ["• 校内参加者: 参加者可根据遊戏内的指示去理大的不同地标寻找谜题，找到谜题後，可扫描提示板上的二维码或输入提示板的4位数密码进入问题部份。参加者可任意选择遊戏内任何节点作为起点。", "• 海外及校外参加者: 参加者可输入遊戏通行码进入遊戏，并可在遊戏地图中点击不同谜题进行回答。"] },
                     { title: "奖项", content: ["• 校内参加者: 比赛设大奖一名（唯港荟GREEN餐厅电子餐饮礼券）及优异奖四名，其他完成遊戏的参加者均可获得神秘礼品一份。", "• 海外及校外参加者: 完成遊戏者均可获得神秘礼品一份。（礼品将以邮寄方式寄送给得参加者）"] },
                     { title: "结果公布及颁奖", content: ["大奖及优异奖将於4月12日校友日闭幕礼中颁发，请中奖者预留时间出席。"] }
                 ],
@@ -493,334 +444,45 @@
         const NotificationModal = ({ title, message, type, customIcon, onClose, lang, customAction }) => {
             const t = TRANSLATIONS[lang];
             return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center border-t-4 border-[#A6192E]">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 fade-in">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center border-t-4 border-[#A6192E] pop-in shadow-2xl">
                         <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 ${type==='success'?'bg-green-100 text-green-600':(type==='error'?'bg-red-100 text-red-600':'bg-blue-100 text-blue-600')}`}>
                             <i className={`fa ${customIcon || (type==='success'?'fa-trophy':type==='error'?'fa-lock':'fa-info')}`}></i>
                         </div>
                         <h3 className="text-xl font-bold mb-2">{title}</h3>
                         <p className="text-gray-600 mb-4 whitespace-pre-wrap">{message}</p>
                         {customAction ? customAction : (
-                            <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-2 rounded-lg">{t.go}</button>
+                            <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90">{t.go || 'OK'}</button>
                         )}
                     </div>
                 </div>
             );
         };
 
-        const LocationModal = ({ location, onClose, onStartQuiz, onDebugTeleport, lang, onScanError }) => {
-            const [scanStatus, setScanStatus] = useState('idle');
-            const [inputCode, setInputCode] = useState('');
-            const [error, setError] = useState('');
-            const scannerRef = useRef(null);
-            const t = TRANSLATIONS[lang];
-
-            useEffect(() => {
-                return () => {
-                    if (scannerRef.current) {
-                        try {
-                            if (scannerRef.current.isScanning) {
-                                scannerRef.current.stop().then(() => {
-                                    scannerRef.current.clear();
-                                }).catch(err => console.error(err));
-                            } else {
-                                scannerRef.current.clear();
-                            }
-                        } catch (e) {
-                            console.error("Scanner cleanup error", e);
-                        }
-                    }
-                };
-            }, []);
-
-            const startScanner = () => {
-                if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') { alert(t.scanError); return; }
-                setScanStatus('scanning');
-                setTimeout(() => { 
-                    const scanner = new Html5Qrcode("reader");
-                    scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decoded) => {
-                        const expectedNew = `scan=${location.qrId}`;
-                        const expectedOld = `scan=${location.id}`;
-                        const expectedLegacy = `POLYU_HUNT:${location.id}`;
-                        
-                        if (decoded.includes(expectedNew) || decoded.includes(expectedOld) || decoded === expectedLegacy) {
-                            scanner.stop().then(() => scanner.clear());
-                            setScanStatus('success');
-                            setTimeout(onStartQuiz, 1000);
-                        } else {
-                            scanner.stop().then(() => scanner.clear());
-                            setScanStatus('error');
-                            if (decoded.includes("scan=") || decoded.startsWith("POLYU_HUNT:")) {
-                                alert(t.wrongLocation);
-                            } else {
-                                alert(t.invalidPin); 
-                            }
-                        }
-                    }).catch(err => { console.error(err); setScanStatus('idle'); });
-                    scannerRef.current = scanner;
-                }, 100);
-            };
-
-            const checkCode = () => {
-                if (inputCode.trim() === location.code) {
-                    onStartQuiz();
-                } else {
-                    setError(t.invalidPin);
-                }
-            };
-
-            return (
-                <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 p-4 fade-in">
-                    <div className="bg-white w-full md:max-w-md rounded-2xl p-6 shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-bold">{location.name[lang]}</h2><button onClick={onClose}><i className="fa fa-times"></i></button></div>
-                        
-                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6 text-left">
-                            <div className="flex items-start">
-                                <i className="fa fa-lightbulb text-yellow-500 mt-1 mr-3"></i>
-                                <div>
-                                    <h4 className="font-bold text-yellow-800 text-sm">{t.clue}</h4>
-                                    <p className="text-sm text-yellow-700 italic">"{location.hint[lang]}"</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {scanStatus === 'idle' && <button onClick={startScanner} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold mb-4"><i className="fa fa-qrcode"></i> {t.scanBtn}</button>}
-                        {scanStatus === 'scanning' && <div className="mb-4 rounded-xl overflow-hidden bg-black relative" style={{minHeight:'250px'}}>
-                            <div id="reader"></div>
-                            <button onClick={()=>{ if(scannerRef.current) scannerRef.current.stop(); onClose(); }} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 text-red-600 px-6 py-2 rounded-full font-bold shadow-lg border border-red-200 hover:bg-white transition-colors z-20">{t.cancelScan}</button>
-                        </div>}
-                        {scanStatus === 'error' && (
-                            <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-xl text-center">
-                                <p className="font-bold mb-2">{t.scanFail}</p>
-                                <button onClick={startScanner} className="underline font-bold">{t.tryAgain}</button>
-                            </div>
-                        )}
-                        {scanStatus === 'success' && (
-                            <div className="w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-3 bg-green-600 text-white mb-4">
-                                <i className="fa fa-check-circle text-xl"></i>
-                                <span>{t.verified}</span>
-                            </div>
-                        )}
-
-                        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 w-[95%] mx-auto">
-                            <h3 className="font-bold text-gray-700 mb-2 text-sm">{t.enterPin}</h3>
-                            <div className="flex gap-2">
-                                <input 
-                                    type="text" 
-                                    className="input-field py-2 text-center tracking-widest font-bold uppercase" 
-                                    placeholder="PIN"
-                                    maxLength="4"
-                                    value={inputCode}
-                                    onChange={e => { setInputCode(e.target.value); setError(''); }}
-                                />
-                                <button onClick={checkCode} className="bg-gray-100 text-gray-800 border border-gray-300 px-4 rounded-lg font-bold hover:bg-gray-200 transition">
-                                    {t.go}
-                                </button>
-                            </div>
-                            {error && <div className="text-red-500 text-xs mt-2 font-bold"><i className="fa fa-times-circle"></i> {error}</div>}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const TutorialModal = ({ onClose, lang, setLang, onOpenTC }) => {
-            const t = TRANSLATIONS[lang];
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl p-6 pt-14 w-full max-w-md pop-in text-center relative">
-                        <div className="absolute top-4 left-4">
-                            <LanguageSwitcher lang={lang} setLang={setLang} />
-                        </div>
-                        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
-                            <i className="fa fa-times"></i>
-                        </button>
-                        
-                        <div className="text-center mb-4 pt-4">
-                            <h2 className="text-2xl font-bold text-gray-800">{t.tutorialTitle}</h2>
-                        </div>
-                        <div className="text-left space-y-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl mb-6">
-                            <p>{t.tutorialLocal}</p>
-                            <p>{t.tutorialOverseas}</p>
-                            <p className="font-bold text-[#A6192E]">{t.tutorialGoal}</p>
-                        </div>
-                        <button onClick={onClose} className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-black transition">
-                            {t.tutorialStart}
-                        </button>
-                        <div className="mt-4 text-center">
-                            <button type="button" onClick={onOpenTC} className="text-sm text-gray-500 hover:text-[#A6192E] underline">{t.readTC}</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const Register = ({ onRegister, onCheckUser, onAdminLogin, lang, setLang, onOpenTC, adminConfig }) => {
-            const [step, setStep] = useState(1);
-            const [version, setVersion] = useState('local');
-            const [formData, setFormData] = useState({ name: '', email: '', role: 'alumni', programme: '', gradYear: '' });
-            const [adminPass, setAdminPass] = useState('');
-            const [showTutorial, setShowTutorial] = useState(true);
-            const [shake, setShake] = useState(false);
-            const [loading, setLoading] = useState(false);
-            const t = TRANSLATIONS[lang];
-            
-            const hasScan = new URLSearchParams(window.location.search).has('scan');
-            
-            const isAdminName = formData.name.trim().toLowerCase().split('').map(c => c.charCodeAt(0).toString(16)).join('') === '707761646d696e';
-
-            const triggerShake = () => { setShake(true); setTimeout(() => setShake(false), 500); };
-
-            const handleFirstStep = async (e) => {
-                e.preventDefault();
-                if (isAdminName) {
-                    const passHex = adminPass.trim().split('').map(c => c.charCodeAt(0).toString(16)).join('');
-                    if (passHex === adminConfig.passHash) {
-                        onAdminLogin();
-                    } else { 
-                        triggerShake(); 
-                        alert('Invalid Admin Password'); 
-                    }
-                } else {
-                    if (!formData.email) { triggerShake(); return; }
-                    
-                    setLoading(true);
-                    const exists = await onCheckUser({ name: formData.name, email: formData.email, version }, false);
-                    setLoading(false);
-
-                    if (!exists) {
-                        if (!formData.name) {
-                            alert(t.required);
-                            return;
-                        }
-                        setStep(2);
-                    }
-                }
-            };
-            
-            const handleFinalRegister = async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                try {
-                    localStorage.setItem('polyu_hunt_email', formData.email.toLowerCase().trim());
-                } catch (err) {
-                    console.warn('localStorage unavailable', err);
-                }
-                await onRegister({...formData, version});
-                setLoading(false);
-            };
-
-            return (
-                <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-                    {showTutorial && <TutorialModal onClose={()=>setShowTutorial(false)} lang={lang} setLang={setLang} onOpenTC={onOpenTC} />}
-                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-8 border-[#A6192E] relative">
-                        <div className="absolute top-4 right-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
-                        <div className="text-center mb-6 pt-4"><h1 className="text-3xl font-bold text-gray-800 mb-1">{t.appTitle}</h1><p className="text-sm text-gray-500">{t.subtitle}</p></div>
-                        
-                        {hasScan && (
-                            <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm font-bold mb-4 flex items-start gap-3 slide-up">
-                                <i className="fa fa-qrcode mt-0.5 text-lg"></i>
-                                <span>{t.scannedLoginMsg}</span>
-                            </div>
-                        )}
-
-                        {step === 1 ? (
-                            <form onSubmit={handleFirstStep} className="space-y-4 fade-in">
-                                <input placeholder={t.fullName} className="w-full p-3 border rounded-lg" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} />
-                                {isAdminName ? <input required type="password" placeholder={t.password} className="w-full p-3 border rounded-lg bg-gray-50 pop-in" value={adminPass} onChange={e=>setAdminPass(e.target.value)} /> : (
-                                    <div className="space-y-4">
-                                        <input required placeholder={t.email} type="email" className="w-full p-3 border rounded-lg" value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} />
-                                        <div className="grid grid-cols-2 gap-2">{['local', 'overseas'].map(v => <button type="button" key={v} onClick={()=>setVersion(v)} className={`p-2 border rounded font-bold ${version===v?'border-[#A6192E] bg-red-50 text-[#A6192E]':'text-gray-400'}`}>{t[v]}</button>)}</div>
-                                    </div>
-                                )}
-                                <button type="submit" disabled={loading} className={`w-full text-white py-3 rounded-xl font-bold shadow-lg ${shake ? 'shake' : ''} ${isAdminName?'bg-gray-800':'bg-[#A6192E]'} ${loading ? 'opacity-70' : ''}`}>
-                                    {loading ? (<span><i className="fa fa-spinner fa-spin mr-2"></i>{t.processing}</span>) : (isAdminName?t.login:t.startBtn)}
-                                </button>
-                                {!isAdminName && <button type="button" onClick={()=>setShowTutorial(true)} className="w-full text-xs text-gray-400 hover:text-[#A6192E] underline mt-2">{t.tutorialTitle}</button>}
-                            </form>
-                        ) : (
-                            <form onSubmit={handleFinalRegister} className="space-y-4 fade-in">
-                                <h3 className="font-bold text-lg text-gray-700 mb-2">{t.role}</h3>
-                                <select className="w-full p-3 border rounded-lg" value={formData.role} onChange={e=>setFormData({...formData, role: e.target.value})}>{['alumni','student','staff','visitor'].map(r=><option key={r} value={r}>{t[r]}</option>)}</select>
-                                {(formData.role === 'student' || formData.role === 'alumni') && <input required placeholder={t.prog} className="w-full p-3 border rounded-lg fade-in" value={formData.programme} onChange={e=>setFormData({...formData, programme: e.target.value})} />}
-                                {(formData.role === 'alumni') && <input required placeholder={t.gradYear} type="number" className="w-full p-3 border rounded-lg fade-in" value={formData.gradYear} onChange={e=>setFormData({...formData, gradYear: e.target.value})} />}
-                                <button type="submit" disabled={loading} className={`w-full text-white py-3 rounded-xl font-bold shadow-lg bg-[#A6192E] ${loading ? 'opacity-70' : ''}`}>
-                                    {loading ? (<span><i className="fa fa-spinner fa-spin mr-2"></i>{t.processing}</span>) : t.registerBtn}
-                                </button>
-                                <button type="button" onClick={()=>setStep(1)} className="w-full text-xs text-gray-400 hover:text-[#A6192E] mt-2">Back</button>
-                            </form>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const MapScreen = ({ user, locations, clearedLocations, stamps, onOpenStampBook, onSelectLocation, onOpenAdmin, lang, setLang, onLogout, onEditProfile }) => {
-            const t = TRANSLATIONS[lang];
-            const isLocal = user.version === 'local';
-            const clearedCount = clearedLocations.length;
-            const canAccessFinal = !isLocal || clearedCount >= 6; 
-
-            return (
-                <div className="flex flex-col h-screen bg-gray-50">
-                    <header className="bg-white shadow-sm px-4 py-2 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch relative">
-                        <div className="flex flex-col gap-2 justify-center">
-                            <div className="flex items-center gap-3">
-                                <button onClick={onEditProfile} className="w-10 h-10 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 hover:opacity-90 shadow-sm" title={t.myProfile}>
-                                    <i className="fa fa-user"></i>
-                                </button>
-                                <div>
-                                    <h1 className="font-bold text-gray-800 leading-none mb-1 text-lg">{user.name}</h1>
-                                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold whitespace-nowrap ${user.version==='overseas'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}`}>{user.role==='admin'?t.adminMode:t[user.version]}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <LanguageSwitcher lang={lang} setLang={setLang} />
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-4 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 border border-yellow-200 shadow-sm h-full w-24">
-                                <i className="fa fa-book-open text-2xl"></i> 
-                                <span>{clearedCount} {t.stamps}</span>
-                            </button>
-                            <button onClick={onLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex flex-col items-center justify-center gap-1 border border-gray-200 shadow-sm hover:bg-gray-200">
-                                <i className="fa fa-sign-out-alt text-xl"></i>
-                            </button>
-                        </div>
-                    </header>
-                    <main className="flex-grow relative overflow-hidden w-full pt-0 pb-4 flex flex-col items-center justify-start">
-                        <div className="map-container shadow-inner border-b border-x border-gray-300 rounded-t-none md:rounded-t-xl md:border-t md:mt-2">
-                            <img src="./image/CampusMap.png" alt="Campus Map" className="map-image" draggable="false" />
-                            <div className="map-overlay">
-                                {locations.map(loc => {
-                                    const isCleared = clearedLocations.includes(loc.id);
-                                    const isFinal = loc.id === 'redemption';
-                                    const isLocked = isFinal && !canAccessFinal && !isCleared;
-                                    return (
-                                        <div key={loc.id} className={`absolute flex flex-col items-center group map-pin ${isCleared?'opacity-75':'cursor-pointer'} ${isLocked?'locked grayscale':''}`} style={{left: `${loc.mapX}%`, top: `${loc.mapY}%`}} onClick={()=> !isCleared && onSelectLocation(loc, isLocked)}>
-                                            <div className={`pin-icon-wrapper ${isCleared?'bg-green-500 text-white':(isLocked?'bg-gray-400 text-white':'bg-[#A6192E] text-white')}`}>
-                                                <i className={`fa ${isCleared?'fa-check':(isLocked?'fa-lock':loc.icon)}`}></i>
-                                            </div>
-                                            <div className="pin-label">{loc.name[lang]}</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </main>
-                    {user.role === 'admin' && <div className="bg-white border-t p-4"><button onClick={onOpenAdmin} className="w-full bg-blue-800 text-white py-3 rounded-lg font-bold shadow"><i className="fa fa-chart-bar mr-2"></i> {t.adminPortal}</button></div>}
-                </div>
-            );
-        };
-
+        // NEW: Camera Booth
         const CameraBooth = ({ location, lang, onComplete }) => {
             const videoRef = useRef(null);
             const canvasRef = useRef(null);
             const [capturedImg, setCapturedImg] = useState(null);
             const [error, setError] = useState(false);
+            const [frameLoaded, setFrameLoaded] = useState(false);
+            const frameImgRef = useRef(null);
             const t = TRANSLATIONS[lang];
 
             useEffect(() => {
+                // Preload frame
+                const frame = new Image();
+                frame.crossOrigin = "Anonymous";
+                frame.src = `./image/frame_${location.id}.png`;
+                frame.onload = () => {
+                    frameImgRef.current = frame;
+                    setFrameLoaded(true);
+                };
+                frame.onerror = () => {
+                    console.warn(`Frame ./image/frame_${location.id}.png not found. Using default overlay.`);
+                    setFrameLoaded(true); 
+                };
+
                 let stream = null;
                 const startCamera = async () => {
                     try {
@@ -839,7 +501,7 @@
                         stream.getTracks().forEach(track => track.stop());
                     }
                 };
-            }, []);
+            }, [location.id]);
 
             const capture = () => {
                 if (!videoRef.current) return;
@@ -850,20 +512,27 @@
                 canvas.height = video.videoHeight;
                 const ctx = canvas.getContext('2d');
                 
+                // Draw Video
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
-                ctx.fillStyle = "rgba(166, 25, 46, 0.9)";
-                const barHeight = Math.max(100, canvas.height * 0.15);
-                ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
-                
-                ctx.fillStyle = "white";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.font = `bold ${Math.floor(barHeight * 0.4)}px Inter`;
-                ctx.fillText("PolyU Hunt 2026", canvas.width / 2, canvas.height - barHeight * 0.65);
-                
-                ctx.font = `${Math.floor(barHeight * 0.25)}px Inter`;
-                ctx.fillText(location.name[lang], canvas.width / 2, canvas.height - barHeight * 0.25);
+                // Draw Frame if exists
+                if (frameImgRef.current) {
+                    ctx.drawImage(frameImgRef.current, 0, 0, canvas.width, canvas.height);
+                } else {
+                    // Fallback default frame drawing
+                    ctx.fillStyle = "rgba(166, 25, 46, 0.9)";
+                    const barHeight = Math.max(100, canvas.height * 0.15);
+                    ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
+                    
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.font = `bold ${Math.floor(barHeight * 0.4)}px Inter`;
+                    ctx.fillText("PolyU Hunt", canvas.width / 2, canvas.height - barHeight * 0.65);
+                    
+                    ctx.font = `${Math.floor(barHeight * 0.25)}px Inter`;
+                    ctx.fillText(location.name[lang], canvas.width / 2, canvas.height - barHeight * 0.25);
+                }
                 
                 setCapturedImg(canvas.toDataURL('image/jpeg', 0.9));
             };
@@ -883,8 +552,8 @@
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         await navigator.share({
-                            title: 'PolyU Hunt 2026',
-                            text: `I conquered ${location.name[lang]} at PolyU Homecoming!`,
+                            title: 'PolyU Hunt',
+                            text: `I conquered ${location.name[lang]} at PolyU Homecoming Week!`,
                             files: [file]
                         });
                     } else {
@@ -904,7 +573,7 @@
                         <i className="fa fa-camera-slash text-5xl text-gray-500 mb-4"></i>
                         <p className="mb-6">{t.camError}</p>
                         <button onClick={onComplete} className="bg-[#A6192E] text-white px-8 py-3 rounded-xl font-bold shadow-lg">
-                            {t.skip} <i className="fa fa-arrow-right ml-2"></i>
+                            {t.skipPhoto} <i className="fa fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 );
@@ -914,16 +583,21 @@
                 <div className="fixed inset-0 z-50 bg-black flex flex-col fade-in">
                     {!capturedImg ? (
                         <>
-                            <div className="relative flex-grow overflow-hidden flex items-center justify-center">
+                            <div className="relative flex-grow overflow-hidden flex items-center justify-center bg-gray-900">
                                 <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover"></video>
-                                <div className="absolute bottom-0 left-0 w-full bg-[#A6192E]/90 text-white p-5 text-center">
-                                    <h2 className="text-2xl font-bold tracking-wide">PolyU Hunt 2026</h2>
-                                    <p className="text-sm opacity-90 mt-1">{location.name[lang]}</p>
-                                </div>
+                                {frameImgRef.current && (
+                                    <img src={frameImgRef.current.src} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" alt="Frame Overlay" />
+                                )}
+                                {!frameImgRef.current && (
+                                    <div className="absolute bottom-0 left-0 w-full bg-[#A6192E]/90 text-white p-5 text-center z-10">
+                                        <h2 className="text-2xl font-bold tracking-wide">PolyU Hunt</h2>
+                                        <p className="text-sm opacity-90 mt-1">{location.name[lang]}</p>
+                                    </div>
+                                )}
                             </div>
-                            <div className="bg-black p-6 flex justify-between items-center px-8">
-                                <button onClick={onComplete} className="text-white opacity-70 px-4 py-2 font-bold">{t.skip}</button>
-                                <button onClick={capture} className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center hover:bg-gray-200 transition transform hover:scale-105">
+                            <div className="bg-black p-6 flex justify-between items-center px-8 z-20">
+                                <button onClick={onComplete} className="text-white opacity-70 px-4 py-2 font-bold">{t.skipPhoto}</button>
+                                <button onClick={capture} disabled={!frameLoaded} className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center hover:bg-gray-200 transition transform hover:scale-105 disabled:opacity-50">
                                     <i className="fa fa-camera text-2xl text-black"></i>
                                 </button>
                                 <div className="w-16"></div> 
@@ -934,7 +608,7 @@
                             <div className="flex-grow flex items-center justify-center bg-gray-900 p-4">
                                 <img src={capturedImg} className="max-h-full max-w-full object-contain rounded shadow-2xl" alt="Captured" />
                             </div>
-                            <div className="bg-white p-6 grid grid-cols-2 gap-4 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.2)] slide-up">
+                            <div className="bg-white p-6 grid grid-cols-2 gap-4 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.2)] slide-up z-20">
                                 <button onClick={() => setCapturedImg(null)} className="py-3 font-bold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition">
                                     <i className="fa fa-redo mr-2"></i> {t.retake}
                                 </button>
@@ -952,723 +626,386 @@
             );
         };
 
-        const QuizScreen = ({ location, content, onBack, onComplete, onAnswerLog, lang }) => {
-            const [view, setView] = useState('q');
-            const [userAnswer, setUserAnswer] = useState(null);
+        const MissionOrchestrator = ({ location, globalUnlocked, onActivate, onComplete, onCancel, content, lang }) => {
+            const t = TRANSLATIONS[lang];
+            const [step, setStep] = useState(globalUnlocked ? 'choice' : 'activate');
+            const [earnedBonus, setEarnedBonus] = useState(false);
             
+            // Reused states for child screens
+            const [scanStatus, setScanStatus] = useState('idle');
+            const [inputCode, setInputCode] = useState('');
+            const [error, setError] = useState('');
+            const scannerRef = useRef(null);
+            
+            const [qUserAnswer, setQUserAnswer] = useState(null);
             const [wrongOpts, setWrongOpts] = useState({});
+            const qData = getQuestionData(content, location.id, lang);
             
             const [storyIndex, setStoryIndex] = useState(0);
-            
-            const t = TRANSLATIONS[lang];
-            const qData = getQuestionData(content, location.id, lang);
             const stories = getStoriesData(content, location.id, lang);
 
-            const handleEvade = (o) => {
-                const isCorrect = String(o).trim() === String(qData.answer).trim();
-                if (!isCorrect && userAnswer === null) {
-                    setWrongOpts(prev => {
-                        const current = prev[o] || { x: 0, y: 0 };
-                        let newX = current.x + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 40);
-                        let newY = current.y + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 40);
-                        
-                        if (newX > 80) newX = 80; 
-                        if (newX < -80) newX = -80;
-                        if (newY > 80) newY = 80; 
-                        if (newY < -80) newY = -80;
-                        
-                        return { ...prev, [o]: { x: newX, y: newY } };
-                    });
-                    if(onAnswerLog) onAnswerLog(location.id);
+            // Cleanup scanner on unmount
+            useEffect(() => {
+                return () => {
+                    if (scannerRef.current) {
+                        try {
+                            if (scannerRef.current.isScanning) {
+                                scannerRef.current.stop().then(() => scannerRef.current.clear()).catch(e=>console.error(e));
+                            } else {
+                                scannerRef.current.clear();
+                            }
+                        } catch (e) {}
+                    }
+                };
+            }, []);
+
+            const stopScanner = () => {
+                if (scannerRef.current) {
+                    scannerRef.current.stop().then(() => scannerRef.current.clear()).catch(e=>console.error(e));
                 }
             };
 
-            const handleAnswer = (o) => {
-                if (userAnswer !== null) return;
-                
-                const isCorrect = String(o).trim() === String(qData.answer).trim();
-                if (isCorrect) {
-                    setUserAnswer(o);
-                    setTimeout(() => setView('camera'), 800); 
-                } else {
-                    handleEvade(o);
-                }
+            const startScanner = (mode) => {
+                if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') { alert(t.scanError); return; }
+                setScanStatus('scanning');
+                setTimeout(() => {
+                    const scanner = new Html5Qrcode("reader");
+                    scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decoded) => {
+                        let isValid = false;
+                        if (mode === 'activate') {
+                            // Any valid code works for global activation
+                            isValid = LOCATIONS.some(l => decoded.includes(`scan=${l.qrId}`) || decoded.includes(`scan=${l.id}`) || decoded === `POLYU_HUNT:${l.id}`);
+                        } else {
+                            // Must be THIS location's code for bonus
+                            isValid = decoded.includes(`scan=${location.qrId}`) || decoded.includes(`scan=${location.id}`) || decoded === `POLYU_HUNT:${location.id}`;
+                        }
+                        
+                        if (isValid) {
+                            scanner.stop().then(() => scanner.clear());
+                            setScanStatus('success');
+                            setTimeout(() => {
+                                if (mode === 'activate') {
+                                    onActivate();
+                                    setStep('choice');
+                                } else {
+                                    setEarnedBonus(true);
+                                    setStep('photo_prompt');
+                                }
+                            }, 1000);
+                        } else {
+                            scanner.stop().then(() => scanner.clear());
+                            setScanStatus('error');
+                            alert(mode === 'activate' ? t.invalidPin : t.wrongLocation);
+                        }
+                    }).catch(err => { console.error(err); setScanStatus('idle'); });
+                    scannerRef.current = scanner;
+                }, 100);
             };
 
-            if (view === 'camera') {
-                return <CameraBooth location={location} lang={lang} onComplete={() => setView('s')} />;
+            // 1. Activation Screen
+            if (step === 'activate') {
+                return (
+                    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 p-4 fade-in">
+                        <div className="bg-white w-full md:max-w-md rounded-2xl p-6 shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-bold">Game Locked</h2><button onClick={onCancel}><i className="fa fa-times"></i></button></div>
+                            
+                            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg mb-6 text-left">
+                                <div className="flex items-start">
+                                    <i className="fa fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                                    <p className="text-sm text-blue-800 font-medium">{t.globalActivateMsg}</p>
+                                </div>
+                            </div>
+
+                            {scanStatus === 'idle' && <button onClick={()=>startScanner('activate')} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold mb-4"><i className="fa fa-qrcode"></i> {t.scanBtn}</button>}
+                            {scanStatus === 'scanning' && <div className="mb-4 rounded-xl overflow-hidden bg-black relative" style={{minHeight:'250px'}}>
+                                <div id="reader"></div>
+                                <button onClick={()=>{ stopScanner(); onCancel(); }} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 text-red-600 px-6 py-2 rounded-full font-bold shadow-lg border border-red-200 hover:bg-white transition-colors z-20">{t.cancelScan}</button>
+                            </div>}
+                            {scanStatus === 'error' && (
+                                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-xl text-center">
+                                    <p className="font-bold mb-2">{t.scanFail}</p>
+                                    <button onClick={()=>startScanner('activate')} className="underline font-bold">{t.tryAgain}</button>
+                                </div>
+                            )}
+                            {scanStatus === 'success' && (
+                                <div className="w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-3 bg-green-600 text-white mb-4">
+                                    <i className="fa fa-check-circle text-xl"></i><span>{t.verified}</span>
+                                </div>
+                            )}
+
+                            <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 w-[95%] mx-auto">
+                                <h3 className="font-bold text-gray-700 mb-2 text-sm">{t.enterPin}</h3>
+                                <div className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        className="input-field py-2 text-center tracking-widest font-bold uppercase" 
+                                        placeholder="PIN" maxLength="4" value={inputCode} onChange={e => { setInputCode(e.target.value); setError(''); }}
+                                    />
+                                    <button onClick={() => {
+                                        const isValidPin = LOCATIONS.some(l => l.code === inputCode.trim());
+                                        if (isValidPin) { onActivate(); setStep('choice'); } else { setError(t.invalidPin); }
+                                    }} className="bg-gray-100 text-gray-800 border border-gray-300 px-4 rounded-lg font-bold hover:bg-gray-200 transition">
+                                        {t.go}
+                                    </button>
+                                </div>
+                                {error && <div className="text-red-500 text-xs mt-2 font-bold"><i className="fa fa-times-circle"></i> {error}</div>}
+                            </div>
+                        </div>
+                    </div>
+                );
             }
 
-            if (view === 'q') return (
-                <div className="fixed inset-0 z-50 bg-white h-screen flex flex-col">
-                    <div className="p-4 border-b flex items-center justify-between">
-                        <button onClick={onBack}><i className="fa fa-times text-gray-500"></i></button>
-                        <span className="font-bold">{t.challenge}</span>
-                        <div className="w-4"></div>
-                    </div>
-                    <div className="p-6 flex-grow flex flex-col justify-center overflow-x-hidden">
-                        <h3 className="text-xl font-bold mb-8 text-center">{qData.text}</h3>
-                        <div className="space-y-4">
-                            {qData.options.map(o => {
-                                const isCorrect = String(o).trim() === String(qData.answer).trim();
-                                const wInfo = wrongOpts[o];
-                                const isWrongClicked = !!wInfo;
-                                const transformStyle = wInfo ? `translate(${wInfo.x}px, ${wInfo.y}px)` : 'none';
-                                
-                                const btnClass = userAnswer === o && isCorrect 
-                                    ? 'bg-green-100 border-green-500 text-green-700 scale-105 shadow-lg' 
-                                    : (isWrongClicked 
-                                        ? 'bg-red-50 border-red-300 text-red-500 shadow-md' 
-                                        : 'bg-white border-gray-200 hover:border-[#A6192E]');
-
-                                return (
-                                    <div 
-                                        key={o} 
-                                        style={{ 
-                                            transform: transformStyle, 
-                                            transition: 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)' 
-                                        }} 
-                                        className="relative z-10"
-                                    >
-                                        <button 
-                                            onMouseEnter={() => handleEvade(o)}
-                                            onTouchStart={() => handleEvade(o)}
-                                            onClick={() => handleAnswer(o)}
-                                            disabled={userAnswer !== null}
-                                            className={`w-full p-4 border-2 rounded-xl text-left font-medium transition-all ${btnClass}`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span>{isWrongClicked ? t.notMe : o}</span>
-                                                {userAnswer === o && isCorrect && <i className="fa fa-check-circle text-green-600 text-xl"></i>}
-                                            </div>
-                                        </button>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="fixed inset-0 z-50 bg-gray-100 h-screen flex flex-col fade-in">
-                    <div className="bg-[#A6192E] text-white p-4 md:p-6 text-center rounded-b-3xl shadow-lg relative z-10 flex-shrink-0">
-                        <h2 className="text-xl md:text-2xl font-bold mb-1">{t.memories}</h2>
-                        <p className="opacity-90 text-xs md:text-sm">{t.readStories}</p>
-                    </div>
-                    
-                    <div className="flex-grow flex flex-col items-center justify-start pt-3 px-4 pb-4 max-w-md mx-auto w-full relative overflow-y-auto">
-                        <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col relative flex-shrink-0" style={{aspectRatio: '4/5', maxHeight: '65vh'}}>
-                            <img 
-                                src={`./image/${location.id}_story_${storyIndex + 1}.jpeg`} 
-                                alt={`Story ${storyIndex + 1}`}
-                                className="w-full h-full object-cover absolute inset-0"
-                                onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDglIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+'; }}
-                            />
+            // 2. Choice Screen (QR vs Quiz)
+            if (step === 'choice') {
+                return (
+                    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 p-4 fade-in">
+                        <div className="bg-white w-full md:max-w-md rounded-2xl p-6 shadow-2xl slide-up">
+                            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-[#A6192E]">{location.name[lang]}</h2><button onClick={onCancel} className="text-gray-400 hover:text-gray-600"><i className="fa fa-times text-xl"></i></button></div>
+                            <h3 className="text-lg font-bold mb-4 text-center">{t.challengeChoice}</h3>
                             
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-6 pt-16 text-white flex flex-col justify-end min-h-[50%]">
-                                <p className="italic text-sm md:text-base leading-relaxed mb-3">"{stories[storyIndex].text}"</p>
-                            </div>
-                            
-                            {storyIndex > 0 && (
-                                <button onClick={() => setStoryIndex(i => i - 1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-[#A6192E] shadow-lg transition">
-                                    <i className="fa fa-chevron-left"></i>
+                            <div className="space-y-4">
+                                <button onClick={() => { setScanStatus('idle'); setStep('scan'); }} className="w-full bg-[#A6192E] text-white p-4 rounded-xl font-bold shadow-lg flex items-center justify-between hover:bg-red-800 transition transform hover:scale-[1.02]">
+                                    <span className="flex items-center gap-3"><i className="fa fa-qrcode text-2xl"></i> {t.scanForBonus}</span>
+                                    <i className="fa fa-chevron-right opacity-50"></i>
                                 </button>
-                            )}
-                            {storyIndex < stories.length - 1 && (
-                                <button onClick={() => setStoryIndex(i => i + 1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-[#A6192E] shadow-lg transition">
-                                    <i className="fa fa-chevron-right"></i>
+                                <button onClick={() => setStep('quiz')} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold shadow-lg flex items-center justify-between hover:bg-blue-700 transition transform hover:scale-[1.02]">
+                                    <span className="flex items-center gap-3"><i className="fa fa-question-circle text-2xl"></i> {t.answerForBase}</span>
+                                    <i className="fa fa-chevron-right opacity-50"></i>
                                 </button>
-                            )}
-                            
-                            <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2">
-                                {stories.map((_, i) => (
-                                    <div key={i} className={`w-2 h-2 rounded-full shadow ${i === storyIndex ? 'bg-[#A6192E]' : 'bg-white/50'}`}></div>
-                                ))}
                             </div>
                         </div>
+                    </div>
+                );
+            }
 
-                        <div className="w-full mt-4 flex-shrink-0">
-                            <button onClick={()=>onComplete(true)} className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">
-                                {t.collectClose}
+            // 3. Scan Bonus Screen
+            if (step === 'scan') {
+                return (
+                    <div className="fixed inset-0 z-50 flex flex-col bg-black fade-in h-screen">
+                        <div className="p-4 flex items-center justify-between bg-black text-white z-10">
+                            <button onClick={() => { stopScanner(); setStep('choice'); }}><i className="fa fa-arrow-left"></i> Back</button>
+                            <span className="font-bold">{location.name[lang]}</span>
+                            <div className="w-4"></div>
+                        </div>
+                        <div className="flex-grow flex flex-col justify-center items-center relative overflow-hidden">
+                            {scanStatus === 'idle' && <button onClick={()=>startScanner('bonus')} className="bg-white text-black py-4 px-8 rounded-xl font-bold shadow-2xl z-20"><i className="fa fa-qrcode"></i> Start Scanner</button>}
+                            {scanStatus === 'scanning' && <div id="reader" className="w-full h-full absolute inset-0"></div>}
+                            {scanStatus === 'error' && (
+                                <div className="p-6 bg-red-100 text-red-700 rounded-xl text-center z-20 max-w-xs">
+                                    <p className="font-bold mb-4">{t.wrongLocation}</p>
+                                    <button onClick={()=>startScanner('bonus')} className="w-full bg-red-600 text-white py-3 rounded-lg font-bold shadow">{t.tryAgain}</button>
+                                </div>
+                            )}
+                            {scanStatus === 'success' && (
+                                <div className="p-8 rounded-xl font-bold shadow-2xl flex flex-col items-center justify-center gap-4 bg-green-500 text-white z-20 transform scale-110 pop-in">
+                                    <i className="fa fa-check-circle text-6xl"></i>
+                                    <span className="text-2xl">+2 Points!</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+
+            // 4. Quiz Screen (Evading Button Logic)
+            if (step === 'quiz') {
+                const handleEvade = (o) => {
+                    const isCorrect = String(o).trim() === String(qData.answer).trim();
+                    if (!isCorrect && qUserAnswer === null) {
+                        setWrongOpts(prev => {
+                            const current = prev[o] || { x: 0, y: 0 };
+                            let newX = current.x + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 60);
+                            let newY = current.y + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 60);
+                            
+                            // Constrain bounds so it doesn't leave the screen entirely
+                            if (newX > 100) newX = 100; if (newX < -100) newX = -100;
+                            if (newY > 100) newY = 100; if (newY < -100) newY = -100;
+                            
+                            return { ...prev, [o]: { x: newX, y: newY } };
+                        });
+                    }
+                };
+
+                const handleAnswer = (o) => {
+                    if (qUserAnswer !== null) return;
+                    const isCorrect = String(o).trim() === String(qData.answer).trim();
+                    if (isCorrect) {
+                        setQUserAnswer(o);
+                        setTimeout(() => {
+                            setEarnedBonus(false);
+                            setStep('photo_prompt');
+                        }, 800); 
+                    } else {
+                        handleEvade(o);
+                    }
+                };
+
+                return (
+                    <div className="fixed inset-0 z-50 bg-white h-screen flex flex-col">
+                        <div className="p-4 border-b flex items-center justify-between"><button onClick={() => setStep('choice')}><i className="fa fa-arrow-left text-gray-500"></i></button><span className="font-bold">{t.challenge}</span><div className="w-4"></div></div>
+                        <div className="p-6 flex-grow flex flex-col justify-center overflow-x-hidden">
+                            <h3 className="text-xl font-bold mb-8 text-center">{qData.text}</h3>
+                            <div className="space-y-4">
+                                {qData.options.map(o => {
+                                    const isCorrect = String(o).trim() === String(qData.answer).trim();
+                                    const wInfo = wrongOpts[o];
+                                    const isWrongClicked = !!wInfo;
+                                    const transformStyle = wInfo ? `translate(${wInfo.x}px, ${wInfo.y}px)` : 'none';
+                                    
+                                    const btnClass = qUserAnswer === o && isCorrect 
+                                        ? 'bg-green-100 border-green-500 text-green-700 scale-105 shadow-lg' 
+                                        : (isWrongClicked 
+                                            ? 'bg-red-50 border-red-300 text-red-500 shadow-md' 
+                                            : 'bg-white border-gray-200 hover:border-[#A6192E]');
+
+                                    return (
+                                        <div key={o} style={{ transform: transformStyle, transition: 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }} className="relative z-10">
+                                            <button 
+                                                onMouseEnter={() => handleEvade(o)}
+                                                onTouchStart={() => handleEvade(o)}
+                                                onClick={() => handleAnswer(o)}
+                                                disabled={qUserAnswer !== null}
+                                                className={`w-full p-4 border-2 rounded-xl text-left font-medium transition-all ${btnClass}`}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span>{isWrongClicked ? t.notMe : o}</span>
+                                                    {qUserAnswer === o && isCorrect && <i className="fa fa-check-circle text-green-600 text-xl"></i>}
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // 5. Photo Prompt Screen
+            if (step === 'photo_prompt') {
+                return (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4 fade-in">
+                        <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center border-t-8 border-[#A6192E] shadow-2xl pop-in">
+                            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fa fa-camera text-4xl text-green-600"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2">{t.photoPromptTitle}</h3>
+                            <p className="text-gray-600 mb-6">{t.photoPromptMsg}</p>
+                            
+                            <button onClick={() => setStep('camera')} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mb-3">
+                                <i className="fa fa-camera mr-2"></i> {t.takePhoto}
+                            </button>
+                            <button onClick={() => setStep('story')} className="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold shadow hover:bg-gray-200 transition">
+                                {t.skipPhoto}
                             </button>
                         </div>
                     </div>
-                </div>
-            );
-        };
+                );
+            }
 
-        const AdminDashboard = ({ onBack, allUsers, stats, lang, content, onUpdateContent, onUpdateAdminSettings, adminConfig }) => {
-            const t = TRANSLATIONS[lang];
-            const [tab, setTab] = useState('users'); 
-            const [editLoc, setEditLoc] = useState(LOCATIONS[0].id);
-            const [editLang, setEditLang] = useState('en');
-            const [qText, setQText] = useState('');
-            const [qOptions, setQOptions] = useState(['','','','']);
-            
-            const [qAnsIndex, setQAnsIndex] = useState(0); 
-            
-            const [storyList, setStoryList] = useState([{user:'', text:''}, {user:'', text:''}]);
+            // 6. Camera Booth Screen
+            if (step === 'camera') {
+                return <CameraBooth location={location} lang={lang} onComplete={() => setStep('story')} />;
+            }
 
-            const [filterText, setFilterText] = useState('');
-            const [sortConfig, setSortConfig] = useState({ key: 'stamps', direction: 'desc' });
-
-            const [searchEmail, setSearchEmail] = useState('');
-            const [manageUserUid, setManageUserUid] = useState(null);
-            const [editedUserLocations, setEditedUserLocations] = useState([]);
-
-            const [newAdminPass, setNewAdminPass] = useState('');
-            const [newStartDate, setNewStartDate] = useState(adminConfig?.startDate || getLocalYYYYMMDD());
-
-            const manageUser = useMemo(() => {
-                if (!manageUserUid) return null;
-                return allUsers.find(u => u.uid === manageUserUid);
-            }, [allUsers, manageUserUid]);
-
-            useEffect(() => {
-                const q = getQuestionData(content, editLoc, editLang);
-                const s = getStoriesData(content, editLoc, editLang);
-                setQText(q.text);
-                setQOptions(q.options);
-                
-                let ansIdx = q.options.indexOf(q.answer);
-                setQAnsIndex(ansIdx !== -1 ? ansIdx : 0);
-                
-                setStoryList(s);
-            }, [editLoc, editLang, content]);
-
-            useEffect(() => {
-                if (tab === 'stats') {
-                    const ctx = document.getElementById('roleChart');
-                    if (ctx) {
-                        const roleCounts = { student: 0, alumni: 0, staff: 0, visitor: 0 };
-                        allUsers.forEach(u => {
-                            const r = u.role || 'visitor';
-                            if (roleCounts[r] !== undefined) roleCounts[r]++;
-                            else roleCounts.visitor++;
-                        });
+            // 7. Story Screen
+            if (step === 'story') {
+                return (
+                    <div className="fixed inset-0 z-50 bg-gray-100 h-screen flex flex-col fade-in">
+                        <div className="bg-[#A6192E] text-white p-4 md:p-6 text-center rounded-b-3xl shadow-lg relative z-10 flex-shrink-0">
+                            <h2 className="text-xl md:text-2xl font-bold mb-1">{t.memories}</h2>
+                            <p className="opacity-90 text-xs md:text-sm">{t.readStories}</p>
+                        </div>
                         
-                        const roleData = { 
-                            labels: ['Student', 'Alumni', 'Staff', 'Visitor'], 
-                            datasets: [{ 
-                                data: [roleCounts.student, roleCounts.alumni, roleCounts.staff, roleCounts.visitor], 
-                                backgroundColor: ['#A6192E','#3B82F6','#10B981','#F59E0B'] 
-                            }] 
-                        };
-
-                        if (window.myRoleChart) window.myRoleChart.destroy();
-                        window.myRoleChart = new Chart(ctx, { type: 'doughnut', data: roleData });
-                    }
-                }
-            }, [tab, allUsers]);
-
-            const sortedAndFilteredUsers = useMemo(() => {
-                let filterableUsers = allUsers;
-                if (filterText) {
-                    const lowerFilter = filterText.toLowerCase();
-                    filterableUsers = filterableUsers.filter(u => 
-                        (u.name && u.name.toLowerCase().includes(lowerFilter)) ||
-                        (u.email && u.email.toLowerCase().includes(lowerFilter)) ||
-                        (u.role && u.role.toLowerCase().includes(lowerFilter)) ||
-                        (u.version && u.version.toLowerCase().includes(lowerFilter))
-                    );
-                }
-
-                filterableUsers.sort((a, b) => {
-                    let aVal, bVal;
-                    switch (sortConfig.key) {
-                        case 'name': aVal = a.name || ''; bVal = b.name || ''; break;
-                        case 'email': aVal = a.email || ''; bVal = b.email || ''; break;
-                        case 'role': aVal = a.role || ''; bVal = b.role || ''; break;
-                        case 'stamps': 
-                            aVal = stats.userAnswers[a.email] || 0; 
-                            bVal = stats.userAnswers[b.email] || 0; 
-                            break;
-                        case 'startTime': aVal = a.joinedAt || ''; bVal = b.joinedAt || ''; break;
-                        case 'finishTime': aVal = a.completedAt || '9999-12-31'; bVal = b.completedAt || '9999-12-31'; break;
-                        case 'durationTime':
-                            const getDur = (u) => (u.joinedAt && u.completedAt) ? (new Date(u.completedAt) - new Date(u.joinedAt)) : Infinity;
-                            aVal = getDur(a); 
-                            bVal = getDur(b);
-                            break;
-                        default: return 0;
-                    }
-
-                    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-                    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-                    return 0;
-                });
-                return filterableUsers;
-            }, [allUsers, filterText, sortConfig, stats.userAnswers]);
-
-            const requestSort = (key) => {
-                let direction = 'asc';
-                if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
-                setSortConfig({ key, direction });
-            };
-
-            const handleSave = () => {
-                const newContent = JSON.parse(JSON.stringify(content || { questions: {}, stories: {} }));
-                if (!newContent.questions) newContent.questions = {};
-                if (!newContent.stories) newContent.stories = {};
-                
-                if (!newContent.questions[editLoc]) newContent.questions[editLoc] = { text:{}, options:{}, answer:{} };
-                if (!newContent.stories[editLoc]) newContent.stories[editLoc] = [];
-                
-                newContent.questions[editLoc].text[editLang] = qText;
-                newContent.questions[editLoc].options[editLang] = qOptions;
-                newContent.questions[editLoc].answer[editLang] = qOptions[qAnsIndex] || qOptions[0]; 
-                
-                for(let i=0; i<2; i++) {
-                    if (!newContent.stories[editLoc][i]) newContent.stories[editLoc][i] = { user: '', text: {} };
-                    newContent.stories[editLoc][i].user = storyList[i].user;
-                    if (!newContent.stories[editLoc][i].text) newContent.stories[editLoc][i].text = {};
-                    else if (typeof newContent.stories[editLoc][i].text === 'string') newContent.stories[editLoc][i].text = { en: newContent.stories[editLoc][i].text };
-                    newContent.stories[editLoc][i].text[editLang] = storyList[i].text;
-                }
-                onUpdateContent(newContent);
-                alert("Content Saved Successfully!");
-            };
-
-            const downloadCSV = (data, filename) => {
-                const csv = "data:text/csv;charset=utf-8," + data.map(r => Object.values(r).join(",")).join("\n");
-                const link = document.createElement("a");
-                link.setAttribute("href", encodeURI(csv));
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-            };
-
-            const exportOverseas = () => {
-                const headers = ["Name", "Email", "Role", "Stamps Completed", "Start Time", "Completed Time", "Duration", "Gift Claimed", "Shipping Address"];
-                const data = [headers, ...allUsers.filter(u => u.version === 'overseas').map(u => [
-                    `"${u.name || ''}"`, 
-                    `"${u.email || ''}"`, 
-                    `"${u.role || ''}"`, 
-                    (u.clearedLocations || []).length,
-                    `"${formatTime(u.joinedAt)}"`,
-                    `"${formatTime(u.completedAt)}"`,
-                    `"${formatDuration(u.joinedAt, u.completedAt)}"`,
-                    u.giftClaimed ? "Yes" : "No",
-                    u.giftRequest ? `"${u.giftRequest.address}"` : "None"
-                ])];
-                downloadCSV(data, "overseas_users.csv");
-            };
-
-            const exportLocal = () => {
-                const headers = ["Name", "Email", "Role", "Programme", "Grad Year", "Stamps Completed", "Start Time", "Completed Time", "Duration"];
-                const data = [headers, ...allUsers.filter(u => u.version === 'local').map(u => [
-                    `"${u.name || ''}"`, 
-                    `"${u.email || ''}"`, 
-                    `"${u.role || ''}"`, 
-                    `"${u.programme || '-'}"`, 
-                    `"${u.gradYear || '-'}"`, 
-                    (u.clearedLocations || []).length,
-                    `"${formatTime(u.joinedAt)}"`,
-                    `"${formatTime(u.completedAt)}"`,
-                    `"${formatDuration(u.joinedAt, u.completedAt)}"`
-                ])];
-                downloadCSV(data, "local_users.csv");
-            };
-
-            const handleSearchUser = () => {
-                const found = allUsers.find(u => u.email.toLowerCase() === searchEmail.trim().toLowerCase());
-                if (found) {
-                    setManageUserUid(found.uid);
-                    setEditedUserLocations(found.clearedLocations || []);
-                } else {
-                    setManageUserUid(null);
-                    setEditedUserLocations([]);
-                    alert("User not found.");
-                }
-            };
-            
-            const selectUserForEdit = (user) => {
-                setSearchEmail(user.email);
-                setManageUserUid(user.uid);
-                setEditedUserLocations(user.clearedLocations || []);
-                setTab('users');
-            };
-
-            const handleDeleteUser = async () => {
-                if(!manageUser) return;
-                const confirmed = window.confirm(`Are you sure you want to permanently delete account: ${manageUser.email}?`);
-                if (confirmed) {
-                    try {
-                        const { db, doc, deleteDoc, appId } = window.FB;
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', manageUser.uid));
-                        setManageUserUid(null);
-                        setSearchEmail('');
-                        alert("Account deleted.");
-                    } catch (e) {
-                        console.error(e);
-                        alert("Error deleting account.");
-                    }
-                }
-            };
-
-            const handleSaveUser = async () => {
-                if(!manageUser) return;
-                try {
-                    const { db, doc, setDoc, appId, deleteField } = window.FB;
-                    const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', manageUser.uid);
-                    
-                    const newClearedLocations = Array.from(new Set([...editedUserLocations]));
-                    
-                    await setDoc(userRef, { 
-                        clearedLocations: newClearedLocations,
-                        missions_completed: deleteField() 
-                    }, { merge: true });
-                    
-                    alert(lang === 'en' ? "User details updated successfully!" : (lang === 'tc' ? "用戶資料更新成功！" : "用户资料更新成功！"));
-                } catch(e) {
-                    console.error("Error updating user", e);
-                    alert("Failed to update user.");
-                }
-            };
-
-            return (
-                <div className="fixed inset-0 z-50 bg-gray-100 h-screen overflow-y-auto">
-                    <div className="bg-white p-4 shadow flex justify-between sticky top-0 z-10">
-                        <div className="flex items-center gap-2"><button onClick={onBack}><i className="fa fa-arrow-left"></i></button><h2 className="font-bold">{t.adminPortal}</h2></div>
-                        <div className="flex bg-gray-100 rounded p-1 gap-1 text-[10px]">{['users','stats','qr','editor','settings'].map(x => <button key={x} onClick={()=>setTab(x)} className={`px-2 py-1 rounded font-bold ${tab===x?'bg-white shadow text-[#A6192E]':'text-gray-500'}`}>{t[x+'Tab'] || (x === 'settings' ? t.settingsTab : x)}</button>)}</div>
-                    </div>
-                    <div className="p-4 max-w-5xl mx-auto space-y-4">
-                        
-                        {tab === 'stats' && (
-                            <div className="space-y-6 fade-in">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white p-4 rounded-xl shadow-sm">
-                                        <p className="text-xs text-gray-500 uppercase">{t.totalUsers}</p>
-                                        <p className="text-2xl font-bold text-[#A6192E]">{allUsers.length}</p>
-                                    </div>
-                                    <div className="bg-white p-4 rounded-xl shadow-sm">
-                                        <p className="text-xs text-gray-500 uppercase">{t.totalStamps}</p>
-                                        <p className="text-2xl font-bold text-[#A6192E]">{stats.totalStamps || 0}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-white p-4 rounded-xl shadow-sm">
-                                    <h3 className="font-bold text-gray-700 mb-4">User Roles</h3>
-                                    <div className="chart-container"><canvas id="roleChart"></canvas></div>
-                                </div>
-                                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border-b bg-gray-50 gap-2">
-                                        <div className="font-bold text-gray-700">{t.userActivity} <span className="text-xs font-normal text-gray-400 ml-2">(Click row to edit user)</span></div>
-                                        <input 
-                                            type="text" 
-                                            placeholder="Search users..." 
-                                            className="p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-[#A6192E]"
-                                            value={filterText}
-                                            onChange={(e) => setFilterText(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm text-left whitespace-nowrap">
-                                            <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
-                                                <tr>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('name')}>{t.fullName} {sortConfig.key==='name'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('email')}>{t.email} {sortConfig.key==='email'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('role')}>{t.role} {sortConfig.key==='role'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('stamps')}>{t.stamps} {sortConfig.key==='stamps'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('startTime')}>{t.startTime} {sortConfig.key==='startTime'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('finishTime')}>{t.finishTime} {sortConfig.key==='finishTime'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 cursor-pointer hover:bg-gray-200 select-none" onClick={() => requestSort('durationTime')}>{t.durationTime} {sortConfig.key==='durationTime'?(sortConfig.direction==='asc'?'↑':'↓'):''}</th>
-                                                    <th className="px-6 py-3 text-right">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {sortedAndFilteredUsers.map((u, i) => (
-                                                    <tr key={i} onClick={() => selectUserForEdit(u)} className="bg-white border-b hover:bg-red-50 cursor-pointer transition-colors group">
-                                                        <td className="px-6 py-4 font-medium text-gray-900">{u.name}</td>
-                                                        <td className="px-6 py-4 text-gray-600">{u.email}</td>
-                                                        <td className="px-6 py-4 capitalize">
-                                                            {u.role}
-                                                            <span className="block text-[10px] text-gray-400">{u.version}</span>
-                                                        </td>
-                                                        <td className="px-6 py-4 font-bold text-[#A6192E]">{stats.userAnswers[u.email] || 0}</td>
-                                                        <td className="px-6 py-4 text-xs text-gray-500">{formatTime(u.joinedAt)}</td>
-                                                        <td className="px-6 py-4 text-xs text-gray-500">{formatTime(u.completedAt)}</td>
-                                                        <td className="px-6 py-4 text-xs font-bold text-gray-700">{formatDuration(u.joinedAt, u.completedAt)}</td>
-                                                        <td className="px-6 py-4 text-right text-gray-400 group-hover:text-[#A6192E]"><i className="fa fa-edit"></i></td>
-                                                    </tr>
-                                                ))}
-                                                {sortedAndFilteredUsers.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan="8" className="px-6 py-8 text-center text-gray-400">No users found.</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {tab === 'qr' && <div className="grid grid-cols-1 md:grid-cols-2 gap-6 fade-in">{LOCATIONS.map(l=><div key={l.id} className="bg-white p-4 rounded text-center"><b>{l.name[lang]}</b><br/><canvas ref={el=>{
-                            if(el){
-                                new QRious({
-                                    element: el,
-                                    value: `https://polyu-hunt.web.app/?scan=${l.qrId}`,
-                                    size: 150
-                                })
-                            }
-                        }}></canvas><p className="text-xs text-gray-400 font-mono mt-2 break-all">{`https://polyu-hunt.web.app/?scan=${l.qrId}`}</p></div>)}</div>}
-                        
-                        {tab === 'users' && (
-                            <div className="space-y-4 fade-in">
-                                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                                    <h3 className="font-bold">Manage User Account</h3>
-                                    <div className="flex gap-2 mb-4">
-                                        <input 
-                                            type="email" 
-                                            placeholder="Enter user email..." 
-                                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none"
-                                            value={searchEmail}
-                                            onChange={e=>setSearchEmail(e.target.value)}
-                                        />
-                                        <button onClick={handleSearchUser} className="bg-gray-800 text-white px-4 rounded-lg font-bold shadow hover:bg-black">Search</button>
-                                    </div>
-
-                                    {manageUser && (
-                                        <div className="border p-4 rounded-lg bg-gray-50 slide-up">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <p className="font-bold text-lg text-[#A6192E]">{manageUser.name}</p>
-                                                    <p className="text-gray-500 text-sm"><i className="fa fa-envelope mr-1"></i> {manageUser.email}</p>
-                                                    <p className="text-gray-500 text-sm capitalize"><i className="fa fa-user-tag mr-1"></i> {manageUser.role} • {manageUser.version} mode</p>
-                                                </div>
-                                                <button onClick={handleDeleteUser} className="bg-red-500 text-white px-3 py-2 rounded text-xs font-bold shadow hover:bg-red-600"><i className="fa fa-trash mr-1"></i> Delete Account</button>
-                                            </div>
-                                            
-                                            <div className="bg-white p-3 rounded shadow-sm border border-gray-100 mt-4">
-                                                <p className="font-bold text-sm mb-3 text-gray-700">Toggle Completed Missions:</p>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                                                    {LOCATIONS.map(loc => {
-                                                        const hasCompleted = editedUserLocations.includes(loc.id);
-                                                        return (
-                                                            <div key={loc.id} className="flex items-center gap-3 bg-gray-50 p-2 rounded border hover:bg-gray-100 transition cursor-pointer">
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    id={`chk-${loc.id}`}
-                                                                    className="w-4 h-4 text-[#A6192E] rounded focus:ring-[#A6192E] cursor-pointer"
-                                                                    checked={hasCompleted} 
-                                                                    onChange={(e) => {
-                                                                        const isChecked = e.target.checked;
-                                                                        setEditedUserLocations(prev => {
-                                                                            if (isChecked) {
-                                                                                return prev.includes(loc.id) ? prev : [...prev, loc.id];
-                                                                            } else {
-                                                                                return prev.filter(id => id !== loc.id);
-                                                                            }
-                                                                        });
-                                                                    }}
-                                                                />
-                                                                <label htmlFor={`chk-${loc.id}`} className={`text-sm font-medium cursor-pointer w-full select-none ${hasCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
-                                                                    {loc.name.en}
-                                                                </label>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </div>
-                                                <button onClick={handleSaveUser} className="w-full bg-[#A6192E] text-white py-2 rounded text-sm font-bold shadow hover:bg-red-800 transition">
-                                                    {t.saveUserDetails || "Save User Details"}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                                    <h3 className="font-bold">Exports</h3>
-                                    <div className="flex gap-2">
-                                        <button onClick={exportOverseas} className="bg-blue-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-blue-700">{t.exportOverseas}</button>
-                                        <button onClick={exportLocal} className="bg-green-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-green-700">{t.exportLocal}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {tab === 'editor' && <div className="bg-white p-6 rounded-xl shadow space-y-6 fade-in">
-                            <div className="flex gap-2 border-b pb-4">
-                                <select className="p-2 border rounded font-bold" value={editLoc} onChange={e=>setEditLoc(e.target.value)}>{LOCATIONS.map(l=><option key={l.id} value={l.id}>{l.name[lang]}</option>)}</select>
-                                <select className="p-2 border rounded font-bold" value={editLang} onChange={e=>setEditLang(e.target.value)}><option value="en">English</option><option value="tc">Traditional Chinese</option><option value="sc">Simplified Chinese</option></select>
-                            </div>
-                            <div className="space-y-4">
-                                <h4 className="font-bold text-gray-700">{t.qText}</h4>
-                                <input className="w-full p-2 border rounded" value={qText} onChange={e=>setQText(e.target.value)} placeholder="Question Text" />
-                                <h4 className="font-bold text-gray-700">{t.qOpt} & {t.setAnswer}</h4>
-                                {qOptions.map((o,i)=> (
-                                    <div key={i} className="flex gap-2 items-center">
-                                        <input 
-                                            type="radio" 
-                                            name="correctAnswer" 
-                                            checked={qAnsIndex === i} 
-                                            onChange={() => setQAnsIndex(i)} 
-                                        />
-                                        <input 
-                                            className="w-full p-2 border rounded" 
-                                            value={o} 
-                                            onChange={e => {
-                                                const ops = [...qOptions];
-                                                ops[i] = e.target.value;
-                                                setQOptions(ops);
-                                            }} 
-                                            placeholder={`Option ${i+1}`} 
-                                        />
-                                    </div>
-                                ))}
-                                <h4 className="font-bold text-gray-700 mt-6 border-t pt-4">Alumni Stories (Unlock Rewards)</h4>
-                                {storyList.map((s, i) => (
-                                    <div key={i} className="p-3 bg-gray-50 rounded border">
-                                        <div className="flex gap-2">
-                                            <span className="text-xs font-bold text-gray-400 w-10 pt-2">Story:</span>
-                                            <textarea className="w-full p-1 border rounded text-sm" rows="3" value={s.text} onChange={e=>{const sl=[...storyList];sl[i].text=e.target.value;setStoryList(sl)}} placeholder="Story content..."></textarea>
-                                        </div>
-                                    </div>
-                                ))}
-                                <button onClick={handleSave} className="w-full bg-[#A6192E] text-white p-3 rounded font-bold shadow-lg hover:bg-red-800 transition mt-4">{t.save}</button>
-                            </div>
-                        </div>}
-
-                        {tab === 'settings' && (
-                            <div className="bg-white p-6 rounded-xl shadow space-y-4 fade-in">
-                                <h3 className="font-bold text-lg text-gray-800">{t.changeAdminPass}</h3>
-                                <div className="flex flex-col md:flex-row gap-2">
-                                    <input 
-                                        type="text" 
-                                        placeholder={t.newPassword}
-                                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none"
-                                        value={newAdminPass}
-                                        onChange={(e) => setNewAdminPass(e.target.value)}
-                                    />
-                                    <button 
-                                        onClick={() => {
-                                            if(newAdminPass.trim().length > 0) {
-                                                const newHash = newAdminPass.trim().split('').map(c => c.charCodeAt(0).toString(16)).join('');
-                                                onUpdateAdminSettings({ passHash: newHash });
-                                                setNewAdminPass('');
-                                            }
-                                        }} 
-                                        className="bg-[#A6192E] text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-red-800 whitespace-nowrap transition">
-                                        {t.updatePass}
-                                    </button>
+                        <div className="flex-grow flex flex-col items-center justify-start pt-3 px-4 pb-4 max-w-md mx-auto w-full relative overflow-y-auto">
+                            <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col relative flex-shrink-0" style={{aspectRatio: '4/5', maxHeight: '65vh'}}>
+                                <img 
+                                    src={`./image/${location.id}_story_${storyIndex + 1}.jpeg`} 
+                                    alt={`Story ${storyIndex + 1}`}
+                                    className="w-full h-full object-cover absolute inset-0"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDglIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5Ij5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+'; }}
+                                />
+                                
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-6 pt-16 text-white flex flex-col justify-end min-h-[50%]">
+                                    <p className="italic text-sm md:text-base leading-relaxed mb-3">"{stories[storyIndex].text}"</p>
                                 </div>
                                 
-                                <h3 className="font-bold text-lg text-gray-800 mt-6 pt-6 border-t">{t.gameStartDate}</h3>
-                                <p className="text-sm text-gray-500 mb-2">Controls the progressive unlocking of missions (1 new mission per day, up to 7 max).</p>
-                                <div className="flex flex-col md:flex-row gap-2">
-                                    <input 
-                                        type="date" 
-                                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none"
-                                        value={newStartDate}
-                                        onChange={(e) => setNewStartDate(e.target.value)}
-                                    />
-                                    <button 
-                                        onClick={() => {
-                                            if(newStartDate) {
-                                                onUpdateAdminSettings({ startDate: newStartDate });
-                                            }
-                                        }} 
-                                        className="bg-[#A6192E] text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-red-800 whitespace-nowrap transition">
-                                        {t.saveDate}
+                                {storyIndex > 0 && (
+                                    <button onClick={() => setStoryIndex(i => i - 1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-[#A6192E] shadow-lg transition">
+                                        <i className="fa fa-chevron-left"></i>
                                     </button>
+                                )}
+                                {storyIndex < stories.length - 1 && (
+                                    <button onClick={() => setStoryIndex(i => i + 1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-[#A6192E] shadow-lg transition">
+                                        <i className="fa fa-chevron-right"></i>
+                                    </button>
+                                )}
+                                
+                                <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2">
+                                    {stories.map((_, i) => (
+                                        <div key={i} className={`w-2 h-2 rounded-full shadow ${i === storyIndex ? 'bg-[#A6192E]' : 'bg-white/50'}`}></div>
+                                    ))}
                                 </div>
                             </div>
-                        )}
+
+                            <div className="w-full mt-4 flex-shrink-0">
+                                <button onClick={()=>onComplete(location.id, earnedBonus)} className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">
+                                    {t.collectClose}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            );
-        };
-
-        const GiftClaimModal = ({ user, onClose, lang, onSubmit }) => {
-            const [step, setStep] = useState(1);
-            const [formData, setFormData] = useState({ email: user.email, address: '' });
-            const t = TRANSLATIONS[lang];
+                );
+            }
             
-            const durationStr = formatDuration(user.joinedAt, user.completedAt || new Date().toISOString());
-            
-            if (user.giftClaimed) return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 p-4"><div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center border-t-8 border-gray-400"><h3 className="text-xl font-bold mb-2">{t.claimed}</h3><button onClick={onClose} className="w-full bg-gray-800 text-white py-2 rounded-lg">Close</button></div></div>;
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center border-t-8 border-[#A6192E]">
-                        {step===1? (
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">{t.giftTitle}</h3>
-                                <p className="text-[#A6192E] font-bold mb-4">{t.timeTaken} {durationStr}</p>
-                                <p className="text-gray-600 mb-4">{t.giftAsk}</p>
-                                <button onClick={()=>setStep(2)} className="w-full bg-[#A6192E] text-white py-2 rounded-lg mb-2">{t.giftYes}</button>
-                                <button onClick={onClose} className="w-full bg-gray-100 text-gray-500 py-2 rounded-lg">{t.giftNo}</button>
-                            </div>
-                        ) : step===2? (
-                            <div>
-                                <textarea className="w-full p-2 border rounded mb-4" rows="3" placeholder={t.shippingAddr} onChange={e=>setFormData({...formData, address:e.target.value})}></textarea>
-                                <button onClick={()=>{onSubmit(formData);setStep(3)}} className="w-full bg-green-600 text-white py-2 rounded-lg">{t.submitClaim}</button>
-                            </div>
-                        ) : (
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Success!</h3>
-                                <button onClick={onClose} className="w-full bg-gray-800 text-white py-2 rounded-lg">Close</button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const StampBook = ({ locations, clearedLocations, onClose, lang }) => {
-            const t = TRANSLATIONS[lang];
-            const clearedCount = clearedLocations.length;
-            
-            return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in"><div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative max-h-[90vh] overflow-y-auto"><button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i className="fa fa-times text-xl"></i></button><div className="text-center mb-6"><h2 className="text-2xl font-bold text-[#A6192E]">{t.myStamps}</h2><p className="text-sm text-gray-500">{clearedCount}/{locations.length}</p></div><div className="grid grid-cols-3 gap-4">{locations.map(loc => {const isEarned = clearedLocations.includes(loc.id); return <div key={loc.id} className={`flex flex-col items-center p-3 rounded-xl border-2 ${isEarned?'border-[#A6192E] bg-red-50':'border-gray-200 bg-gray-50'}`}><div className={`stamp-circle mb-2 ${isEarned?'stamp-earned':'stamp-locked'}`}><i className={`fa ${loc.icon}`}></i></div><span className="text-[10px] font-bold text-center leading-tight">{loc.name[lang]}</span></div>;})}</div></div></div>;
-        };
-
-        const OverseasUnlockModal = ({ onUnlock, lang, onLogout }) => {
-            const [c, setC] = useState('');
-            const t = TRANSLATIONS[lang];
-            return <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 fade-in"><div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm text-center pop-in border-t-4 border-blue-600"><h3 className="text-2xl font-bold mb-2">{t.overseasActivation}</h3><input className="w-full text-center text-2xl font-bold border-2 rounded-lg p-3 mb-2 uppercase tracking-widest" placeholder="CODE" maxLength="4" onChange={e=>setC(e.target.value)} /><button onClick={()=>c==='1937'?onUnlock():alert(t.invalidEventCode)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow hover:bg-blue-700">{t.unlockCampus}</button><div className="mt-4"><button onClick={onLogout} className="text-sm text-gray-500 underline">{t.logout}</button></div></div></div>;
+            return null;
         };
 
         const App = () => {
             const [user, setUser] = useState(null);
             const [view, setView] = useState('register');
             const [lang, setLang] = useState('en'); 
-            const [activeLoc, setActiveLoc] = useState(null);
-            const [modalOpen, setModalOpen] = useState(false);
+            const [activeMission, setActiveMission] = useState(null);
             const [notification, setNotification] = useState(null); 
             const [stampBookOpen, setStampBookOpen] = useState(false);
-            const [overseasUnlocked, setOverseasUnlocked] = useState(false);
+            const [globalUnlocked, setGlobalUnlocked] = useState(false);
             const [giftClaimOpen, setGiftClaimOpen] = useState(false); 
             const [profileOpen, setProfileOpen] = useState(false); 
             const [tcOpen, setTcOpen] = useState(false);
             
-            // Firebase State
             const [allUsers, setAllUsers] = useState([]);
-            const [stats, setStats] = useState({ userAnswers: {}, questionAnswers: {} });
+            const [stats, setStats] = useState({ userAnswers: {}, totalPoints: 0 });
             const [cleared, setCleared] = useState([]); 
+            const [bonusLocs, setBonusLocs] = useState([]); 
             const [content, setContent] = useState({ questions: DEFAULT_QUESTIONS, stories: ALUMNI_STORIES });
             
-            // Admin Config State
-            const [adminConfig, setAdminConfig] = useState({ passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD() }); 
+            const [adminConfig, setAdminConfig] = useState({ passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD(), locationOrder: LOCATIONS.map(l=>l.id) }); 
             const [initializing, setInitializing] = useState(true);
             const t = TRANSLATIONS[lang];
 
-            // --- PROGRESSIVE UNLOCK LOGIC ---
-            const visibleLocations = useMemo(() => {
+            const locationOrder = adminConfig?.locationOrder || LOCATIONS.map(l=>l.id);
+            const orderedLocations = useMemo(() => {
+                return locationOrder.map(id => LOCATIONS.find(l => l.id === id)).filter(Boolean);
+            }, [locationOrder]);
+
+            const unlockedLocationIds = useMemo(() => {
                 const startDateStr = adminConfig?.startDate || getLocalYYYYMMDD();
-                
                 const start = new Date(startDateStr);
                 start.setHours(0, 0, 0, 0); 
-                
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
                 
                 const diffDays = Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24)));
-                
-                return LOCATIONS.slice(0, Math.min(LOCATIONS.length, 1 + diffDays));
-            }, [adminConfig?.startDate]);
+                return locationOrder.slice(0, Math.min(locationOrder.length, 1 + diffDays));
+            }, [adminConfig?.startDate, locationOrder]);
 
+            useEffect(() => {
+                try {
+                    const isUnlocked = localStorage.getItem('polyu_hunt_global_unlocked') === 'true';
+                    if (isUnlocked) setGlobalUnlocked(true);
+                } catch (e) {}
+            }, []);
 
-            // 1. Initial Init & Admin Snapshot Listener
             useEffect(() => {
                 const init = async () => {
                     try { 
@@ -1678,8 +1015,6 @@
                         if(db) {
                             const ref = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main');
                             const snap = await getDoc(ref);
-                            
-                            // FIX applied here: Check if property exists first to support compat layer
                             if (snap.exists || (typeof snap.exists === 'function' && snap.exists())) {
                                 setContent(snap.data());
                             } else {
@@ -1689,10 +1024,8 @@
 
                             const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2');
                             const configSnap = await getDoc(configRef);
-                            
-                            // FIX applied here too
                             if (!configSnap.exists && !(typeof configSnap.exists === 'function' && configSnap.exists())) {
-                                await setDoc(configRef, { passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD() });
+                                await setDoc(configRef, { passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD(), locationOrder: LOCATIONS.map(l=>l.id) });
                             }
                             
                             onSnapshot(configRef, (docSnap) => {
@@ -1707,7 +1040,6 @@
                 init();
             }, []);
 
-            // 2. Real-time User Data Sync
             useEffect(() => {
                 if (user && user.uid !== 'offline-user' && user.role !== 'admin') {
                     const { db, doc, onSnapshot, appId } = window.FB;
@@ -1716,6 +1048,7 @@
                         if (docSnap.exists || (typeof docSnap.exists === 'function' && docSnap.exists())) {
                             const data = docSnap.data();
                             setCleared(data.clearedLocations || []);
+                            setBonusLocs(data.bonusLocations || []);
                             setUser(prev => ({...prev, ...data}));
                         }
                     }, (error) => {
@@ -1725,7 +1058,6 @@
                 }
             }, [user?.uid]);
 
-            // 3. Admin Data Sync
             useEffect(() => {
                 if (user?.role === 'admin') {
                     const { db, collection, onSnapshot, appId } = window.FB;
@@ -1735,17 +1067,17 @@
                     const unsubscribe = onSnapshot(q, (snapshot) => {
                         const users = [];
                         const userAnswers = {};
-                        let totalStamps = 0;
+                        let totalPointsAll = 0;
                         
                         snapshot.forEach(doc => {
                             const u = doc.data();
                             users.push(u);
-                            const stampCount = (u.clearedLocations || []).length;
-                            userAnswers[u.email] = stampCount;
-                            totalStamps += stampCount;
+                            const pts = (u.clearedLocations?.length || 0) + (u.bonusLocations?.length || 0);
+                            userAnswers[u.email] = pts;
+                            totalPointsAll += pts;
                         });
                         setAllUsers(users);
-                        setStats({ userAnswers, totalStamps, questionAnswers: {} });
+                        setStats({ userAnswers, totalPoints: totalPointsAll });
                     }, (error) => {
                         console.error("Admin snapshot error:", error);
                     });
@@ -1753,15 +1085,10 @@
                 }
             }, [user?.role]);
             
-            // 4. Auto Login via LocalStorage
             useEffect(() => {
                 const autoLogin = async () => {
                      let savedEmail = null;
-                     try {
-                         savedEmail = localStorage.getItem('polyu_hunt_email');
-                     } catch (e) {
-                         console.warn('localStorage unavailable', e);
-                     }
+                     try { savedEmail = localStorage.getItem('polyu_hunt_email'); } catch (e) {}
                      if (savedEmail && !user && !initializing) {
                          await handleCheckUser({ email: savedEmail, name: '', version: 'local' }, true);
                      }
@@ -1769,7 +1096,6 @@
                 if (!initializing) autoLogin();
             }, [initializing]);
 
-            // 5. Watch for URL "scan" param
             useEffect(() => {
                 if (user && !initializing) {
                     const params = new URLSearchParams(window.location.search);
@@ -1777,23 +1103,17 @@
                     if (scanId) {
                         const loc = LOCATIONS.find(l => l.qrId === scanId || l.id === scanId);
                         if (loc) {
-                            const isVisible = visibleLocations.some(vl => vl.id === loc.id);
-                            
-                            if (!isVisible) {
-                                showNotify(t.lockedTitle || "Location Locked", "This mission is not available yet. Please wait for it to be revealed!", 'error', 'fa-lock');
+                            const isDayUnlocked = unlockedLocationIds.includes(loc.id);
+                            if (!isDayUnlocked) {
+                                showNotify(t.lockedTitle, t.lockedMsg, 'error', 'fa-lock');
                             } else {
-                                const isLocal = user.version === 'local';
                                 const isCleared = cleared.includes(loc.id);
-                                const isFinal = loc.id === 'redemption';
-                                const canAccessFinal = !isLocal || cleared.length >= 6;
-                                const isLocked = isFinal && !canAccessFinal && !isCleared;
-                                
-                                if (!isLocked && !isCleared) {
-                                    setActiveLoc(loc);
-                                    setView('quiz'); 
-                                } else if (isLocked) {
-                                    showNotify(t.lockedTitle, t.lockedMsg, 'error');
-                                } else if (isCleared) {
+                                if (!isCleared) {
+                                    // If scanning from URL, automatically set global activation to true
+                                    setGlobalUnlocked(true);
+                                    try { localStorage.setItem('polyu_hunt_global_unlocked', 'true'); } catch(e){}
+                                    setActiveMission(loc);
+                                } else {
                                     showNotify(t.alreadyClearedTitle, t.alreadyClearedMsg, 'info', loc.icon);
                                 }
                             }
@@ -1801,13 +1121,11 @@
                         window.history.replaceState(null, '', window.location.pathname);
                     }
                 }
-            }, [user, initializing, cleared, t, visibleLocations]); 
+            }, [user, initializing, cleared, t, unlockedLocationIds]); 
 
             const handleCheckUser = async (data, silent = false) => {
                 const { db, collection, getDocs, auth, appId, setDoc, doc, deleteDoc, deleteField } = window.FB;
-                
-                if (!auth || !auth.currentUser) return false;
-                if (!data.email) return false;
+                if (!auth?.currentUser || !data.email) return false;
 
                 try {
                     const normalizedEmail = data.email.toLowerCase().trim();
@@ -1815,6 +1133,7 @@
                     
                     let foundAny = false;
                     let mergedLocations = [];
+                    let mergedBonus = [];
                     let latestProfile = null;
                     const oldDocIds = [];
                     
@@ -1826,14 +1145,10 @@
                             oldDocIds.push(docSnap.id);
                             
                             if (Array.isArray(d.clearedLocations)) {
-                                d.clearedLocations.forEach(id => {
-                                    if (!mergedLocations.includes(id)) mergedLocations.push(id);
-                                });
+                                d.clearedLocations.forEach(id => { if (!mergedLocations.includes(id)) mergedLocations.push(id); });
                             }
-                            if (d.missions_completed) {
-                                Object.keys(d.missions_completed).forEach(id => {
-                                    if (!mergedLocations.includes(id)) mergedLocations.push(id);
-                                });
+                            if (Array.isArray(d.bonusLocations)) {
+                                d.bonusLocations.forEach(id => { if (!mergedBonus.includes(id)) mergedBonus.push(id); });
                             }
                         }
                     });
@@ -1843,10 +1158,7 @@
                         
                         let finalVersion = latestProfile.version || data.version || 'local';
                         if (data.version && latestProfile.version && data.version !== latestProfile.version) {
-                            if (!silent) {
-                                const modeText = latestProfile.version === 'local' ? t.local : t.overseas;
-                                alert(`${t.modeMismatch} ${modeText}`);
-                            }
+                            if (!silent) alert(`${t.modeMismatch} ${latestProfile.version === 'local' ? t.local : t.overseas}`);
                             finalVersion = latestProfile.version; 
                         }
 
@@ -1854,35 +1166,27 @@
                         delete latestProfile.missions_completed;
 
                         const mergedData = { 
-                            ...latestProfile, 
-                            uid: currentUid, 
-                            name: updatedName,
-                            clearedLocations: mergedLocations,
-                            lastLogin: new Date().toISOString(),
-                            version: finalVersion,
+                            ...latestProfile, uid: currentUid, name: updatedName,
+                            clearedLocations: mergedLocations, bonusLocations: mergedBonus,
+                            lastLogin: new Date().toISOString(), version: finalVersion,
                             missions_completed: deleteField() 
                         };
                         
                         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', currentUid), mergedData, { merge: true });
 
                         for (const oldId of oldDocIds) {
-                            if (oldId !== currentUid) {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', oldId)).catch(e => console.log("Cleanup ignored"));
-                            }
+                            if (oldId !== currentUid) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', oldId)).catch(e=>{});
                         }
 
                         setUser(mergedData);
                         setCleared(mergedLocations);
+                        setBonusLocs(mergedBonus);
                         setView('map');
-                        try {
-                            localStorage.setItem('polyu_hunt_email', normalizedEmail);
-                        } catch (e) {
-                            console.warn('localStorage unavailable', e);
-                        }
+                        try { localStorage.setItem('polyu_hunt_email', normalizedEmail); } catch (e) {}
                         return true; 
                     }
                 } catch (e) { 
-                    console.error("CheckUser Error: ", e); 
+                    console.error(e); 
                     if (!silent) alert("Error connecting to database.");
                 }
                 return false;
@@ -1890,142 +1194,63 @@
 
             const handleRegister = async (data) => {
                 const { db, doc, setDoc, auth, appId } = window.FB;
-                
                 const uid = auth?.currentUser?.uid || 'offline-user';
                 const normalizedEmail = data.email.toLowerCase().trim();
 
                 const newUser = { 
-                    ...data, 
-                    email: normalizedEmail,
-                    uid, 
-                    clearedLocations: [], 
-                    joinedAt: new Date().toISOString(), 
-                    giftClaimed: false 
+                    ...data, email: normalizedEmail, uid, 
+                    clearedLocations: [], bonusLocations: [], 
+                    joinedAt: new Date().toISOString(), giftClaimed: false 
                 };
 
                 if (auth && auth.currentUser && db) {
-                    try {
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', uid), newUser);
-                    } catch (e) {
-                        console.error("Save Error", e);
-                    }
+                    try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', uid), newUser); } catch (e) {}
                 }
                 
-                setUser(newUser);
-                setCleared([]);
-                setView('map');
-                try {
-                    localStorage.setItem('polyu_hunt_email', normalizedEmail);
-                } catch (e) {
-                    console.warn('localStorage unavailable', e);
-                }
+                setUser(newUser); setCleared([]); setBonusLocs([]); setView('map');
+                try { localStorage.setItem('polyu_hunt_email', normalizedEmail); } catch (e) {}
             };
 
-            const handleUpdateProfile = async (updates) => {
-                const { db, doc, updateDoc, appId, auth } = window.FB;
-                const updatedUser = { ...user, ...updates };
-                setUser(updatedUser);
+            const handleMissionComplete = async (locId, earnedBonus) => {
+                const { db, doc, updateDoc, arrayUnion, appId, auth } = window.FB;
+                
+                const newCleared = [...cleared, locId];
+                setCleared(newCleared);
+                if (earnedBonus) setBonusLocs([...bonusLocs, locId]);
+
+                const completedTime = new Date().toISOString();
+
+                let payloadToUpdate = { clearedLocations: arrayUnion(locId) };
+                if (earnedBonus) payloadToUpdate.bonusLocations = arrayUnion(locId);
+                if (newCleared.length === LOCATIONS.length) payloadToUpdate.completedAt = completedTime;
 
                 if (auth && auth.currentUser && db) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), updates);
+                    const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid);
+                    await updateDoc(userRef, payloadToUpdate);
                 }
-                showNotify("Profile Updated", "Your information has been updated successfully.", "success", "fa-user-check");
-            };
-
-            const handleAdminLogin = async () => {
-                const { db, doc, setDoc, auth, appId } = window.FB;
-                if (auth.currentUser) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
-                setUser({ name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
-                setView('map');
-            };
-            
-            const handleUpdateAdminSettings = async (updates) => {
-                const { db, doc, setDoc, appId } = window.FB;
-                if (db) {
-                    const newConfig = { ...adminConfig, ...updates };
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2'), newConfig, { merge: true });
-                    alert(t.settingsSaved || "Settings updated successfully!");
+                
+                if (newCleared.length === LOCATIONS.length) {
+                    if (window.confetti) window.confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 9999 });
+                    const durationStr = formatDuration(user.joinedAt, completedTime);
+                    if (user.version === 'overseas') {
+                        setUser(prev => ({...prev, completedAt: completedTime}));
+                        setGiftClaimOpen(true);
+                    } else {
+                        showNotify(t.grandSuccessTitle, `${t.grandSuccessMsg}\n\n${t.timeTaken}${durationStr}`, "success", "fa-crown");
+                    }
+                } else {
+                    const earnedPoints = earnedBonus ? 2 : 1;
+                    showNotify(t.stampCollectedTitle, `You earned ${earnedPoints} Point(s)!`, "success", "fa-star");
                 }
+                setActiveMission(null); setView('map');
             };
 
             const handleLogout = async () => {
                 const { auth, signOut } = window.FB;
                 if (auth) try { await signOut(auth); } catch (e) {}
-                setUser(null); setView('register'); setCleared([]); setOverseasUnlocked(false);
-                try {
-                    localStorage.removeItem('polyu_hunt_email');
-                } catch (e) {
-                    console.warn('localStorage unavailable', e);
-                }
+                setUser(null); setView('register'); setCleared([]); setGlobalUnlocked(false);
+                try { localStorage.removeItem('polyu_hunt_email'); localStorage.removeItem('polyu_hunt_global_unlocked'); } catch (e) {}
                 window.location.reload();
-            };
-
-            const handleQuizComplete = async (success) => {
-                if (success) {
-                    const { db, doc, updateDoc, arrayUnion, appId, auth } = window.FB;
-                    
-                    if (cleared.includes(activeLoc.id)) {
-                        showNotify(t.alreadyClearedTitle, t.alreadyClearedMsg, "info", activeLoc.icon);
-                    } else {
-                        const newCleared = [...cleared, activeLoc.id];
-                        setCleared(newCleared);
-
-                        const completedTime = new Date().toISOString();
-
-                        let payloadToUpdate = {
-                            clearedLocations: arrayUnion(activeLoc.id)
-                        };
-
-                        if (newCleared.length === 7) {
-                            payloadToUpdate.completedAt = completedTime;
-                        }
-
-                        if (auth && auth.currentUser && db) {
-                            const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid);
-                            await updateDoc(userRef, payloadToUpdate);
-                        }
-                        
-                        if (newCleared.length === 7) {
-                            if (window.confetti) {
-                                window.confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 9999 });
-                            }
-                            
-                            const durationStr = formatDuration(user.joinedAt, completedTime);
-
-                            if (user.version === 'overseas') {
-                                setUser(prev => ({...prev, completedAt: completedTime}));
-                                setGiftClaimOpen(true);
-                            } else {
-                                showNotify(t.grandSuccessTitle, `${t.grandSuccessMsg}\n\n${t.timeTaken}${durationStr}`, "success", "fa-crown");
-                            }
-                        } else {
-                            showNotify(t.stampCollectedTitle, `${t.stampCollectedMsg} (${activeLoc.name[lang]})`, "success", activeLoc.icon);
-                        }
-                    }
-                }
-                setActiveLoc(null); setView('map');
-            };
-
-            const handleGiftSubmit = async (data) => {
-                const { db, doc, updateDoc, appId, auth } = window.FB;
-                if (auth && auth.currentUser && db) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { giftRequest: data, giftClaimed: true });
-                    setUser(prev => ({ ...prev, giftClaimed: true }));
-                }
-            };
-
-            const handleUpdateContent = async (newContent) => {
-                const { db, doc, setDoc, appId } = window.FB;
-                setContent(newContent);
-                if (db) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main'), newContent, { merge: true });
-                }
-            };
-
-            const handleSelectLocation = (loc, isLocked) => {
-                if (isLocked) { setNotification({ title: t.lockedTitle, message: t.lockedMsg, type: 'error' }); return; }
-                if (user.version === 'overseas') { if (!overseasUnlocked) return; setActiveLoc(loc); setView('quiz'); }
-                else { setActiveLoc(loc); setModalOpen(true); }
             };
 
             const showNotify = (title, message, type = 'info', customIcon = null, customAction = null) => {
@@ -2038,27 +1263,153 @@
                 return (
                     <div className={`text-gray-800 lang-${lang}`}>
                         {tcOpen && <TCModal onClose={() => setTcOpen(false)} lang={lang} />}
-                        <Register onRegister={handleRegister} onCheckUser={handleCheckUser} onAdminLogin={handleAdminLogin} lang={lang} setLang={setLang} onOpenTC={() => setTcOpen(true)} adminConfig={adminConfig} />
+                        <Register onRegister={handleRegister} onCheckUser={handleCheckUser} onAdminLogin={async () => {
+                            const { db, doc, setDoc, auth, appId } = window.FB;
+                            if (auth.currentUser) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
+                            setUser({ name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
+                            setView('map');
+                        }} lang={lang} setLang={setLang} onOpenTC={() => setTcOpen(true)} adminConfig={adminConfig} />
                     </div>
                 );
             }
+
+            const currentTotalPoints = cleared.length + bonusLocs.length;
 
             return (
                 <div className={`text-gray-800 lang-${lang}`}>
                     {tcOpen && <TCModal onClose={() => setTcOpen(false)} lang={lang} />}
                     {notification && <NotificationModal {...notification} onClose={()=>setNotification(null)} lang={lang} />}
-                    
-                    {stampBookOpen && <StampBook locations={visibleLocations} clearedLocations={cleared} onClose={()=>setStampBookOpen(false)} lang={lang} />}
-                    {giftClaimOpen && <GiftClaimModal user={user} onClose={()=>setGiftClaimOpen(false)} onSubmit={handleGiftSubmit} lang={lang} />}
-                    {profileOpen && <ProfileModal user={user} onClose={()=>setProfileOpen(false)} onUpdate={handleUpdateProfile} lang={lang} onOpenTC={() => setTcOpen(true)} />}
+                    {stampBookOpen && <StampBook locations={orderedLocations} clearedLocations={cleared} onClose={()=>setStampBookOpen(false)} lang={lang} />}
+                    {giftClaimOpen && <GiftClaimModal user={user} onClose={()=>setGiftClaimOpen(false)} onSubmit={async (data) => {
+                        const { db, doc, updateDoc, appId, auth } = window.FB;
+                        if (auth && auth.currentUser && db) {
+                            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { giftRequest: data, giftClaimed: true });
+                            setUser(prev => ({ ...prev, giftClaimed: true }));
+                        }
+                    }} lang={lang} />}
+                    {profileOpen && <ProfileModal user={user} onClose={()=>setProfileOpen(false)} onUpdate={async (updates) => {
+                        const { db, doc, updateDoc, appId, auth } = window.FB;
+                        setUser({ ...user, ...updates });
+                        if (auth && auth.currentUser && db) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), updates);
+                        showNotify("Profile Updated", "Your information has been updated successfully.", "success", "fa-user-check");
+                    }} lang={lang} onOpenTC={() => setTcOpen(true)} />}
 
-                    {view === 'map' && user.version === 'overseas' && !overseasUnlocked && <OverseasUnlockModal onUnlock={()=>setOverseasUnlocked(true)} lang={lang} onLogout={handleLogout} />}
+                    {view === 'map' && (
+                        <div className="flex flex-col h-screen bg-gray-50/50 backdrop-blur-sm">
+                            <header className="bg-white shadow-sm px-4 py-2 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch relative">
+                                <div className="flex flex-col gap-2 justify-center">
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={()=>setProfileOpen(true)} className="w-10 h-10 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 hover:opacity-90 shadow-sm" title={t.myProfile}>
+                                            <i className="fa fa-user"></i>
+                                        </button>
+                                        <div>
+                                            <h1 className="font-bold text-gray-800 leading-none mb-1 text-lg">{user.name}</h1>
+                                            <span className={`text-[10px] px-2 py-0.5 rounded font-bold whitespace-nowrap ${user.version==='overseas'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}`}>{user.role==='admin'?t.adminMode:t[user.version]}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <LanguageSwitcher lang={lang} setLang={setLang} />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={()=>setStampBookOpen(true)} className="bg-yellow-100 text-yellow-800 px-4 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 border border-yellow-200 shadow-sm h-full w-24">
+                                        <i className="fa fa-star text-2xl"></i> 
+                                        <span>{currentTotalPoints} {t.points}</span>
+                                    </button>
+                                    <button onClick={handleLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex flex-col items-center justify-center gap-1 border border-gray-200 shadow-sm hover:bg-gray-200">
+                                        <i className="fa fa-sign-out-alt text-xl"></i>
+                                    </button>
+                                </div>
+                            </header>
+                            <main className="flex-grow relative overflow-hidden w-full pt-0 pb-4 flex flex-col items-center justify-start">
+                                <div className="map-container shadow-inner border-b border-x border-gray-300 rounded-t-none md:rounded-t-xl md:border-t md:mt-2">
+                                    <img src="./image/CampusMap.png" alt="Campus Map" className="map-image" draggable="false" onError={(e) => { e.target.onerror = null; e.target.src = './image/CampusMap.png'; }} />
+                                    <div className="map-overlay">
+                                        {orderedLocations.map(loc => {
+                                            const isCleared = cleared.includes(loc.id);
+                                            const isDayUnlocked = unlockedLocationIds.includes(loc.id);
+                                            
+                                            let lockReason = false;
+                                            if (!isDayUnlocked) lockReason = 'date';
+                                            const isLocked = !!lockReason;
+
+                                            return (
+                                                <div key={loc.id} className={`absolute flex flex-col items-center group map-pin ${isCleared?'opacity-75':'cursor-pointer'} ${isLocked?'locked grayscale':''}`} style={{left: `${loc.mapX}%`, top: `${loc.mapY}%`}} onClick={() => {
+                                                    if (isCleared) { showNotify(t.alreadyClearedTitle, t.alreadyClearedMsg, 'info', loc.icon); return; }
+                                                    if (isLocked) { showNotify(t.lockedTitle, t.lockedMsg, 'error', 'fa-clock'); return; }
+                                                    setActiveMission(loc);
+                                                }}>
+                                                    <div className={`pin-icon-wrapper ${isCleared?'bg-green-500 text-white':(isLocked?'bg-gray-400 text-white':'bg-[#A6192E] text-white')}`}>
+                                                        <i className={`fa ${isCleared?'fa-check':(isLocked?'fa-lock':loc.icon)}`}></i>
+                                                    </div>
+                                                    <div className="pin-label">{loc.name[lang]}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </main>
+                            {user.role === 'admin' && <div className="bg-white border-t p-4"><button onClick={()=>setView('admin')} className="w-full bg-blue-800 text-white py-3 rounded-lg font-bold shadow"><i className="fa fa-chart-bar mr-2"></i> {t.adminPortal}</button></div>}
+                        </div>
+                    )}
                     
-                    {view === 'map' && <MapScreen user={user} locations={visibleLocations} clearedLocations={cleared} stamps={cleared.length} onOpenStampBook={()=>setStampBookOpen(true)} onSelectLocation={handleSelectLocation} onOpenAdmin={()=>setView('admin')} onLogout={handleLogout} onEditProfile={()=>setProfileOpen(true)} lang={lang} setLang={setLang} />}
-                    
-                    {modalOpen && activeLoc && <LocationModal location={activeLoc} onClose={()=>setModalOpen(false)} onStartQuiz={()=>{setModalOpen(false); setView('quiz');}} onDebugTeleport={()=>{setModalOpen(false); setView('quiz');}} lang={lang} />}
-                    {view === 'quiz' && activeLoc && <QuizScreen location={activeLoc} content={content} onBack={()=>setView('map')} onComplete={handleQuizComplete} onAnswerLog={()=>{}} lang={lang} />}
-                    {view === 'admin' && <AdminDashboard onBack={()=>setView('map')} allUsers={allUsers} stats={stats} lang={lang} content={content} onUpdateContent={handleUpdateContent} onUpdateAdminSettings={handleUpdateAdminSettings} adminConfig={adminConfig} />}
+                    {activeMission && (
+                        <MissionOrchestrator 
+                            location={activeMission} 
+                            globalUnlocked={globalUnlocked} 
+                            onActivate={() => { setGlobalUnlocked(true); try { localStorage.setItem('polyu_hunt_global_unlocked', 'true'); } catch(e){} }} 
+                            onComplete={handleMissionComplete} 
+                            onCancel={() => setActiveMission(null)} 
+                            content={content} 
+                            lang={lang} 
+                        />
+                    )}
+
+                    {view === 'admin' && (
+                        <div className="fixed inset-0 z-50 bg-gray-100 h-screen overflow-y-auto">
+                            <div className="bg-white p-4 shadow flex justify-between sticky top-0 z-10">
+                                <div className="flex items-center gap-2"><button onClick={()=>setView('map')}><i className="fa fa-arrow-left"></i></button><h2 className="font-bold">{t.adminPortal}</h2></div>
+                                <div className="flex bg-gray-100 rounded p-1 gap-1 text-[10px]">{['users','stats','qr','editor','settings'].map(x => <button key={x} onClick={e=>e.target.parentElement.nextElementSibling.setAttribute('data-tab', x)} className="px-2 py-1 rounded font-bold text-gray-500">{x.toUpperCase()}</button>)}</div>
+                            </div>
+                            <div className="p-4 max-w-5xl mx-auto space-y-4">
+                                <div className="space-y-6 fade-in">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-white p-4 rounded-xl shadow-sm">
+                                            <p className="text-xs text-gray-500 uppercase">{t.totalUsers}</p>
+                                            <p className="text-2xl font-bold text-[#A6192E]">{allUsers.length}</p>
+                                        </div>
+                                        <div className="bg-white p-4 rounded-xl shadow-sm">
+                                            <p className="text-xs text-gray-500 uppercase">TOTAL POINTS EARNED</p>
+                                            <p className="text-2xl font-bold text-[#A6192E]">{stats.totalPoints || 0}</p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-6">
+                                        <div className="p-4 border-b bg-gray-50 font-bold text-gray-700">All Registered Users ({allUsers.length})</div>
+                                        <div className="overflow-x-auto max-h-96">
+                                            <table className="w-full text-sm text-left whitespace-nowrap">
+                                                <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b sticky top-0 z-10">
+                                                    <tr>
+                                                        <th className="px-6 py-3 select-none">{t.fullName}</th>
+                                                        <th className="px-6 py-3 select-none">{t.email}</th>
+                                                        <th className="px-6 py-3 select-none">Points</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {allUsers.map((u, i) => (
+                                                        <tr key={i} className="bg-white border-b transition-colors group">
+                                                            <td className="px-6 py-3 font-medium text-gray-900">{u.name}</td>
+                                                            <td className="px-6 py-3 text-gray-600">{u.email}</td>
+                                                            <td className="px-6 py-3 font-bold text-[#A6192E]">{stats.userAnswers[u.email] || 0}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
