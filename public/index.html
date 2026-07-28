@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PolyU Hunt</title>
     
-    <!-- Google Fonts: Inter and Noto Sans CJK for TC/SC -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
     
     <!-- Tailwind CSS -->
@@ -23,14 +21,8 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- QR Code Generator -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-
-    <!-- QR Code Scanner -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    
-    <!-- Confetti Animation -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- jsQR for QR Scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <!-- FIREBASE COMPAT SETUP -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
@@ -47,370 +39,309 @@
             appId: "1:958809195745:web:1be0bc46e7cdf88a6e63a0",
             measurementId: "G-S3HQ8XDE59"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const appId = "polyu_hunt_game_v6"; // Updated ID for new schema
-
-        window.FB = {
-            auth, db, appId,
+        const appId = "polyu_hunt_game_v6"; // Main Database Node
+        window.FB = { auth, db, appId,
             signInAnonymously: (a) => a.signInAnonymously(),
             onAuthStateChanged: (a, cb) => a.onAuthStateChanged(cb),
-            signOut: (a) => a.signOut(),
             collection: (d, ...paths) => d.collection(paths.join('/')),
             doc: (d, ...paths) => d.doc(paths.join('/')),
             setDoc: (ref, data, opts) => ref.set(data, opts),
             getDoc: (ref) => ref.get(),
-            getDocs: (ref) => ref.get(),
             updateDoc: (ref, data) => ref.update(data),
-            deleteDoc: (ref) => ref.delete(),
-            onSnapshot: (ref, cb, errCb) => ref.onSnapshot(cb, errCb),
-            arrayUnion: (val) => firebase.firestore.FieldValue.arrayUnion(val),
-            deleteField: () => firebase.firestore.FieldValue.delete()
+            onSnapshot: (ref, cb) => ref.onSnapshot(cb)
         };
     </script>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            overscroll-behavior-y: none;
-            background-color: #f3f4f6;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('./image/CampusMap.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .lang-en { font-family: 'Inter', sans-serif; }
-        .lang-tc { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
-        .lang-sc { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
-
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #f8fafc; overflow: hidden; overscroll-behavior-y: contain; touch-action: pan-x pan-y; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .slide-up { animation: slideUp 0.4s ease-out forwards; }
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .stamp-pop { animation: stampPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        .shake { animation: shake 0.5s; }
-
-        .map-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            aspect-ratio: 1080 / 1350;
-            width: 100%;
-            max-width: min(100%, calc(70vh * (1080 / 1350)));
-            margin: 0 auto;
-            background-color: #f8f8f8;
-            flex-shrink: 0;
-            container-type: inline-size; 
-        }
-
-        .map-image {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            display: block;
-            user-select: none;
-            -webkit-user-drag: none;
-            pointer-events: none;
-        }
-
-        .map-overlay { position: absolute; inset: 0; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes stampPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
         
-        .map-pin { position: absolute; transform: translate(-50%, -100%); transition: all 0.2s; cursor: pointer; }
-        .map-pin:hover { transform: translate(-50%, -120%) scale(1.1); z-index: 20; }
-        .map-pin.locked { filter: grayscale(100%); opacity: 0.6; pointer-events: none; }
+        /* Language Fonts */
+        .lang-tc, .lang-sc { font-family: 'Noto Sans TC', 'PingFang HK', 'Microsoft JhengHei', sans-serif; }
         
-        .pin-icon-wrapper {
-            width: 12cqi; height: 12cqi; 
-            border: max(2px, 0.6cqi) solid white; 
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 1cqi 2cqi -0.2cqi rgba(0,0,0,0.1);
-        }
-        .pin-icon-wrapper i { font-size: 5cqi; }
-
-        .pin-label { 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 0.6cqi 1.2cqi; 
-            border-radius: 0.75cqi; 
-            font-size: 1.65cqi; 
-            font-weight: 800; 
-            text-align: center;
-            white-space: normal; word-break: keep-all; 
-            width: max-content; max-width: 30cqi; 
-            line-height: 1.15;
-            box-shadow: 0 0.3cqi 0.75cqi rgba(0,0,0,0.2); 
-            margin-top: 0.75cqi; 
-            color: #333; 
-            border: max(1.5px, 0.15cqi) solid #ddd; 
-        }
-
-        .stamp-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid; font-size: 24px; }
-        .stamp-earned { border-color: #A6192E; color: #A6192E; background-color: #fff0f0; }
-        .stamp-locked { border-color: #e5e7eb; color: #d1d5db; background-color: #f9fafb; }
+        /* Map Layout */
+        .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('https://placehold.co/1080x1920/e2e8f0/94a3b8?text=PolyU+Campus+Map') center/cover no-repeat; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
         
-        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; outline: none; transition: all 0.2s; }
-        .input-field:focus { border-color: #A6192E; box-shadow: 0 0 0 2px rgba(166, 25, 46, 0.2); }
+        .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; items-align: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
+        .loc-pin:active { transform: translate(-50%, -100%) scale(0.9); }
+        
+        .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; }
+        .pin-0 { background: #A6192E; } /* Not started */
+        .pin-1 { background: #EAB308; } /* Partially cleared (1 pt) */
+        .pin-2 { background: #22C55E; } /* Fully cleared (2 pts) */
+        
+        .pin-label { background: rgba(255,255,255,0.95); color: #333; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-top: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; border: 1px solid #ddd; text-align: center; line-height: 1.1; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Stamp book style */
+        .stamp-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .stamp-earned-0 { background: #f1f5f9; color: #cbd5e1; border: 2px dashed #cbd5e1; }
+        .stamp-earned-1 { background: #fef08a; color: #a16207; border: 2px solid #eab308; }
+        .stamp-earned-2 { background: #bbf7d0; color: #15803d; border: 2px solid #22c55e; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel" data-presets="react">
-        /** @jsx React.createElement */
-        /** @jsxFrag React.Fragment */
-        
-        const { useState, useEffect, useMemo, useRef } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
-        const formatDuration = (startIso, endIso) => {
-            if (!startIso || !endIso) return '-';
-            const diffMs = new Date(endIso) - new Date(startIso);
-            if (diffMs < 0) return '-';
-            const totalSeconds = Math.floor(diffMs / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            if (hours > 0) return `${hours}h ${minutes}m`;
-            if (minutes > 0) return `${minutes}m ${seconds}s`;
-            return `${seconds}s`;
-        };
-
-        const getLocalYYYYMMDD = () => {
+        const parseLocalDate = (dateString) => {
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0);
+            }
             const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            d.setHours(0,0,0,0);
+            return d;
         };
 
-        // --- Localization ---
         const TRANSLATIONS = {
             en: {
-                appTitle: "Puzzle Hunt Game", welcome: "Welcome", subtitle: "PolyU Homecoming Week", adminLogin: "Admin Login", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Please select your role:", visitor: "Visitor", student: "Current Student", alumni: "Alumni", staff: "Staff", prog: "Programme", gradYear: "Graduation Year", startBtn: "Next", registerBtn: "Complete Registration", adminBtn: "Login as Admin", adminMode: "Admin Mode", points: "Point(s)", scanQr: "Scan QR / Enter PIN", scanBtn: "Scan QR Code", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Go", invalidPin: "Invalid PIN", challenge: "Challenge", adminPortal: "Admin Portal", totalUsers: "Total Users", overseasActivation: "Overseas Activation", enterEventCode: "Enter Global Event Code", unlockCampus: "Unlock Campus", invalidEventCode: "Invalid Code. Try 1937.", myStamps: "My Stamps", collectAll: "Collect all points!", clue: "Clue:", incorrect: "Incorrect! Try again.", stampCollectedTitle: "POINT EARNED!", stampCollectedMsg: "You earned 1 point!", password: "Password", login: "Login", tutorialTitle: "How to Play", tutorialLocal: "📍 On-campus: Visit locations, Scan QR code and Answer questions", tutorialOverseas: "🌏 Off-campus: Enter player code to unlock the map", tutorialGoal: "🏆 Goal: Collect all points!", tutorialStart: "Let's Play!", lockedTitle: "Location Locked", lockedMsg: "This mission is not available yet!", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", qrTab: "QR Codes", scanError: "Camera Error. Ensure HTTPS.", wrongLocation: "Wrong Location! Please scan the correct QR code.", giftTitle: "Grand Prize Claim", giftAsk: "Map completed! Send souvenir gift?", giftYes: "Yes, send it!", giftNo: "No, thanks", confirmEmail: "Confirm Email", shippingAddr: "Mailing Address", giftSubmitted: "Request Received! We will contact you soon.", submitClaim: "Submit Claim", authError: "Offline Mode", statsTab: "Stats & Users", scanFail: "Incorrect Code", tryAgain: "Try Again", logout: "Logout", questionsTab: "Questions", save: "Save", claimed: "Already Claimed", exportOverseas: "Export Overseas Gifts", exportLocal: "Export Local Users", editorTab: "Editor", usersTab: "Users",
-                qText: "Question", qOpt: "Option", setAnswer: "Set as Answer", cancelScan: "Cancel Scan", processing: "Processing...", required: "Name and Email required", myProfile: "My Profile", editRole: "Edit Role", updateProfile: "Update Profile", wrongAnswer: "Incorrect Answer", wait: "Wait", tcTitle: "Terms & Conditions", readTC: "Read Terms & Conditions", timeTaken: "Time taken: ", modeMismatch: "Account registered in another mode. Continuing in:", scannedLoginMsg: "📍 Location scanned! Please login.", settingsTab: "Settings", changeAdminPass: "Change Admin Password", newPassword: "New Password", updatePass: "Update Password", saveUserDetails: "Save User Details", gameStartDate: "Game Start Date", saveDate: "Save Date", settingsSaved: "Settings updated successfully!",
-                challengeChoice: "Choose your action:", scanForBonus: "Scan Location QR (1 pt)", answerForBase: "Answer Question (1 pt)", takePhoto: "Take Photo", notMe: "Not Me! 🙅‍♂️", camError: "Camera access denied or unavailable.", retake: "Retake", share: "Share / Save", continue: "Continue", globalActivateMsg: "Enter ANY location PIN or scan ANY valid QR code to unlock your map!", verified: "Verified!", backToMap: "Back to Map", completedText: "Completed"
+                appTitle: "PolyU Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan Location QR / PIN", answerQ: "Answer Question", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", qrPoints: "1 pt", quizPoints: "1 pt", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Not Me 🙅‍♂️", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", welcomeBack: "Welcome Back!", logout: "Logout", pts0: "Not Started", pts1: "Partially Cleared", pts2: "Fully Conquered", unlocksOn: "Unlocks on", tryAgain: "Try Again", wait: "Wait", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", capture: "Capture Photo", retake: "Retake", saveShare: "Save / Share", scanOrPin: "Scan QR or Enter PIN", manualPin: "Manual PIN Entry", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!"
             },
             tc: {
-                appTitle: "校園解謎遊戲", welcome: "歡迎", subtitle: "理大校友週", adminLogin: "管理員登入", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "你的身份是：", visitor: "訪客", student: "在讀學生", alumni: "校友", staff: "教職員", prog: "課程", gradYear: "畢業年份", startBtn: "下一步", registerBtn: "完成註冊", adminBtn: "管理員", adminMode: "管理員模式", points: "積分", scanQr: "掃描 QR / 輸入 PIN", scanBtn: "掃描 QR Code", scanning: "掃描中...", enterPin: "輸入 PIN", go: "確定", invalidPin: "無效 PIN", challenge: "挑戰", adminPortal: "管理員平台", totalUsers: "總用戶", overseasActivation: "海外啟用", enterEventCode: "輸入活動代碼", unlockCampus: "解鎖校園", invalidEventCode: "無效代碼 (1937)", myStamps: "我的積分", collectAll: "收集所有積分！", clue: "提示:", incorrect: "錯誤！再試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 積分！", password: "密碼", login: "登入", tutorialTitle: "遊戲玩法", tutorialLocal: "📍 校園內：前往地點，掃描 QR Code 並回答問題", tutorialOverseas: "🌏 校園外：輸入玩家代碼解鎖地圖", tutorialGoal: "🏆 目標：收集所有積分！", tutorialStart: "開始遊戲！", lockedTitle: "已鎖定", lockedMsg: "此任務尚未解鎖！", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", qrTab: "QR 碼", scanError: "相機錯誤", wrongLocation: "地點錯誤！請掃描正確的 QR 碼。", giftTitle: "領取大獎", giftAsk: "完成地圖！寄送紀念品？", giftYes: "好，請寄給我！", giftNo: "不用了", confirmEmail: "確認電郵", shippingAddr: "地址", giftSubmitted: "已收到！", submitClaim: "提交", authError: "離線模式", statsTab: "數據與用戶", scanFail: "QR 碼錯誤", tryAgain: "重試", logout: "登出", questionsTab: "題目", save: "儲存", claimed: "已領取", exportOverseas: "匯出海外禮品", exportLocal: "匯出本地用戶", editorTab: "編輯器", usersTab: "用戶",
-                qText: "問題", qOpt: "選項", setAnswer: "設為答案", cancelScan: "取消掃描", processing: "處理中...", required: "必須輸入全名和電郵", myProfile: "我的檔案", editRole: "修改身分", updateProfile: "更新檔案", wrongAnswer: "答案錯誤", wait: "請等待", tcTitle: "條款及細則", readTC: "閱讀條款及細則", timeTaken: "所用時間：", modeMismatch: "此帳戶已在其他模式註冊。將繼續使用：", scannedLoginMsg: "📍 地點已掃描！請先登入。", settingsTab: "設定", changeAdminPass: "更改管理員密碼", newPassword: "新密碼", updatePass: "更新密碼", saveUserDetails: "儲存用戶資料", gameStartDate: "遊戲開始日期", saveDate: "儲存日期", settingsSaved: "設定已儲存！",
-                challengeChoice: "請選擇你的行動：", scanForBonus: "掃描地點 QR 碼 (1分)", answerForBase: "回答問題 (1分)", takePhoto: "拍照", notMe: "不是我！ 🙅‍♂️", camError: "無法存取相機。", retake: "重拍", share: "分享 / 儲存", continue: "繼續", globalActivateMsg: "輸入任何地點 PIN 或掃描任何有效的 QR 碼以啟動遊戲！", verified: "驗證成功！", backToMap: "返回地圖", completedText: "已完成"
+                appTitle: "理大解謎遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", qrPoints: "1 分", quizPoints: "1 分", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", welcomeBack: "歡迎回來!", logout: "登出", pts0: "未開始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解鎖日期：", tryAgain: "重試", wait: "請等待", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", scanOrPin: "掃描 QR 或輸入 PIN", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！"
             },
             sc: {
-                appTitle: "校园解谜游戏", welcome: "欢迎", subtitle: "理大校友周", adminLogin: "管理员登入", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "你的身份是：", visitor: "访客", student: "在读学生", alumni: "校友", staff: "教职员", prog: "课程", gradYear: "毕业年份", startBtn: "下一步", registerBtn: "完成注册", adminBtn: "管理员", adminMode: "管理员模式", points: "积分", scanQr: "扫描 QR / 输入 PIN", scanBtn: "扫描 QR Code", scanning: "扫描中...", enterPin: "输入 PIN", go: "确定", invalidPin: "PIN 无效", challenge: "挑战", adminPortal: "管理员平台", totalUsers: "总用户", overseasActivation: "海外启用", enterEventCode: "输入活动代码", unlockCampus: "解锁校园", invalidEventCode: "代码无效。请尝试 1937。", myStamps: "我的积分", collectAll: "收集所有积分！", clue: "寻找代码的提示：", incorrect: "答案错误！下次再试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 积分！", password: "密码", login: "登入", tutorialTitle: "游戏玩法", tutorialLocal: "📍 校园内：前往地点，扫描 QR Code 并回答问题", tutorialOverseas: "🌏 校园外：输入玩家代码解锁地图", tutorialGoal: "🏆 目标：收集所有积分！", tutorialStart: "开始游戏！", lockedTitle: "地点已锁定", lockedMsg: "此任务尚未解锁！", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "恭喜！征服所有地点！", qrTab: "QR 码", scanError: "扫描器错误。请尝试输入 PIN。", wrongLocation: "地点错误！请扫描正确的 QR 码。", giftTitle: "领取大奖", giftAsk: "你已完成地图！想要我们寄送纪念品给你吗？", giftYes: "好，请寄给我！", giftNo: "不用了，谢谢", confirmEmail: "确认电邮", shippingAddr: "邮寄地址", giftSubmitted: "已收到请求！我们稍后会联络你。", submitClaim: "提交申请", authError: "验证错误。正在以离线模式运行。", statsTab: "数据与用户", scanFail: "QR 码错误", tryAgain: "重试", logout: "登出", questionsTab: "题目", save: "保存", claimed: "已领取", exportOverseas: "汇出海外礼品", exportLocal: "汇出本地用户", editorTab: "编辑器", usersTab: "用户",
-                qText: "问题", qOpt: "选项", setAnswer: "设为答案", cancelScan: "取消扫描", processing: "处理中...", required: "必须输入全名和电邮", myProfile: "我的档案", editRole: "修改身分", updateProfile: "更新档案", wrongAnswer: "答案错误", wait: "请等待", tcTitle: "条款及细则", readTC: "阅读条款及细则", timeTaken: "所用时间：", modeMismatch: "此帐户已在其他模式注册。将继续使用：", scannedLoginMsg: "📍 地点已扫描！请先登入。", settingsTab: "设置", changeAdminPass: "更改管理员密码", newPassword: "新密码", updatePass: "更新密码", saveUserDetails: "保存用户资料", gameStartDate: "游戏开始日期", saveDate: "保存日期", settingsSaved: "设置已保存！",
-                challengeChoice: "请选择你的行动：", scanForBonus: "扫描地点 QR 码 (1分)", answerForBase: "回答问题 (1分)", takePhoto: "拍照", notMe: "不是我！ 🙅‍♂️", camError: "无法访问相机。", retake: "重拍", share: "分享 / 保存", continue: "继续", globalActivateMsg: "输入任何地点 PIN 或扫描任何有效的 QR 码以启动游戏！", verified: "验证成功！", backToMap: "返回地图", completedText: "已完成"
+                appTitle: "理大解谜游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", qrPoints: "1 分", quizPoints: "1 分", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", welcomeBack: "欢迎回来!", logout: "登出", pts0: "未开始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解锁日期：", tryAgain: "重试", wait: "请等待", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "征服所有地点！", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", scanOrPin: "扫描 QR 或输入 PIN", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！"
             }
         };
 
         const LOCATIONS = [
-            { id: 'alumni_atrium', qrId: 'x7K9pM2v', name: {en:'Alumni Atrium', tc:'校友薈', sc:'校友荟'}, mapX: 11.4, mapY: 57.2, icon: 'fa-user-graduate', code: '4829', hint: {en:'The Podium Entrance of the Alumni Atrium. Near the Confucius Institute of Hong Kong', tc:'校友薈平台入口，近香港孔子學院。', sc:'校友荟平台入口，近香港孔子学院。'} },
-            { id: 'core_a', qrId: 'b3N8vC1x', name: {en:'Main Entrance', tc:'主校門', sc:'主校门'}, mapX: 10.1, mapY: 94.7, icon: 'fa-building', code: '7153', hint: {en:'On the left side of the Main Entrance', tc:'位於正門入口的左側。', sc:'位于正门入口的左侧。'} },
-            { id: 'uni_gallery', qrId: 'p8L4jT6n', name: {en:'University Gallery', tc:'大學展覽館', sc:'大学展览馆'}, mapX: 72.6, mapY: 89.8, icon: 'fa-images', code: '8371', hint: {en:'Outside the Gallery.', tc:'展覽館門外。', sc:'展览馆门外。'} },
-            { id: 'logo_square', qrId: 'r2Y7cX5h', name: {en:'Logo Square', tc:'陳瑞球林滿珍伉儷廣場', sc:'陈瑞球林满珍伉俪广场'}, mapX: 83.5, mapY: 63.2, icon: 'fa-vector-square', code: '5692', hint: {en:'The Podium Entrance of the Logo Square.', tc:'廣場平台入口。', sc:'广场平台入口。'} },
-            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: {en:'VA Kiosk', tc:'VA Kiosk', sc:'VA Kiosk'}, mapX: 14.2, mapY: 23.2, icon: 'fa-store', code: '3184', hint: {en:'Near the 7-11.', tc:'7-11 便利店附近。', sc:'7-11 便利店附近。'} },
-            { id: 'core_w', qrId: 'c2M5nB8k', name: {en:'Lee Shau Kee Building', tc:'李兆基樓', sc:'李兆基楼'}, mapX: 85.0, mapY: 35.0, icon: 'fa-building', code: '1892', hint: {en:'Near the entrance of Core W.', tc:'W座入口附近。', sc:'W座入口附近。'} },
-            { id: 'library', qrId: 'L9p1xZ4m', name: {en:'Pao Yue-kong Library', tc:'包玉剛圖書館', sc:'包玉刚图书馆'}, mapX: 45.0, mapY: 50.0, icon: 'fa-book', code: '4017', hint: {en:'Outside the main entrance of the library.', tc:'圖書館正門外。', sc:'图书馆正门外。'} },
-            { id: 'house_of_innovation', qrId: 'h7J3vC2n', name: {en:'House of Innovation', tc:'創新館', sc:'创新馆'}, mapX: 55.0, mapY: 80.0, icon: 'fa-lightbulb', code: '6351', hint: {en:'Near the entrance of Core P.', tc:'P座入口附近。', sc:'P座入口附近。'} },
-            { id: 'innovation_tower', qrId: 'T5b8kM1x', name: {en:'Jockey Club Innovation Tower', tc:'賽馬會創新樓', sc:'赛马会创新楼'}, mapX: 65.0, mapY: 15.0, icon: 'fa-drafting-compass', code: '9274', hint: {en:'Outside the main entrance of Core V.', tc:'V座正門外。', sc:'V座正门外。'} },
-            { id: 'brick_wall', qrId: 'w2N9cZ5b', name: {en:'Commemorative Brick Wall', tc:'紀念磚牆', sc:'纪念砖墙'}, mapX: 30.0, mapY: 85.0, icon: 'fa-th', code: '2835', hint: {en:'Along the walkway near Core A.', tc:'A座附近的走道旁。', sc:'A座附近的走道旁。'} }
+            { id: 'alumni_atrium', qrId: 'x7K9pM2v', name: { en: "Alumni Atrium", tc: "校友薈", sc: "校友荟" }, icon: 'fa-users', pos: { top: '35%', left: '30%' }, code: '4829' },
+            { id: 'core_a', qrId: 'b3N8vC1x', name: { en: "Main Entrance", tc: "主校門", sc: "主校门" }, icon: 'fa-door-open', pos: { top: '75%', left: '45%' }, code: '7153' },
+            { id: 'uni_gallery', qrId: 'p8L4jT6n', name: { en: "University Gallery", tc: "大學展覽館", sc: "大学展览馆" }, icon: 'fa-images', pos: { top: '65%', left: '55%' }, code: '8371' },
+            { id: 'logo_square', qrId: 'r2Y7cX5h', name: { en: "Logo Square", tc: "陳瑞球林滿珍伉儷廣場", sc: "陈瑞球林满珍伉俪广场" }, icon: 'fa-cube', pos: { top: '45%', left: '60%' }, code: '5692' },
+            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: { en: "VA Kiosk", tc: "VA 亭", sc: "VA 亭" }, icon: 'fa-store', pos: { top: '25%', left: '40%' }, code: '3184' },
+            { id: 'core_w', qrId: 'c2M5nB8k', name: { en: "Lee Shau Kee Bldg", tc: "李兆基樓", sc: "李兆基楼" }, icon: 'fa-building', pos: { top: '20%', left: '70%' }, code: '1892' },
+            { id: 'library', qrId: 'L9p1xZ4m', name: { en: "Library", tc: "包玉剛圖書館", sc: "包玉刚图书馆" }, icon: 'fa-book', pos: { top: '55%', left: '35%' }, code: '4017' },
+            { id: 'house_of_innovation', qrId: 'h7J3vC2n', name: { en: "House of Innovation", tc: "創新館", sc: "创新馆" }, icon: 'fa-lightbulb', pos: { top: '40%', left: '75%' }, code: '6351' },
+            { id: 'innovation_tower', qrId: 'T5b8kM1x', name: { en: "Innovation Tower", tc: "賽馬會創新樓", sc: "赛马会创新楼" }, icon: 'fa-drafting-compass', pos: { top: '15%', left: '20%' }, code: '9274' },
+            { id: 'brick_wall', qrId: 'w2N9cZ5b', name: { en: "Brick Wall", tc: "紀念磚牆", sc: "纪念砖墙" }, icon: 'fa-th-large', pos: { top: '85%', left: '30%' }, code: '2835' }
         ];
 
         const DEFAULT_QUESTIONS = {
-            'alumni_atrium': { text: {en:'In which building is the Alumni Atrium located?', tc:'校友薈坐落於哪一座建築內？', sc:'校友荟坐落于哪一座建筑内？'}, options: {en:['Li Ka Shing Tower', 'Chung Sze Yuen Building', 'Jockey Club Innovation Tower', 'William M.W. Mong Building'], tc:['李嘉誠樓', '鍾士元樓', '賽馬會創新樓', '蒙民偉樓'], sc:['李嘉诚楼', '钟士元楼', '赛马会创新楼', '蒙民伟楼']}, answer: {en:'Chung Sze Yuen Building', tc:'鍾士元樓', sc:'钟士元楼'} },
-            'core_a': { text: {en:'Walking into the Main Entrance at Block A, which contemporary design feature can be seen alongside the iconic red bricks?', tc:'走進A座主入口，除了經典的紅磚，還能看到哪種展現「生機勃勃」的當代設計？', sc:'走进A座主入口，除了经典的红砖，还能看到哪种展现「生机勃勃」的当代设计？'}, options: {en:['A giant fountain', 'A vertical green wall', 'Rainbow-coloured floor tiles', 'Solar umbrellas'], tc:['巨大的噴泉', '垂直綠化牆', '彩虹色的地磚', '太陽能雨傘'], sc:['巨大的喷泉', '垂直绿化墙', '彩虹色的地砖', '太阳能雨伞']}, answer: {en:'A vertical green wall', tc:'垂直綠化牆', sc:'垂直绿化墙'} },
-            'uni_gallery': { text: {en:'What special material, developed by PolyU’s researchers, is used to make the hollow blocks in the Gallery wall?', tc:'這面牆上的空心磚是由理大研究人員研發的哪種特殊材料製成的？', sc:'这面墙上的空心砖是由理大研究人员研发的哪种特殊材料制成的？'}, options: {en:['Recycled terracotta clay', 'Reclaimed red bricks', 'Sustainable cement', '3D-printed plastic'], tc:['回收陶土', '回收的紅磚', '可持續水泥', '3D 打印環保塑料'], sc:['回收陶土', '回收的红砖', '可持续水泥', '3D 打印环保塑料']}, answer: {en:'Sustainable cement', tc:'可持續水泥', sc:'可持续水泥'} },
-            'logo_square': { text: {en:'Which of the following activities is NOT typically held at the Logo Square?', tc:'以下哪一項活動通常不會在校徽廣場舉行？', sc:'以下哪一项活动通常不会在校徽广场举行？'}, options: {en:['Concerts', 'Student markets', 'Cultural exhibitions', 'Academic seminars'], tc:['音樂會', '學生市集', '文化展覽', '學術研討會'], sc:['音乐会', '学生市集', '文化展览', '学术研讨会']}, answer: {en:'Academic seminars', tc:'學術研討會', sc:'学术研讨会'} },
-            'va_kiosk': { text: {en:'Which of the following reopened at the VA Kiosk in 2025?', tc:'以下哪一個於2025年在VA平台重新開幕？', sc:'以下哪一个于2025年在VA平台重新开幕？'}, options: {en:['Above & Beyond', 'U Garden', 'Gourmet Shop', 'U.Green'], tc:['天外天', '花園 理', 'Gourmet Shop', 'U.Green'], sc:['天外天', '花园 理', 'Gourmet Shop', 'U.Green']}, answer: {en:'Gourmet Shop', tc:'Gourmet Shop', sc:'Gourmet Shop'} },
-            'core_w': { text: {en:'Question W', tc:'問題 W', sc:'问题 W'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} },
-            'library': { text: {en:'Question L', tc:'問題 L', sc:'问题 L'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} },
-            'house_of_innovation': { text: {en:'Question H', tc:'問題 H', sc:'问题 H'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} },
-            'innovation_tower': { text: {en:'Question I', tc:'問題 I', sc:'問題 I'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} },
-            'brick_wall': { text: {en:'Question B', tc:'問題 B', sc:'問題 B'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} },
-            'default': { text: {en:'Welcome to PolyU!', tc:'歡迎來到理大！', sc:'欢迎来到理大！'}, options: {en:['A', 'B', 'C', 'D'], tc:['A', 'B', 'C', 'D'], sc:['A', 'B', 'C', 'D']}, answer: {en:'A', tc:'A', sc:'A'} }
+            alumni_atrium: { text: { en: "In what year was PolyU officially granted university status?", tc: "理大於哪一年正式獲得大學地位？", sc: "理大于哪一年正式获得大学地位？" }, options: { en: ["1990", "1994", "1997", "2000"], tc: ["1990", "1994", "1997", "2000"], sc: ["1990", "1994", "1997", "2000"] }, answer: { en: "1994", tc: "1994", sc: "1994" } },
+            core_a: { text: { en: "What is PolyU's motto?", tc: "理大的校訓是什麼？", sc: "理大的校训是什么？" }, options: { en: ["To Learn and To Apply", "To learn and to apply, for the benefit of mankind", "Innovation for all", "Excellence in Education"], tc: ["開物成務", "開物成務 勵學利民", "創新為民", "卓越教育"], sc: ["开物成务", "开物成务 励学利民", "创新为民", "卓越教育"] }, answer: { en: "To learn and to apply, for the benefit of mankind", tc: "開物成務 勵學利民", sc: "开物成务 励学利民" } },
+            uni_gallery: { text: { en: "What color is predominantly associated with PolyU?", tc: "理大的代表顏色是什麼？", sc: "理大的代表颜色是什么？" }, options: { en: ["Blue", "Green", "Brick Red", "Yellow"], tc: ["藍色", "綠色", "磚紅色", "黃色"], sc: ["蓝色", "绿色", "砖红色", "黄色"] }, answer: { en: "Brick Red", tc: "磚紅色", sc: "砖红色" } },
+            logo_square: { text: { en: "Who designed the current PolyU logo?", tc: "理大現時的校徽由誰設計？", sc: "理大现时的校徽由谁设计？" }, options: { en: ["Alan Chan", "Kan Tai-keung", "Freeman Lau", "Tommy Li"], tc: ["陳幼堅", "靳埭強", "劉小康", "李永銓"], sc: ["陈幼坚", "靳埭强", "刘小康", "李永铨"] }, answer: { en: "Alan Chan", tc: "陳幼堅", sc: "陈幼坚" } },
+            va_kiosk: { text: { en: "Which building core is closest to the VA Kiosk?", tc: "哪一座教學樓最靠近 VA 亭？", sc: "哪一座教学楼最靠近 VA 亭？" }, options: { en: ["Core A", "Core V", "Core P", "Core W"], tc: ["A 座", "V 座", "P 座", "W 座"], sc: ["A 座", "V 座", "P 座", "W 座"] }, answer: { en: "Core V", tc: "V 座", sc: "V 座" } },
+            core_w: { text: { en: "What facility is mainly housed in the Lee Shau Kee Building?", tc: "李兆基樓主要設有什麼設施？", sc: "李兆基楼主要设有什么设施？" }, options: { en: ["Sports Hall", "Library", "Lecture Theatres", "Canteen"], tc: ["體育館", "圖書館", "演講廳", "飯堂"], sc: ["体育馆", "图书馆", "演讲厅", "饭堂"] }, answer: { en: "Lecture Theatres", tc: "演講廳", sc: "演讲厅" } },
+            library: { text: { en: "Who is the Pao Yue-kong Library named after?", tc: "包玉剛圖書館是以誰的名字命名的？", sc: "包玉刚图书馆是以谁的名字命名的？" }, options: { en: ["A famous architect", "A shipping magnate", "A former president", "A government official"], tc: ["一位著名建築師", "一位航運巨頭", "一位前任校長", "一位政府官員"], sc: ["一位著名建筑师", "一位航运巨头", "一位前任校长", "一位政府官员"] }, answer: { en: "A shipping magnate", tc: "一位航運巨頭", sc: "一位航运巨头" } },
+            house_of_innovation: { text: { en: "What does the House of Innovation showcase?", tc: "創新館主要展示什麼？", sc: "创新馆主要展示什么？" }, options: { en: ["Student Art", "Historical Artifacts", "Research Achievements", "Sports Trophies"], tc: ["學生藝術品", "歷史文物", "科研成就", "體育獎盃"], sc: ["学生艺术品", "历史文物", "科研成就", "体育奖杯"] }, answer: { en: "Research Achievements", tc: "科研成就", sc: "科研成就" } },
+            innovation_tower: { text: { en: "Who was the architect of the Jockey Club Innovation Tower?", tc: "賽馬會創新樓的建築師是誰？", sc: "赛马会创新楼的建筑师是谁？" }, options: { en: ["Norman Foster", "I.M. Pei", "Zaha Hadid", "Frank Gehry"], tc: ["諾曼·福斯特", "貝聿銘", "扎哈·哈迪德", "弗蘭克·蓋里"], sc: ["诺曼·福斯特", "贝聿铭", "扎哈·哈迪德", "弗兰克·盖里"] }, answer: { en: "Zaha Hadid", tc: "扎哈·哈迪德", sc: "扎哈·哈迪德" } },
+            brick_wall: { text: { en: "What is commemorated on the Commemorative Brick Wall?", tc: "紀念磚牆是為了紀念什麼？", sc: "纪念砖墙是为了纪念什么？" }, options: { en: ["Donors and Supporters", "First Graduates", "Former Presidents", "Nobel Laureates"], tc: ["捐贈者和支持者", "首批畢業生", "歷任校長", "諾貝爾獎得主"], sc: ["捐赠者和支持者", "首批毕业生", "历任校长", "诺贝尔奖得主"] }, answer: { en: "Donors and Supporters", tc: "捐贈者和支持者", sc: "捐赠者和支持者" } }
         };
 
-        const getQuestionData = (content, id, lang) => {
-            const dbQ = content?.questions?.[id];
-            const defQ = DEFAULT_QUESTIONS[id] || DEFAULT_QUESTIONS['default'];
-            let text = dbQ?.text?.[lang] || defQ.text[lang] || defQ.text['en'];
-            let opts = dbQ?.options?.[lang] || defQ.options[lang] || defQ.options['en'] || [];
-            let answer = dbQ?.answer?.[lang] || defQ.answer[lang] || defQ.answer['en'];
-            const safeOpts = [...opts];
-            while (safeOpts.length < 4) safeOpts.push('');
-            return { text, options: safeOpts, answer };
+        const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => {
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl stamp-pop relative overflow-hidden" onClick={e=>e.stopPropagation()}>
+                        <div className={`absolute top-0 left-0 w-full h-3 ${type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-[#A6192E]')}`}></div>
+                        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner 
+                            ${type === 'success' ? 'bg-green-100 text-green-600' : (type === 'error' ? 'bg-red-100 text-red-600' : 'bg-red-50 text-[#A6192E]')}`}>
+                            <i className={`fa ${customIcon || (type === 'success' ? 'fa-check' : (type === 'error' ? 'fa-times' : 'fa-info'))}`}></i>
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-800 mb-2">{title}</h3>
+                        <p className="text-gray-600 font-medium mb-8 leading-relaxed">{message}</p>
+                        <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95
+                            ${type === 'success' ? 'bg-green-500 hover:bg-green-600' : (type === 'error' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#A6192E] hover:bg-red-800')}`}>
+                            {TRANSLATIONS[lang].startBtn}
+                        </button>
+                    </div>
+                </div>
+            );
         };
 
-        const LanguageSwitcher = ({ lang, setLang, light = false }) => (
-            <div className={`flex w-fit rounded-lg overflow-hidden border ${light ? 'border-white/30' : 'border-gray-300'}`}>
+        const LanguageSwitcher = ({ lang, setLang }) => (
+            <div className="flex bg-gray-100 rounded-full p-1 border shadow-inner w-max">
                 {['en', 'tc', 'sc'].map(l => (
-                    <button key={l} type="button" onClick={() => setLang(l)} className={`px-2 py-1 text-xs font-bold transition-colors ${lang === l ? (light ? 'bg-white text-[#A6192E]' : 'bg-[#A6192E] text-white') : (light ? 'bg-transparent text-white hover:bg-white/20' : 'bg-white text-gray-500 hover:bg-gray-100')}`}>{l === 'en' ? 'EN' : (l === 'tc' ? '繁' : '簡')}</button>
+                    <button key={l} onClick={() => setLang(l)} className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition ${lang === l ? 'bg-white text-[#A6192E] shadow' : 'text-gray-400 hover:text-gray-600'}`}>
+                        {l === 'en' ? 'EN' : (l === 'tc' ? '繁' : '简')}
+                    </button>
                 ))}
             </div>
         );
 
-        const TC_CONTENT = {
-            en: {
-                title: "Puzzle Hunt Game",
-                sections: [
-                    { title: "Background", content: ["This activity adopts a digital campus orienteering format, enabling participants to explore designated University landmarks using their mobile devices.", "The activity is open to on-campus participants (during PolyU Homecoming Week), as well as overseas and off-campus participants. Participants who complete the required tasks and successfully accumulate points will be eligible to redeem designated prizes, subject to availability."] }
-                ], disclaimer: "* The organiser reserves the right to amend the rules."
-            },
-            tc: {
-                title: "校園解謎遊戲",
-                sections: [
-                    { title: "背景", content: ["本活動結合數碼技術，讓參加者透過流動裝置體驗校園定向之樂趣。本活動適用於理大校友週、以及供海外或校外參加者參與。", "回答指定問題並成功累積所需積分後，即可兌換相應獎品。海外校友如獲得獎品，將以郵寄方式寄送。"] }
-                ], disclaimer: "* 主辦單位保留修改細則或暫停本活動之權利。"
-            },
-            sc: {
-                title: "校园解谜游戏",
-                sections: [
-                    { title: "背景", content: ["本活动结合数码技术，让参加者透过流动装置体验校园定向之乐趣。本活动适用於理大校友周、以及供海外或校外参加者参与。", "回答指定问题并成功累积所需积分後，即可兑换相应奖品。海外校友如获得奖品，将以邮寄方式寄送。"] }
-                ], disclaimer: "* 主办单位保留修改细则或暂停本活动之权利。"
-            }
-        };
-
-        const TCModal = ({ onClose, lang }) => {
-            const content = TC_CONTENT[lang] || TC_CONTENT.en;
-            return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 relative pop-in max-h-[80vh] flex flex-col">
-                        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200"><i className="fa fa-times"></i></button>
-                        <h2 className="text-2xl font-bold mb-4 text-[#A6192E] text-center">{content.title}</h2>
-                        <div className="overflow-y-auto flex-grow text-sm text-gray-700 space-y-5 pr-4 text-left">
-                            {content.sections.map((sec, idx) => (
-                                <div key={idx}><h3 className="font-bold text-gray-900 mb-1">{sec.title}</h3>{sec.content.map((p, pIdx) => <p key={pIdx} className="mb-1 leading-relaxed">{p}</p>)}</div>
-                            ))}
-                            <p className="italic text-xs text-gray-500 mt-4 border-t pt-4">{content.disclaimer}</p>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const NotificationModal = ({ title, message, type, customIcon, onClose, lang, customAction }) => {
+        const TutorialModal = ({ onClose, lang }) => {
             const t = TRANSLATIONS[lang];
             return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 fade-in">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center border-t-4 border-[#A6192E] pop-in shadow-2xl">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 ${type==='success'?'bg-green-100 text-green-600':(type==='error'?'bg-red-100 text-red-600':'bg-blue-100 text-blue-600')}`}>
-                            <i className={`fa ${customIcon || (type==='success'?'fa-trophy':type==='error'?'fa-lock':'fa-info')}`}></i>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative">
+                        <h2 className="text-2xl font-black text-[#A6192E] mb-6">How to Play</h2>
+                        <div className="space-y-6 text-left text-sm text-gray-600 font-medium">
+                            <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-full bg-red-100 text-[#A6192E] flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-map-marker-alt"></i></div>
+                                <div><strong className="text-gray-800 block mb-1">1. Find Locations</strong> Explore the campus and find the 10 marked locations on the map.</div>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-qrcode"></i></div>
+                                <div><strong className="text-gray-800 block mb-1">2. Scan or Quiz (1 Pt Each)</strong> Scan the location's QR code (1pt) and answer the daily unlocked Quiz (1pt).</div>
+                            </div>
+                            <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-camera"></i></div>
+                                <div><strong className="text-gray-800 block mb-1">3. Take Photo</strong> Get at least 1 point at a location to unlock its special photo frame!</div>
+                            </div>
                         </div>
-                        <h3 className="text-xl font-bold mb-2">{title}</h3>
-                        <p className="text-gray-600 mb-4 whitespace-pre-wrap">{message}</p>
-                        {customAction ? customAction : <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90">{t.go || 'OK'}</button>}
+                        <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg mt-8 hover:bg-red-800 transition">Let's Go!</button>
                     </div>
                 </div>
             );
         };
 
-        const TutorialModal = ({ onClose, lang, setLang, onOpenTC }) => {
+        const GiftModal = ({ user, onClose, onSave, lang }) => {
             const t = TRANSLATIONS[lang];
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl p-6 pt-14 w-full max-w-md pop-in text-center relative">
-                        <div className="absolute top-4 left-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
-                        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200"><i className="fa fa-times"></i></button>
-                        <div className="text-center mb-4 pt-4"><h2 className="text-2xl font-bold text-gray-800">{t.tutorialTitle}</h2></div>
-                        <div className="text-left space-y-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-xl mb-6">
-                            <p>{t.tutorialLocal}</p>
-                            <p>{t.tutorialOverseas}</p>
-                            <p className="font-bold text-[#A6192E]">{t.tutorialGoal}</p>
-                        </div>
-                        <button onClick={onClose} className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-black transition">{t.tutorialStart}</button>
-                        <div className="mt-4 text-center"><button type="button" onClick={onOpenTC} className="text-sm text-gray-500 hover:text-[#A6192E] underline">{t.readTC}</button></div>
-                    </div>
-                </div>
-            );
-        };
-
-        const Register = ({ onRegister, onCheckUser, onAdminLogin, lang, setLang, onOpenTC, adminConfig }) => {
-            const [step, setStep] = useState(1);
-            const [version, setVersion] = useState('local');
-            const [formData, setFormData] = useState({ name: '', email: '', role: 'alumni', programme: '', gradYear: '' });
-            const [adminPass, setAdminPass] = useState('');
-            const [showTutorial, setShowTutorial] = useState(true);
-            const [shake, setShake] = useState(false);
+            const [address, setAddress] = useState(user.address || '');
             const [loading, setLoading] = useState(false);
-            const t = TRANSLATIONS[lang];
-            
-            const hasScan = new URLSearchParams(window.location.search).has('scan');
-            const isAdminName = formData.name.trim().toLowerCase().split('').map(c => c.charCodeAt(0).toString(16)).join('') === '707761646d696e'; 
 
-            const triggerShake = () => { setShake(true); setTimeout(() => setShake(false), 500); };
-
-            const handleFirstStep = async (e) => {
+            const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (isAdminName) {
-                    const passHex = adminPass.trim().split('').map(c => c.charCodeAt(0).toString(16)).join('');
-                    if (passHex === adminConfig.passHash) {
-                        onAdminLogin();
-                    } else { triggerShake(); alert('Invalid Admin Password'); }
-                } else {
-                    if (!formData.email) { triggerShake(); return; }
-                    setLoading(true);
-                    const exists = await onCheckUser({ name: formData.name, email: formData.email, version }, false);
-                    setLoading(false);
-                    if (!exists) {
-                        if (!formData.name) { alert(t.required); return; }
-                        setStep(2);
-                    }
-                }
-            };
-            
-            const handleFinalRegister = async (e) => {
-                e.preventDefault();
+                if (!address.trim()) return;
                 setLoading(true);
-                try { localStorage.setItem('polyu_hunt_email', formData.email.toLowerCase().trim()); } catch (err) {}
-                await onRegister({...formData, version});
+                await onSave(address);
                 setLoading(false);
             };
 
             return (
-                <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-                    {showTutorial && <TutorialModal onClose={()=>setShowTutorial(false)} lang={lang} setLang={setLang} onOpenTC={onOpenTC} />}
-                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-8 border-[#A6192E] relative">
-                        <div className="absolute top-4 right-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
-                        <div className="text-center mb-6 pt-4"><h1 className="text-3xl font-bold text-gray-800 mb-1">{t.appTitle}</h1><p className="text-sm text-gray-500">{t.subtitle}</p></div>
-                        
-                        {hasScan && (
-                            <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm font-bold mb-4 flex items-start gap-3 slide-up">
-                                <i className="fa fa-qrcode mt-0.5 text-lg"></i><span>{t.scannedLoginMsg}</span>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
+                        <div className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white text-center">
+                            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40"><i className="fa fa-times"></i></button>
+                            <i className="fa fa-gift text-5xl mb-2 drop-shadow-md"></i>
+                            <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-gray-50">
+                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold shadow-sm">
+                                {t.localOnly}
                             </div>
-                        )}
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 ml-1">{t.addressLabel}</label>
+                                <textarea 
+                                    className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" 
+                                    placeholder={lang === 'en' ? "Enter your flat, building, street, and district..." : "請輸入您的室、大廈、街道及地區..."}
+                                    value={address} 
+                                    onChange={e => setAddress(e.target.value)} 
+                                    required
+                                ></textarea>
+                            </div>
+                            <button type="submit" disabled={loading} className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-800 transition">
+                                {loading ? <i className="fa fa-spinner fa-spin"></i> : t.submitBtn}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
 
-                        {step === 1 ? (
-                            <form onSubmit={handleFirstStep} className="space-y-4 fade-in">
-                                <input placeholder={t.fullName} className="w-full p-3 border rounded-lg" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} />
-                                {isAdminName ? <input required type="password" placeholder={t.password} className="w-full p-3 border rounded-lg bg-gray-50 pop-in" value={adminPass} onChange={e=>setAdminPass(e.target.value)} /> : (
-                                    <div className="space-y-4">
-                                        <input required placeholder={t.email} type="email" className="w-full p-3 border rounded-lg" value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} />
-                                        <div className="grid grid-cols-2 gap-2">{['local', 'overseas'].map(v => <button type="button" key={v} onClick={()=>setVersion(v)} className={`p-2 border rounded font-bold ${version===v?'border-[#A6192E] bg-red-50 text-[#A6192E]':'text-gray-400'}`}>{t[v]}</button>)}</div>
-                                    </div>
-                                )}
-                                <button type="submit" disabled={loading} className={`w-full text-white py-3 rounded-xl font-bold shadow-lg ${shake ? 'shake' : ''} ${isAdminName?'bg-gray-800':'bg-[#A6192E]'} ${loading ? 'opacity-70' : ''}`}>
-                                    {loading ? (<span><i className="fa fa-spinner fa-spin mr-2"></i>{t.processing}</span>) : (isAdminName?t.login:t.startBtn)}
-                                </button>
-                                {!isAdminName && <button type="button" onClick={()=>setShowTutorial(true)} className="w-full text-xs text-gray-400 hover:text-[#A6192E] underline mt-2">{t.tutorialTitle}</button>}
+        const Register = ({ onComplete, lang, setLang }) => {
+            const t = TRANSLATIONS[lang];
+            const [step, setStep] = useState(1);
+            const [form, setForm] = useState({ name: '', email: '', role: 'alumni', version: 'local' });
+            const [loading, setLoading] = useState(false);
+            const [isAdminLogin, setIsAdminLogin] = useState(false);
+            const [adminPass, setAdminPass] = useState('');
+
+            const handleNext = (e) => {
+                e.preventDefault();
+                if (form.name.trim().toLowerCase() === 'pwadmin') {
+                    setIsAdminLogin(true);
+                } else if (form.name.trim() && form.email.trim()) {
+                    setStep(2);
+                }
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                
+                if (isAdminLogin) {
+                    const inputHash = adminPass.trim().split('').map(c => c.charCodeAt(0).toString(16)).join('');
+                    if (inputHash === '7077686f6d65636f6d696e67706f6c79755f32303236') { 
+                        form.name = 'Admin';
+                        form.email = 'admin@polyu.edu.hk';
+                        form.role = 'staff';
+                        form.version = 'local';
+                    } else {
+                        alert("Invalid Admin Password");
+                        setLoading(false);
+                        return;
+                    }
+                }
+                
+                try {
+                    const { auth, signInAnonymously } = window.FB;
+                    const cred = await signInAnonymously(auth);
+                    await onComplete({ ...form, uid: cred.user.uid });
+                } catch(e) {
+                    alert("Registration failed. Check network.");
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 relative overflow-hidden">
+                    <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-60"></div>
+                    <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-60"></div>
+                    
+                    <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 border border-gray-100">
+                        <div className="flex justify-end mb-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
+                        
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 mx-auto bg-[#A6192E] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
+                                <i className="fa fa-university text-4xl text-white transform -rotate-3"></i>
+                            </div>
+                            <h1 className="text-3xl font-black text-gray-800 leading-tight">{t.appTitle}</h1>
+                            <p className="text-[#A6192E] font-bold text-sm tracking-widest uppercase mt-1">{t.subtitle}</p>
+                        </div>
+
+                        {step === 1 && !isAdminLogin ? (
+                            <form onSubmit={handleNext} className="space-y-4 slide-up">
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" placeholder="e.g. Chan Tai Man" value={form.name} onChange={e=>setForm({...form, name: e.target.value})} /></div>
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.email}</label><input required type="email" className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" placeholder="name@example.com" value={form.email} onChange={e=>setForm({...form, email: e.target.value})} /></div>
+                                <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.startBtn}</button>
+                            </form>
+                        ) : isAdminLogin ? (
+                            <form onSubmit={handleSubmit} className="space-y-4 slide-up">
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">Admin Password</label><input required type="password" className="w-full p-4 mt-1 border-2 border-red-200 rounded-xl bg-red-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" value={adminPass} onChange={e=>setAdminPass(e.target.value)} /></div>
+                                <button type="submit" disabled={loading} className="w-full bg-black text-white py-4 rounded-xl font-bold shadow-lg transition mt-6 text-lg">{loading ? <i className="fa fa-spinner fa-spin"></i> : t.login}</button>
                             </form>
                         ) : (
-                            <form onSubmit={handleFinalRegister} className="space-y-4 fade-in">
-                                <h3 className="font-bold text-lg text-gray-700 mb-2">{t.role}</h3>
-                                <select className="w-full p-3 border rounded-lg" value={formData.role} onChange={e=>setFormData({...formData, role: e.target.value})}>{['alumni','student','staff','visitor'].map(r=><option key={r} value={r}>{t[r]}</option>)}</select>
-                                {(formData.role === 'student' || formData.role === 'alumni') && <input required placeholder={t.prog} className="w-full p-3 border rounded-lg fade-in" value={formData.programme} onChange={e=>setFormData({...formData, programme: e.target.value})} />}
-                                {(formData.role === 'alumni') && <input required placeholder={t.gradYear} type="number" className="w-full p-3 border rounded-lg fade-in" value={formData.gradYear} onChange={e=>setFormData({...formData, gradYear: e.target.value})} />}
-                                <button type="submit" disabled={loading} className={`w-full text-white py-3 rounded-xl font-bold shadow-lg bg-[#A6192E] ${loading ? 'opacity-70' : ''}`}>
-                                    {loading ? (<span><i className="fa fa-spinner fa-spin mr-2"></i>{t.processing}</span>) : t.registerBtn}
-                                </button>
-                                <button type="button" onClick={()=>setStep(1)} className="w-full text-xs text-gray-400 hover:text-[#A6192E] mt-2">Back</button>
+                            <form onSubmit={handleSubmit} className="space-y-6 slide-up">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 ml-1 block mb-2">{t.mode}</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {['local', 'overseas'].map(v => (
+                                            <button type="button" key={v} onClick={()=>setForm({...form, version: v})} className={`py-4 rounded-xl font-bold border-2 transition ${form.version === v ? 'border-[#A6192E] bg-red-50 text-[#A6192E]' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
+                                                <i className={`fa ${v === 'local' ? 'fa-map-marker-alt' : 'fa-globe'} block text-xl mb-1`}></i> {t[v]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 ml-1 block mb-2">{t.role}</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {['alumni', 'student', 'staff', 'visitor'].map(r => (
+                                            <button type="button" key={r} onClick={()=>setForm({...form, role: r})} className={`py-3 rounded-xl font-bold text-sm border-2 transition ${form.role === r ? 'border-[#A6192E] bg-[#A6192E] text-white shadow-md' : 'border-gray-100 bg-gray-50 text-gray-500'}`}>
+                                                {t[r]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button type="button" onClick={()=>setStep(1)} className="w-14 h-14 rounded-xl border-2 border-gray-200 text-gray-400 flex items-center justify-center hover:bg-gray-50 transition"><i className="fa fa-arrow-left"></i></button>
+                                    <button type="submit" disabled={loading} className="flex-grow bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition text-lg flex items-center justify-center gap-2">
+                                        {loading ? <i className="fa fa-spinner fa-spin"></i> : <>{t.registerBtn} <i className="fa fa-check-circle"></i></>}
+                                    </button>
+                                </div>
                             </form>
                         )}
                     </div>
@@ -418,646 +349,540 @@
             );
         };
 
-        const ProfileModal = ({ user, onClose, onUpdate, lang, onOpenTC }) => {
+        const QuizModule = ({ locationId, content, lang, onClear, onFail }) => {
             const t = TRANSLATIONS[lang];
-            const [role, setRole] = useState(user.role || 'alumni');
-            const [programme, setProgramme] = useState(user.programme || '');
-            const [gradYear, setGradYear] = useState(user.gradYear || '');
-            const [loading, setLoading] = useState(false);
+            const q = content?.questions?.[locationId] || DEFAULT_QUESTIONS[locationId];
+            const [selected, setSelected] = useState(null);
+            const [submitted, setSubmitted] = useState(false);
+            const [btnPos, setBtnPos] = useState({ x: 0, y: 0 });
+            
+            const handleHover = () => setBtnPos({ x: (Math.random() - 0.5) * 150, y: (Math.random() - 0.5) * 150 });
 
-            const handleSave = async () => {
-                setLoading(true);
-                await onUpdate({ role, programme, gradYear });
-                setLoading(false);
-                onClose();
+            const handleSubmit = () => {
+                if(!selected) return;
+                setSubmitted(true);
+                if(selected === q.answer[lang]) setTimeout(() => onClear(), 1500);
             };
 
+            const isWrong = submitted && selected !== q.answer[lang];
+
             return (
-                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 p-4 fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative pop-in">
-                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i className="fa fa-times text-xl"></i></button>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t.myProfile}</h2>
-                        <div className="space-y-4 mb-6">
-                            <div className="bg-gray-50 p-3 rounded-lg border"><span className="text-xs text-gray-500 font-bold uppercase">{t.fullName}</span><div className="font-medium">{user.name}</div></div>
-                            <div className="bg-gray-50 p-3 rounded-lg border"><span className="text-xs text-gray-500 font-bold uppercase">{t.email}</span><div className="font-medium">{user.email}</div></div>
-                            <div>
-                                <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">{t.editRole}</label>
-                                <select className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none" value={role} onChange={(e) => setRole(e.target.value)}>{['alumni','student','staff','visitor'].map(r=><option key={r} value={r}>{t[r]}</option>)}</select>
-                            </div>
-                            {(role === 'student' || role === 'alumni') && <div><label className="text-xs text-gray-500 font-bold uppercase mb-1 block">{t.prog}</label><input className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none" value={programme} onChange={(e) => setProgramme(e.target.value)} /></div>}
-                            {role === 'alumni' && <div><label className="text-xs text-gray-500 font-bold uppercase mb-1 block">{t.gradYear}</label><input type="number" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#A6192E] outline-none" value={gradYear} onChange={(e) => setGradYear(e.target.value)} /></div>}
+                <div className="flex flex-col h-full fade-in pb-4">
+                    <div className="flex-grow overflow-y-auto px-6 py-4">
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-10"></div>
+                            <span className="text-xs font-black uppercase tracking-wider text-blue-500 mb-2 block">{t.challenge}</span>
+                            <h3 className="text-lg font-bold text-gray-800 leading-snug">{q.text[lang]}</h3>
                         </div>
-                        <button onClick={handleSave} disabled={loading} className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition">{loading ? t.processing : t.updateProfile}</button>
-                        <div className="mt-4 text-center"><button onClick={onOpenTC} className="text-sm text-gray-500 hover:text-[#A6192E] underline">{t.readTC}</button></div>
+                        <div className="space-y-3">
+                            {q.options[lang].map((opt, i) => {
+                                const isSelected = selected === opt;
+                                const isCorrect = opt === q.answer[lang];
+                                let btnClass = "w-full text-left p-4 rounded-xl font-bold transition-all border-2 text-sm ";
+                                
+                                if (submitted) {
+                                    if (isCorrect) btnClass += "border-green-500 bg-green-50 text-green-700 shadow-sm";
+                                    else if (isSelected) btnClass += "border-red-500 bg-red-50 text-red-700 opacity-50";
+                                    else btnClass += "border-gray-100 bg-gray-50 text-gray-400 opacity-50";
+                                } else {
+                                    btnClass += isSelected ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md" : "border-gray-200 bg-white text-gray-600 hover:border-blue-300";
+                                }
+
+                                return (
+                                    <button key={i} disabled={submitted} onClick={() => setSelected(opt)} className={btnClass}>
+                                        <div className="flex justify-between items-center">
+                                            <span>{opt}</span>
+                                            {submitted && isCorrect && <i className="fa fa-check text-green-500 text-lg"></i>}
+                                            {submitted && isSelected && !isCorrect && <i className="fa fa-times text-red-500 text-lg"></i>}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    
+                    <div className="px-6 pt-4 border-t border-gray-100 bg-white relative h-24 flex items-center justify-center">
+                        {isWrong ? (
+                            <button onMouseEnter={handleHover} onTouchStart={handleHover} onClick={handleHover} 
+                                style={{ transform: `translate(${btnPos.x}px, ${btnPos.y}px)`, transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
+                                className="px-8 py-4 bg-gray-800 text-white rounded-full font-bold shadow-xl flex items-center gap-2 absolute z-20">
+                                {t.incorrect}
+                            </button>
+                        ) : (
+                            <button disabled={!selected || submitted} onClick={handleSubmit} 
+                                className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all text-lg
+                                ${!selected ? 'bg-gray-200 text-gray-400' : (submitted ? 'bg-green-500 text-white scale-95' : 'bg-[#A6192E] text-white hover:bg-red-800')}`}>
+                                {submitted ? <i className="fa fa-spinner fa-spin"></i> : t.go}
+                            </button>
+                        )}
+                        {isWrong && (
+                            <button onClick={onFail} className="absolute bottom-[-10px] text-xs text-gray-400 underline p-2">{t.tryAgain}</button>
+                        )}
                     </div>
                 </div>
             );
         };
 
-        const CameraBooth = ({ location, lang, onClose }) => {
+        const PhotoBooth = ({ locationId, lang, onBack }) => {
+            const t = TRANSLATIONS[lang];
             const videoRef = useRef(null);
             const canvasRef = useRef(null);
-            const [capturedImg, setCapturedImg] = useState(null);
-            const [error, setError] = useState(false);
-            const [frameLoaded, setFrameLoaded] = useState(false);
-            const frameImgRef = useRef(null);
-            const t = TRANSLATIONS[lang];
+            const [photoData, setPhotoData] = useState(null);
+            const [stream, setStream] = useState(null);
 
             useEffect(() => {
-                const frame = new Image();
-                frame.crossOrigin = "Anonymous";
-                frame.src = `./image/frame_${location.id}.png`;
-                frame.onload = () => { frameImgRef.current = frame; setFrameLoaded(true); };
-                frame.onerror = () => { console.warn(`Frame ./image/frame_${location.id}.png not found.`); setFrameLoaded(true); };
-
-                let stream = null;
-                const startCamera = async () => {
+                const initCamera = async () => {
                     try {
-                        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
-                        if (videoRef.current) videoRef.current.srcObject = stream;
-                    } catch (err) { setError(true); }
+                        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                        if (videoRef.current) { videoRef.current.srcObject = s; setStream(s); }
+                    } catch (e) { alert("Camera access denied or unavailable."); }
                 };
-                startCamera();
-                return () => { if (stream) stream.getTracks().forEach(track => track.stop()); };
-            }, [location.id]);
+                initCamera();
+                return () => { if(stream) stream.getTracks().forEach(t => t.stop()); };
+            }, []);
 
             const capture = () => {
-                if (!videoRef.current) return;
-                const video = videoRef.current;
-                const canvas = canvasRef.current;
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                if (!videoRef.current || !canvasRef.current) return;
+                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
+                c.width = v.videoWidth; c.height = v.videoHeight;
+                ctx.drawImage(v, 0, 0, c.width, c.height);
                 
-                if (frameImgRef.current) {
-                    ctx.drawImage(frameImgRef.current, 0, 0, canvas.width, canvas.height);
-                } else {
-                    ctx.fillStyle = "rgba(166, 25, 46, 0.9)";
-                    const barHeight = Math.max(100, canvas.height * 0.15);
-                    ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
-                    ctx.fillStyle = "white";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.font = `bold ${Math.floor(barHeight * 0.4)}px Inter`;
-                    ctx.fillText("PolyU Hunt", canvas.width / 2, canvas.height - barHeight * 0.65);
-                    ctx.font = `${Math.floor(barHeight * 0.25)}px Inter`;
-                    ctx.fillText(location.name[lang], canvas.width / 2, canvas.height - barHeight * 0.25);
-                }
-                setCapturedImg(canvas.toDataURL('image/jpeg', 0.9));
+                const frame = new Image();
+                frame.crossOrigin = "anonymous";
+                frame.src = `frame_${locationId}.png`;
+                frame.onload = () => {
+                    ctx.drawImage(frame, 0, 0, c.width, c.height);
+                    setPhotoData(c.toDataURL('image/png'));
+                };
+                frame.onerror = () => { setPhotoData(c.toDataURL('image/png')); };
             };
 
-            const downloadImage = () => {
-                const link = document.createElement('a');
-                link.href = capturedImg;
-                link.download = `PolyUHunt_${location.id}.jpg`;
-                link.click();
+            const download = () => {
+                const link = document.createElement('a'); link.download = `polyu_hunt_${locationId}.png`;
+                link.href = photoData; link.click();
             };
-
-            const shareOrSave = async () => {
-                try {
-                    const res = await fetch(capturedImg);
-                    const blob = await res.blob();
-                    const file = new File([blob], 'polyu_hunt.jpg', { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({ title: 'PolyU Hunt', text: `I conquered ${location.name[lang]} at PolyU Homecoming Week!`, files: [file] });
-                    } else { downloadImage(); }
-                } catch (e) { if (e.name !== 'AbortError') downloadImage(); }
-            };
-
-            if (error) {
-                return (
-                    <div className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 text-center fade-in text-white">
-                        <i className="fa fa-camera-slash text-5xl text-gray-500 mb-4"></i>
-                        <p className="mb-6">{t.camError}</p>
-                        <button onClick={onClose} className="bg-[#A6192E] text-white px-8 py-3 rounded-xl font-bold shadow-lg">{t.continue} <i className="fa fa-arrow-right ml-2"></i></button>
-                    </div>
-                );
-            }
 
             return (
-                <div className="fixed inset-0 z-[100] bg-black flex flex-col fade-in">
-                    {!capturedImg ? (
-                        <>
-                            <div className="relative flex-grow overflow-hidden flex items-center justify-center bg-gray-900">
-                                <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover"></video>
-                                {frameImgRef.current && <img src={frameImgRef.current.src} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" alt="Frame Overlay" />}
+                <div className="flex flex-col h-full bg-black fade-in text-white relative">
+                    <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-arrow-left"></i></button>
+                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
+                        {!photoData ? (
+                            <>
+                                <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover"></video>
+                                <img src={`frame_${locationId}.png`} className="absolute w-full h-full object-cover pointer-events-none opacity-80 border-4 border-dashed border-white/20" alt="" onError={(e)=>e.target.style.display='none'}/>
+                                <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
+                                    <button onClick={capture} className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition">
+                                        <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"></div>
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center bg-gray-900">
+                                <img src={photoData} className="w-full h-auto max-h-[75vh] object-contain shadow-2xl mb-6" alt="Captured" />
+                                <div className="flex gap-4 px-6 w-full max-w-sm">
+                                    <button onClick={() => setPhotoData(null)} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
+                                    <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
+                                </div>
                             </div>
-                            <div className="bg-black p-6 flex justify-between items-center px-8 z-20">
-                                <button onClick={onClose} className="text-white opacity-70 px-4 py-2 font-bold"><i className="fa fa-times text-xl"></i></button>
-                                <button onClick={capture} disabled={!frameLoaded} className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center hover:bg-gray-200 transition transform hover:scale-105 disabled:opacity-50"><i className="fa fa-camera text-2xl text-black"></i></button>
-                                <div className="w-16"></div> 
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="flex-grow flex items-center justify-center bg-gray-900 p-4"><img src={capturedImg} className="max-h-full max-w-full object-contain rounded shadow-2xl" alt="Captured" /></div>
-                            <div className="bg-white p-6 grid grid-cols-2 gap-4 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.2)] slide-up z-20">
-                                <button onClick={() => setCapturedImg(null)} className="py-3 font-bold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
-                                <button onClick={shareOrSave} className="py-3 font-bold text-white bg-blue-500 rounded-xl shadow-lg hover:bg-blue-600 transition"><i className="fa fa-share-alt mr-2"></i> {t.share}</button>
-                                <button onClick={onClose} className="col-span-2 py-4 font-bold text-white bg-[#A6192E] rounded-xl shadow-lg mt-2 text-lg hover:bg-red-800 transition">{t.continue} <i className="fa fa-arrow-right ml-2"></i></button>
-                            </div>
-                        </>
-                    )}
-                    <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+                        )}
+                    </div>
+                    <canvas ref={canvasRef} className="hidden"></canvas>
                 </div>
             );
         };
 
-        const MissionOrchestrator = ({ location, globalUnlocked, hasQuizPoint, hasQRPoint, onActivate, onProgress, onClose, content, lang }) => {
+        const Scanner = ({ location, lang, onScanSuccess }) => {
             const t = TRANSLATIONS[lang];
-            const [step, setStep] = useState(globalUnlocked ? 'choice' : 'activate');
-            
-            const [scanStatus, setScanStatus] = useState('idle');
-            const [inputCode, setInputCode] = useState('');
-            const [error, setError] = useState('');
-            const scannerRef = useRef(null);
-            
-            const [qUserAnswer, setQUserAnswer] = useState(null);
-            const [wrongOpts, setWrongOpts] = useState({});
-            const qData = getQuestionData(content, location.id, lang);
+            const videoRef = useRef(null);
+            const canvasRef = useRef(null);
+            const [stream, setStream] = useState(null);
+            const [pinInput, setPinInput] = useState('');
+            const scanLoop = useRef(null);
 
             useEffect(() => {
-                return () => {
-                    if (scannerRef.current) {
-                        try {
-                            if (scannerRef.current.isScanning) scannerRef.current.stop().then(() => scannerRef.current.clear()).catch(e=>console.error(e));
-                            else scannerRef.current.clear();
-                        } catch (e) {}
-                    }
-                };
-            }, []);
-
-            const stopScanner = () => { if (scannerRef.current) scannerRef.current.stop().then(() => scannerRef.current.clear()).catch(e=>console.error(e)); };
-
-            const startScanner = (mode) => {
-                if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') { alert(t.scanError); return; }
-                setScanStatus('scanning');
-                setTimeout(() => {
-                    const scanner = new Html5Qrcode("reader");
-                    scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decoded) => {
-                        let isValid = false;
-                        if (mode === 'activate') {
-                            isValid = LOCATIONS.some(l => decoded.includes(`scan=${l.qrId}`) || decoded.includes(`scan=${l.id}`) || decoded === `POLYU_HUNT:${l.id}`);
-                        } else {
-                            isValid = decoded.includes(`scan=${location.qrId}`) || decoded.includes(`scan=${location.id}`) || decoded === `POLYU_HUNT:${location.id}`;
-                        }
+                const initScanner = async () => {
+                    try {
+                        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                        if(videoRef.current) { videoRef.current.srcObject = s; setStream(s); }
                         
-                        if (isValid) {
-                            scanner.stop().then(() => scanner.clear());
-                            setScanStatus('success');
-                            setTimeout(() => {
-                                if (mode === 'activate') {
-                                    onActivate();
-                                    setStep('choice');
-                                } else {
-                                    onProgress(location.id, 'qr');
-                                    setStep('choice');
-                                }
-                            }, 1000);
-                        } else {
-                            scanner.stop().then(() => scanner.clear());
-                            setScanStatus('error');
-                            alert(mode === 'activate' ? t.invalidPin : t.wrongLocation);
-                        }
-                    }).catch(err => { console.error(err); setScanStatus('idle'); });
-                    scannerRef.current = scanner;
-                }, 100);
+                        const tick = () => {
+                            if(videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+                                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
+                                c.width = v.videoWidth; c.height = v.videoHeight;
+                                ctx.drawImage(v, 0, 0, c.width, c.height);
+                                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                                const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
+                                if (code && code.data.includes(location.qrId)) { onScanSuccess(); return; }
+                            }
+                            scanLoop.current = requestAnimationFrame(tick);
+                        };
+                        scanLoop.current = requestAnimationFrame(tick);
+                    } catch(e) { console.warn("Camera init failed", e); }
+                };
+                initScanner();
+                return () => { if(stream) stream.getTracks().forEach(t=>t.stop()); cancelAnimationFrame(scanLoop.current); };
+            }, [location]);
+
+            const handlePinSubmit = (e) => {
+                e.preventDefault();
+                if(pinInput === location.code) onScanSuccess();
+                else { alert(t.invalidPin); setPinInput(''); }
             };
 
-            if (step === 'activate') {
-                return (
-                    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-black/50 p-4 fade-in">
-                        <div className="bg-white w-full md:max-w-md rounded-2xl p-6 shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
-                            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-bold">Game Locked</h2><button onClick={onClose}><i className="fa fa-times"></i></button></div>
-                            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg mb-6 text-left">
-                                <div className="flex items-start"><i className="fa fa-info-circle text-blue-500 mt-1 mr-3"></i><p className="text-sm text-blue-800 font-medium">{t.globalActivateMsg}</p></div>
+            return (
+                <div className="flex flex-col h-full bg-gray-900 text-white relative fade-in">
+                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
+                        <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover opacity-60"></video>
+                        <canvas ref={canvasRef} className="hidden"></canvas>
+                        
+                        {/* Scanner HUD */}
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6">
+                            <div className="w-64 h-64 border-2 border-white/50 rounded-3xl relative overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-400 rounded-tl-xl"></div>
+                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-yellow-400 rounded-tr-xl"></div>
+                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-yellow-400 rounded-bl-xl"></div>
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-yellow-400 rounded-br-xl"></div>
+                                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-red-500/50 shadow-[0_0_10px_red] transform -translate-y-1/2 animate-[scan_2s_ease-in-out_infinite]"></div>
                             </div>
-                            {scanStatus === 'idle' && <button onClick={()=>startScanner('activate')} className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold mb-4"><i className="fa fa-qrcode"></i> {t.scanBtn}</button>}
-                            {scanStatus === 'scanning' && <div className="mb-4 rounded-xl overflow-hidden bg-black relative" style={{minHeight:'250px'}}><div id="reader"></div><button onClick={()=>{ stopScanner(); onClose(); }} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 text-red-600 px-6 py-2 rounded-full font-bold shadow-lg border border-red-200 hover:bg-white transition-colors z-20">{t.cancelScan}</button></div>}
-                            {scanStatus === 'error' && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-xl text-center"><p className="font-bold mb-2">{t.scanFail}</p><button onClick={()=>startScanner('activate')} className="underline font-bold">{t.tryAgain}</button></div>}
-                            {scanStatus === 'success' && <div className="w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-3 bg-green-600 text-white mb-4"><i className="fa fa-check-circle text-xl"></i><span>{t.verified}</span></div>}
-
-                            <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 w-[95%] mx-auto">
-                                <h3 className="font-bold text-gray-700 mb-2 text-sm">{t.enterPin}</h3>
-                                <div className="flex gap-2">
-                                    <input type="text" className="input-field py-2 text-center tracking-widest font-bold uppercase" placeholder="PIN" maxLength="4" value={inputCode} onChange={e => { setInputCode(e.target.value); setError(''); }} />
-                                    <button onClick={() => {
-                                        const isValidPin = LOCATIONS.some(l => l.code === inputCode.trim());
-                                        if (isValidPin) { onActivate(); setStep('choice'); } else { setError(t.invalidPin); }
-                                    }} className="bg-gray-100 text-gray-800 border border-gray-300 px-4 rounded-lg font-bold hover:bg-gray-200 transition">{t.go}</button>
-                                </div>
-                                {error && <div className="text-red-500 text-xs mt-2 font-bold"><i className="fa fa-times-circle"></i> {error}</div>}
-                            </div>
+                            <p className="mt-8 font-bold text-lg tracking-widest uppercase text-white drop-shadow-md">{t.scanning}</p>
+                            <p className="mt-2 text-sm text-gray-300">Scan QR Code for {location.name[lang]}</p>
                         </div>
                     </div>
-                );
-            }
+                    
+                    <div className="bg-white p-6 rounded-t-3xl relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
+                        <form onSubmit={handlePinSubmit} className="flex gap-3 max-w-sm mx-auto">
+                            <input type="text" placeholder={t.manualPin} className="flex-grow p-4 bg-gray-100 rounded-xl outline-none font-mono text-center text-gray-800 text-lg tracking-widest font-bold focus:border-[#A6192E] border-2 border-transparent transition" value={pinInput} onChange={e=>setPinInput(e.target.value)} maxLength="4" />
+                            <button type="submit" className="px-6 bg-gray-800 text-white rounded-xl font-bold shadow hover:bg-black transition"><i className="fa fa-unlock"></i></button>
+                        </form>
+                    </div>
+                    <style>{`@keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }`}</style>
+                </div>
+            );
+        };
 
-            if (step === 'choice') {
-                const canTakePic = hasQuizPoint || hasQRPoint;
-                return (
-                    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-black/50 p-4 fade-in">
-                        <div className="bg-white w-full md:max-w-md rounded-2xl p-6 shadow-2xl slide-up">
-                            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-[#A6192E]">{location.name[lang]}</h2><button onClick={onClose} className="text-gray-400 hover:text-gray-600"><i className="fa fa-times text-xl"></i></button></div>
-                            <h3 className="text-lg font-bold mb-4 text-center">{t.challengeChoice}</h3>
-                            <div className="space-y-4">
-                                <button onClick={() => { if(!hasQRPoint){ setScanStatus('idle'); setStep('scan'); } }} className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-between transition ${hasQRPoint?'bg-green-100 text-green-700':'bg-[#A6192E] text-white hover:bg-red-800 transform hover:scale-[1.02]'}`}>
-                                    <span className="flex items-center gap-3"><i className="fa fa-qrcode text-2xl"></i> {hasQRPoint ? t.completedText : t.scanForBonus}</span>
-                                    {hasQRPoint ? <i className="fa fa-check-circle text-xl"></i> : <i className="fa fa-chevron-right opacity-50"></i>}
-                                </button>
-                                <button onClick={() => { if(!hasQuizPoint) setStep('quiz'); }} className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-between transition ${hasQuizPoint?'bg-green-100 text-green-700':'bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-[1.02]'}`}>
-                                    <span className="flex items-center gap-3"><i className="fa fa-question-circle text-2xl"></i> {hasQuizPoint ? t.completedText : t.answerForBase}</span>
-                                    {hasQuizPoint ? <i className="fa fa-check-circle text-xl"></i> : <i className="fa fa-chevron-right opacity-50"></i>}
-                                </button>
-                                <button onClick={() => { if(canTakePic) setStep('camera'); }} disabled={!canTakePic} className={`w-full p-4 rounded-xl font-bold shadow-lg flex items-center justify-between transition ${canTakePic?'bg-purple-600 text-white hover:bg-purple-700 transform hover:scale-[1.02]':'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                                    <span className="flex items-center gap-3"><i className="fa fa-camera text-2xl"></i> {t.takePhoto}</span>
-                                    {canTakePic ? <i className="fa fa-chevron-right opacity-50"></i> : <i className="fa fa-lock text-xl"></i>}
-                                </button>
+        const MissionOrchestrator = ({ location, user, content, adminConfig, lang, onSavePoints, onClose, showNotify }) => {
+            const t = TRANSLATIONS[lang];
+            const [view, setView] = useState(null); // null = menu, 'qr' = scanner, 'quiz' = quiz module, 'photo' = camera
+            
+            // Calculate progressive unlock status
+            const orderIndex = (adminConfig.locationOrder || LOCATIONS.map(l=>l.id)).indexOf(location.id);
+            const startD = parseLocalDate(adminConfig.startDate || '2026-07-28');
+            const unlockD = new Date(startD);
+            unlockD.setDate(unlockD.getDate() + (orderIndex >= 0 ? orderIndex : 0));
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const isQuizUnlocked = today >= unlockD;
+            
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const unlockStr = `${unlockD.getDate()} ${months[unlockD.getMonth()]}`;
+
+            // Check completion status
+            const hasQrPt = (user.bonusLocations || []).includes(location.id);
+            const hasQuizPt = (user.clearedLocations || []).includes(location.id);
+            const totalPts = (hasQrPt ? 1 : 0) + (hasQuizPt ? 1 : 0);
+
+            const handlePointGained = async (type) => {
+                await onSavePoints(location.id, type);
+                showNotify(t.stampCollectedTitle, t.stampCollectedMsg, "success", "fa-star");
+                setView(null);
+            };
+
+            return (
+                <div className="fixed inset-0 z-40 bg-black/50 flex flex-col justify-end backdrop-blur-sm fade-in">
+                    <div className="absolute inset-0" onClick={onClose}></div>
+                    <div className={`bg-white w-full rounded-t-3xl overflow-hidden shadow-2xl relative z-50 flex flex-col transition-all duration-300 ${view ? 'h-[90vh]' : 'h-auto max-h-[80vh]'}`}>
+                        
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
+                            <div>
+                                <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+                                    <i className={`fa ${location.icon} text-[#A6192E]`}></i> {location.name[lang]}
+                                </h2>
+                                <p className="text-xs font-bold text-gray-500 mt-0.5">{totalPts}/2 {t.stamps}</p>
                             </div>
-                            <button onClick={onClose} className="w-full bg-gray-100 text-gray-600 p-4 rounded-xl font-bold shadow hover:bg-gray-200 mt-6 transition">{t.backToMap}</button>
+                            <button onClick={() => view ? setView(null) : onClose()} className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300 transition shrink-0">
+                                <i className={`fa ${view ? 'fa-arrow-down' : 'fa-times'}`}></i>
+                            </button>
                         </div>
-                    </div>
-                );
-            }
 
-            if (step === 'scan') {
-                return (
-                    <div className="fixed inset-0 z-[70] flex flex-col bg-black fade-in h-screen">
-                        <div className="p-4 flex items-center justify-between bg-black text-white z-10"><button onClick={() => { stopScanner(); setStep('choice'); }}><i className="fa fa-arrow-left"></i> Back</button><span className="font-bold">{location.name[lang]}</span><div className="w-4"></div></div>
-                        <div className="flex-grow flex flex-col justify-center items-center relative overflow-hidden">
-                            {scanStatus === 'idle' && <button onClick={()=>startScanner('bonus')} className="bg-white text-black py-4 px-8 rounded-xl font-bold shadow-2xl z-20"><i className="fa fa-qrcode"></i> Start Scanner</button>}
-                            {scanStatus === 'scanning' && <div id="reader" className="w-full h-full absolute inset-0"></div>}
-                            {scanStatus === 'error' && <div className="p-6 bg-red-100 text-red-700 rounded-xl text-center z-20 max-w-xs"><p className="font-bold mb-4">{t.wrongLocation}</p><button onClick={()=>startScanner('bonus')} className="w-full bg-red-600 text-white py-3 rounded-lg font-bold shadow">{t.tryAgain}</button></div>}
-                            {scanStatus === 'success' && <div className="p-8 rounded-xl font-bold shadow-2xl flex flex-col items-center justify-center gap-4 bg-green-500 text-white z-20 transform scale-110 pop-in"><i className="fa fa-check-circle text-6xl"></i><span className="text-2xl">+1 Point!</span></div>}
-                        </div>
-                    </div>
-                );
-            }
-
-            if (step === 'quiz') {
-                const handleEvade = (o) => {
-                    const isCorrect = String(o).trim() === String(qData.answer).trim();
-                    if (!isCorrect && qUserAnswer === null) {
-                        setWrongOpts(prev => {
-                            const current = prev[o] || { x: 0, y: 0 };
-                            let newX = current.x + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 60);
-                            let newY = current.y + (Math.random() > 0.5 ? 1 : -1) * (40 + Math.random() * 60);
-                            if (newX > 100) newX = 100; if (newX < -100) newX = -100;
-                            if (newY > 100) newY = 100; if (newY < -100) newY = -100;
-                            return { ...prev, [o]: { x: newX, y: newY } };
-                        });
-                    }
-                };
-                const handleAnswer = (o) => {
-                    if (qUserAnswer !== null) return;
-                    const isCorrect = String(o).trim() === String(qData.answer).trim();
-                    if (isCorrect) {
-                        setQUserAnswer(o);
-                        setTimeout(() => { onProgress(location.id, 'quiz'); setStep('choice'); }, 800); 
-                    } else { handleEvade(o); }
-                };
-                return (
-                    <div className="fixed inset-0 z-[70] bg-white h-screen flex flex-col">
-                        <div className="p-4 border-b flex items-center justify-between"><button onClick={() => setStep('choice')}><i className="fa fa-arrow-left text-gray-500"></i></button><span className="font-bold">{t.challenge}</span><div className="w-4"></div></div>
-                        <div className="p-6 flex-grow flex flex-col justify-center overflow-x-hidden">
-                            <h3 className="text-xl font-bold mb-8 text-center">{qData.text}</h3>
-                            <div className="space-y-4">
-                                {qData.options.map(o => {
-                                    const isCorrect = String(o).trim() === String(qData.answer).trim();
-                                    const wInfo = wrongOpts[o];
-                                    const isWrongClicked = !!wInfo;
-                                    const transformStyle = wInfo ? `translate(${wInfo.x}px, ${wInfo.y}px)` : 'none';
-                                    const btnClass = qUserAnswer === o && isCorrect ? 'bg-green-100 border-green-500 text-green-700 scale-105 shadow-lg' : (isWrongClicked ? 'bg-red-50 border-red-300 text-red-500 shadow-md' : 'bg-white border-gray-200 hover:border-[#A6192E]');
-                                    return (
-                                        <div key={o} style={{ transform: transformStyle, transition: 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }} className="relative z-10">
-                                            <button onMouseEnter={() => handleEvade(o)} onTouchStart={() => handleEvade(o)} onClick={() => handleAnswer(o)} disabled={qUserAnswer !== null} className={`w-full p-4 border-2 rounded-xl text-left font-medium transition-all ${btnClass}`}>
-                                                <div className="flex items-center justify-between"><span>{isWrongClicked ? t.notMe : o}</span>{qUserAnswer === o && isCorrect && <i className="fa fa-check-circle text-green-600 text-xl"></i>}</div>
-                                            </button>
+                        {/* Content Area */}
+                        <div className="flex-grow overflow-hidden relative">
+                            {!view ? (
+                                <div className="p-6 space-y-4 slide-up overflow-y-auto max-h-full">
+                                    
+                                    {/* Action 1: QR/PIN (1 Pt) */}
+                                    <button onClick={() => setView('qr')} disabled={hasQrPt} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left
+                                        ${hasQrPt ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-yellow-400 hover:shadow-md'}`}>
+                                        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0
+                                            ${hasQrPt ? 'bg-green-500 text-white' : 'bg-yellow-100 text-yellow-600'}`}>
+                                            <i className={`fa ${hasQrPt ? 'fa-check' : 'fa-qrcode'}`}></i>
                                         </div>
-                                    )
+                                        <div className="flex-grow">
+                                            <h3 className={`font-bold text-lg ${hasQrPt ? 'text-green-700' : 'text-gray-800'}`}>{t.scanQr}</h3>
+                                            <p className="text-sm font-bold text-gray-400 mt-1">{hasQrPt ? 'Completed' : `+ ${t.qrPoints}`}</p>
+                                        </div>
+                                    </button>
+
+                                    {/* Action 2: Quiz (1 Pt) */}
+                                    <button onClick={() => setView('quiz')} disabled={hasQuizPt || !isQuizUnlocked} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left relative overflow-hidden
+                                        ${hasQuizPt ? 'border-green-500 bg-green-50' : (!isQuizUnlocked ? 'border-gray-100 bg-gray-50 opacity-80' : 'border-gray-200 bg-white hover:border-blue-400 hover:shadow-md')}`}>
+                                        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0 z-10
+                                            ${hasQuizPt ? 'bg-green-500 text-white' : (!isQuizUnlocked ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600')}`}>
+                                            <i className={`fa ${hasQuizPt ? 'fa-check' : (!isQuizUnlocked ? 'fa-lock' : 'fa-question')}`}></i>
+                                        </div>
+                                        <div className="flex-grow z-10">
+                                            <h3 className={`font-bold text-lg ${hasQuizPt ? 'text-green-700' : (!isQuizUnlocked ? 'text-gray-400' : 'text-gray-800')}`}>{t.answerQ}</h3>
+                                            <p className={`text-sm font-bold mt-1 ${!isQuizUnlocked && !hasQuizPt ? 'text-red-500' : 'text-gray-400'}`}>
+                                                {hasQuizPt ? 'Completed' : (!isQuizUnlocked ? `${t.unlocksOn} ${unlockStr}` : `+ ${t.quizPoints}`)}
+                                            </p>
+                                        </div>
+                                        {/* Striped locked background */}
+                                        {!isQuizUnlocked && !hasQuizPt && <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 20px)' }}></div>}
+                                    </button>
+
+                                    {/* Action 3: Photo Booth */}
+                                    <div className="pt-4 border-t border-gray-100 mt-2">
+                                        <button onClick={() => setView('photo')} disabled={totalPts === 0} className={`w-full flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition
+                                            ${totalPts > 0 ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
+                                            <i className={`fa fa-camera text-4xl mb-3 ${totalPts > 0 ? 'text-purple-500' : 'text-gray-300'}`}></i>
+                                            <span className={`font-black text-lg ${totalPts > 0 ? 'text-purple-800' : 'text-gray-400'}`}>{t.takePhoto}</span>
+                                            {totalPts === 0 && <span className="text-xs font-bold text-gray-400 mt-2 text-center max-w-[200px]">{t.lockedPhoto}</span>}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : view === 'qr' ? (
+                                <Scanner location={location} lang={lang} onScanSuccess={()=>handlePointGained('qr')} />
+                            ) : view === 'quiz' ? (
+                                <QuizModule locationId={location.id} content={content} lang={lang} onClear={()=>handlePointGained('quiz')} onFail={()=>setView(null)} />
+                            ) : (
+                                <PhotoBooth locationId={location.id} lang={lang} onBack={()=>setView(null)} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const StampBook = ({ locations, clearedLocations, bonusLocations, onClose, lang }) => {
+            const t = TRANSLATIONS[lang];
+            const total = clearedLocations.length + bonusLocations.length;
+            
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
+                    <div className="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative slide-up" onClick={e=>e.stopPropagation()}>
+                        <div className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex justify-between items-center shrink-0">
+                            <div>
+                                <h2 className="text-2xl font-black tracking-wide">{t.stamps}</h2>
+                                <p className="text-gray-300 font-bold text-sm mt-1">{total} / 20 Earned</p>
+                            </div>
+                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40"><i className="fa fa-times"></i></button>
+                        </div>
+                        <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
+                            <div className="grid grid-cols-2 gap-3">
+                                {locations.map(loc => {
+                                    const pts = (clearedLocations.includes(loc.id)?1:0) + (bonusLocations.includes(loc.id)?1:0);
+                                    return (
+                                        <div key={loc.id} className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-colors ${pts===2?'border-green-500 bg-green-50 shadow-sm':(pts===1?'border-yellow-400 bg-yellow-50':'border-gray-200 bg-white')}`}>
+                                            <div className={`stamp-circle mb-3 ${pts>0?'stamp-pop':''} stamp-earned-${pts}`}><i className={`fa ${loc.icon}`}></i></div>
+                                            <span className="text-[11px] font-bold text-center leading-tight h-8 flex items-center text-gray-700">{loc.name[lang]}</span>
+                                            <div className="mt-2 flex gap-1">
+                                                <div className={`w-3 h-3 rounded-full ${bonusLocations.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
+                                                <div className={`w-3 h-3 rounded-full ${clearedLocations.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
+                                            </div>
+                                        </div>
+                                    );
                                 })}
                             </div>
                         </div>
                     </div>
-                );
-            }
+                </div>
+            );
+        };
 
-            if (step === 'camera') return <CameraBooth location={location} lang={lang} onClose={() => setStep('choice')} />;
-            return null;
+        const MapScreen = ({ user, locations, clearedLocations, bonusLocations, adminConfig, onSelectLocation, onOpenStampBook, onOpenGift, lang, setLang, onLogout }) => {
+            const t = TRANSLATIONS[lang];
+            const totalPts = clearedLocations.length + bonusLocations.length; 
+
+            return (
+                <div className="flex flex-col h-screen bg-gray-50 relative">
+                    {/* Header */}
+                    <header className="bg-white/90 backdrop-blur shadow-sm px-4 py-3 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch absolute top-0 w-full rounded-b-3xl border-b border-gray-100">
+                        <div className="flex flex-col gap-2 justify-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-black text-xl shadow flex-shrink-0">{user.name.charAt(0).toUpperCase()}</div>
+                                <div className="overflow-hidden">
+                                    <h1 className="font-bold text-gray-800 truncate leading-none mb-1.5 text-lg">{user.name}</h1>
+                                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-700 uppercase tracking-wider">{t[user.version]}</span>
+                                </div>
+                            </div>
+                            <LanguageSwitcher lang={lang} setLang={setLang} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {user.version === 'local' && (
+                                <button onClick={onOpenGift} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 shadow-sm h-full w-16 hover:bg-purple-200 transition">
+                                    <i className="fa fa-gift text-xl"></i><span>{t.giftBtn}</span>
+                                </button>
+                            )}
+                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 border border-yellow-200 shadow-sm h-full w-20 hover:bg-yellow-200 transition">
+                                <i className="fa fa-book-open text-xl text-yellow-600"></i><span>{totalPts} {t.stamps}</span>
+                            </button>
+                            <button onClick={onLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center shadow-sm hover:bg-gray-200 transition"><i className="fa fa-sign-out-alt text-lg"></i></button>
+                        </div>
+                    </header>
+
+                    {/* Map Area */}
+                    <main className="flex-grow relative w-full h-full pt-28 pb-4 px-2">
+                        <div className="map-container h-full max-h-[800px]">
+                            {locations.map(loc => {
+                                const hasQr = bonusLocations.includes(loc.id);
+                                const hasQuiz = clearedLocations.includes(loc.id);
+                                const pts = (hasQr?1:0) + (hasQuiz?1:0);
+                                const isUnlocked = true; // All pins visible and clickable immediately
+                                
+                                return (
+                                    <div key={loc.id} className="loc-pin" style={loc.pos} onClick={() => onSelectLocation(loc)}>
+                                        <div className={`pin-icon ${pts===2?'pin-2':(pts===1?'pin-1':'pin-0')}`}>
+                                            <i className={`fa ${pts===2 ? 'fa-check-double' : (pts===1 ? 'fa-check' : 'fa-map-marker-alt')}`}></i>
+                                        </div>
+                                        <div className="pin-label">{loc.name[lang]}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </main>
+                </div>
+            );
         };
 
         const App = () => {
             const [user, setUser] = useState(null);
-            const [view, setView] = useState('register');
             const [lang, setLang] = useState('en'); 
-            const [activeMission, setActiveMission] = useState(null);
+            const [activeLoc, setActiveLoc] = useState(null);
             const [notification, setNotification] = useState(null); 
             const [stampBookOpen, setStampBookOpen] = useState(false);
-            const [globalUnlocked, setGlobalUnlocked] = useState(false);
-            const [profileOpen, setProfileOpen] = useState(false); 
-            const [tcOpen, setTcOpen] = useState(false);
+            const [giftOpen, setGiftOpen] = useState(false);
+            const [tutorialOpen, setTutorialOpen] = useState(false);
             
-            const [cleared, setCleared] = useState([]); 
-            const [bonusLocs, setBonusLocs] = useState([]); 
-            const [content, setContent] = useState({ questions: DEFAULT_QUESTIONS });
-            
-            const [adminConfig, setAdminConfig] = useState({ passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD(), locationOrder: LOCATIONS.map(l=>l.id) }); 
-            const [initializing, setInitializing] = useState(true);
-            const t = TRANSLATIONS[lang];
-
-            const locationOrder = adminConfig?.locationOrder || LOCATIONS.map(l=>l.id);
-            const orderedLocations = useMemo(() => locationOrder.map(id => LOCATIONS.find(l => l.id === id)).filter(Boolean), [locationOrder]);
-            const unlockedLocationIds = useMemo(() => {
-                const startDateStr = adminConfig?.startDate || getLocalYYYYMMDD();
-                const start = new Date(startDateStr); start.setHours(0, 0, 0, 0); 
-                const now = new Date(); now.setHours(0, 0, 0, 0);
-                const diffDays = Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24)));
-                return locationOrder.slice(0, Math.min(locationOrder.length, 1 + diffDays));
-            }, [adminConfig?.startDate, locationOrder]);
+            const [cleared, setCleared] = useState([]); // Quiz points
+            const [bonusLocs, setBonusLocs] = useState([]); // QR points
+            const [content, setContent] = useState({});
+            const [adminConfig, setAdminConfig] = useState({});
+            const [initialized, setInitialized] = useState(false);
 
             useEffect(() => {
-                try { if (localStorage.getItem('polyu_hunt_global_unlocked') === 'true') setGlobalUnlocked(true); } catch (e) {}
-            }, []);
+                const initApp = async () => {
+                    const savedEmail = localStorage.getItem('polyu_hunt_email');
+                    const { auth, db, doc, onSnapshot, appId } = window.FB;
+                    
+                    // Listen to global config and content
+                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main'), snap => setContent(snap.data() || {}));
+                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2'), snap => setAdminConfig(snap.data() || {}));
 
-            useEffect(() => {
-                const init = async () => {
-                    try { 
-                        const { auth, signInAnonymously, db, doc, getDoc, setDoc, onSnapshot, appId } = window.FB;
-                        if (!auth) throw new Error("No Auth");
-                        await signInAnonymously(auth); 
-                        if(db) {
-                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main');
-                            const snap = await getDoc(ref);
-                            if (snap.exists || (typeof snap.exists === 'function' && snap.exists())) setContent(snap.data());
-                            else { await setDoc(ref, { questions: DEFAULT_QUESTIONS }, { merge: true }); setContent({ questions: DEFAULT_QUESTIONS }); }
-
-                            const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2');
-                            const configSnap = await getDoc(configRef);
-                            if (!configSnap.exists && !(typeof configSnap.exists === 'function' && configSnap.exists())) {
-                                await setDoc(configRef, { passHash: '7077686f6d65636f6d696e67706f6c79755f32303236', startDate: getLocalYYYYMMDD(), locationOrder: LOCATIONS.map(l=>l.id) });
-                            }
-                            onSnapshot(configRef, (docSnap) => {
-                                if (docSnap.exists || (typeof docSnap.exists === 'function' && docSnap.exists())) setAdminConfig(docSnap.data());
+                    // Restore session
+                    window.FB.onAuthStateChanged(auth, async (fbUser) => {
+                        if (fbUser && savedEmail) {
+                            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'participants', fbUser.uid), snap => {
+                                if (snap.exists) {
+                                    const data = snap.data();
+                                    setUser({ ...data, uid: fbUser.uid });
+                                    setCleared(data.clearedLocations || []);
+                                    setBonusLocs(data.bonusLocations || []);
+                                    setInitialized(true);
+                                } else {
+                                    handleLogout(); setInitialized(true);
+                                }
                             });
+                        } else {
+                            setInitialized(true);
                         }
-                    } catch (e) { console.error("Offline/Init", e); }
-                    setInitializing(false);
+                    });
                 };
-                init();
+                initApp();
             }, []);
 
-            useEffect(() => {
-                if (user && user.uid !== 'offline-user' && user.role !== 'admin') {
-                    const { db, doc, onSnapshot, appId } = window.FB;
-                    const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', user.uid);
-                    const unsubscribe = onSnapshot(userRef, (docSnap) => {
-                        if (docSnap.exists || (typeof docSnap.exists === 'function' && docSnap.exists())) {
-                            const data = docSnap.data();
-                            setCleared(data.clearedLocations || []);
-                            setBonusLocs(data.bonusLocations || []);
-                            setUser(prev => ({...prev, ...data}));
-                        }
-                    });
-                    return () => unsubscribe();
-                }
-            }, [user?.uid]);
-
-            useEffect(() => {
-                const autoLogin = async () => {
-                     let savedEmail = null;
-                     try { savedEmail = localStorage.getItem('polyu_hunt_email'); } catch (e) {}
-                     if (savedEmail && !user && !initializing) await handleCheckUser({ email: savedEmail, name: '', version: 'local' }, true);
-                };
-                if (!initializing) autoLogin();
-            }, [initializing]);
-
-            useEffect(() => {
-                if (user && !initializing) {
-                    const params = new URLSearchParams(window.location.search);
-                    const scanId = params.get('scan');
-                    if (scanId) {
-                        const loc = LOCATIONS.find(l => l.qrId === scanId || l.id === scanId);
-                        if (loc) {
-                            if (!unlockedLocationIds.includes(loc.id)) showNotify(t.lockedTitle, t.lockedMsg, 'error', 'fa-lock');
-                            else {
-                                setGlobalUnlocked(true);
-                                try { localStorage.setItem('polyu_hunt_global_unlocked', 'true'); } catch(e){}
-                                setActiveMission(loc);
-                            }
-                        }
-                        window.history.replaceState(null, '', window.location.pathname);
-                    }
-                }
-            }, [user, initializing, cleared, t, unlockedLocationIds]); 
-
-            const handleCheckUser = async (data, silent = false) => {
-                const { db, collection, getDocs, auth, appId, setDoc, doc, deleteDoc, deleteField } = window.FB;
-                if (!auth?.currentUser || !data.email) return false;
-
-                try {
-                    const normalizedEmail = data.email.toLowerCase().trim();
-                    const snap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'participants'));
-                    
-                    let foundAny = false;
-                    let mergedLocations = [];
-                    let mergedBonus = [];
-                    let latestProfile = null;
-                    const oldDocIds = [];
-                    
-                    snap.forEach(docSnap => {
-                        const d = docSnap.data();
-                        if (d.email && d.email.toLowerCase() === normalizedEmail) {
-                            foundAny = true;
-                            latestProfile = d; 
-                            oldDocIds.push(docSnap.id);
-                            if (Array.isArray(d.clearedLocations)) d.clearedLocations.forEach(id => { if (!mergedLocations.includes(id)) mergedLocations.push(id); });
-                            if (Array.isArray(d.bonusLocations)) d.bonusLocations.forEach(id => { if (!mergedBonus.includes(id)) mergedBonus.push(id); });
-                        }
-                    });
-                    
-                    if (foundAny && latestProfile) {
-                        const currentUid = auth.currentUser.uid;
-                        let finalVersion = latestProfile.version || data.version || 'local';
-                        if (data.version && latestProfile.version && data.version !== latestProfile.version) {
-                            if (!silent) alert(`${t.modeMismatch} ${latestProfile.version === 'local' ? t.local : t.overseas}`);
-                            finalVersion = latestProfile.version; 
-                        }
-                        const updatedName = (data.name && data.name.trim() !== '') ? data.name.trim() : latestProfile.name;
-                        delete latestProfile.missions_completed;
-
-                        const mergedData = { 
-                            ...latestProfile, uid: currentUid, name: updatedName,
-                            clearedLocations: mergedLocations, bonusLocations: mergedBonus,
-                            lastLogin: new Date().toISOString(), version: finalVersion,
-                            missions_completed: deleteField() 
-                        };
-                        
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', currentUid), mergedData, { merge: true });
-                        for (const oldId of oldDocIds) { if (oldId !== currentUid) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', oldId)).catch(e=>{}); }
-
-                        setUser(mergedData); setCleared(mergedLocations); setBonusLocs(mergedBonus); setView('map');
-                        try { localStorage.setItem('polyu_hunt_email', normalizedEmail); } catch (e) {}
-                        return true; 
-                    }
-                } catch (e) { if (!silent) alert("Error connecting to database."); }
-                return false;
-            };
-
-            const handleRegister = async (data) => {
-                const { db, doc, setDoc, auth, appId } = window.FB;
-                const uid = auth?.currentUser?.uid || 'offline-user';
-                const normalizedEmail = data.email.toLowerCase().trim();
-                const newUser = { ...data, email: normalizedEmail, uid, clearedLocations: [], bonusLocations: [], joinedAt: new Date().toISOString() };
-                if (auth && auth.currentUser && db) try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', uid), newUser); } catch (e) {}
-                setUser(newUser); setCleared([]); setBonusLocs([]); setView('map');
-                try { localStorage.setItem('polyu_hunt_email', normalizedEmail); } catch (e) {}
-            };
-
-            const handleMissionProgress = async (locId, type) => {
-                const { db, doc, updateDoc, arrayUnion, appId, auth } = window.FB;
-                let payloadToUpdate = {};
-                let newCleared = [...cleared];
-                let newBonus = [...bonusLocs];
-
-                if (type === 'quiz' && !cleared.includes(locId)) {
-                    newCleared.push(locId); setCleared(newCleared);
-                    payloadToUpdate.clearedLocations = arrayUnion(locId);
-                } else if (type === 'qr' && !bonusLocs.includes(locId)) {
-                    newBonus.push(locId); setBonusLocs(newBonus);
-                    payloadToUpdate.bonusLocations = arrayUnion(locId);
-                } else return;
-
-                const completedTime = new Date().toISOString();
-                const totalPoints = newCleared.length + newBonus.length;
-                const maxPoints = LOCATIONS.length * 2;
-
-                if (totalPoints === maxPoints) payloadToUpdate.completedAt = completedTime;
-                if (auth && auth.currentUser && db) {
-                    const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid);
-                    await updateDoc(userRef, payloadToUpdate);
-                }
-                
-                if (totalPoints === maxPoints) {
-                    if (window.confetti) window.confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 9999 });
-                    const durationStr = formatDuration(user.joinedAt, completedTime);
-                    showNotify(t.grandSuccessTitle, `${t.grandSuccessMsg}\n\n${t.timeTaken}${durationStr}`, "success", "fa-crown");
-                } else {
-                    showNotify(t.stampCollectedTitle, t.stampCollectedMsg, "success", "fa-star");
-                }
+            const handleRegister = async (userData) => {
+                const { db, doc, setDoc, appId } = window.FB;
+                const fullData = { ...userData, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [] };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', userData.uid), fullData);
+                localStorage.setItem('polyu_hunt_email', userData.email);
+                setUser(fullData);
+                setTutorialOpen(true);
             };
 
             const handleLogout = async () => {
-                const { auth, signOut } = window.FB;
-                if (auth) try { await signOut(auth); } catch (e) {}
-                setUser(null); setView('register'); setCleared([]); setGlobalUnlocked(false);
-                try { localStorage.removeItem('polyu_hunt_email'); localStorage.removeItem('polyu_hunt_global_unlocked'); } catch (e) {}
-                window.location.reload();
+                if (window.FB.auth) try { await window.FB.auth.signOut(); } catch (e) {}
+                setUser(null); setCleared([]); setBonusLocs([]);
+                try { localStorage.removeItem('polyu_hunt_email'); } catch (e) {}
             };
 
-            const showNotify = (title, message, type = 'info', customIcon = null, customAction = null) => {
-                setNotification({ title, message, type, customIcon, customAction });
+            const handleSavePoints = async (locId, type) => {
+                const { db, doc, setDoc, appId, auth } = window.FB;
+                if (!auth?.currentUser) return;
+                
+                let newCleared = [...cleared];
+                let newBonus = [...bonusLocs];
+                if (type === 'quiz' && !cleared.includes(locId)) newCleared.push(locId);
+                if (type === 'qr' && !bonusLocs.includes(locId)) newBonus.push(locId);
+                
+                setCleared(newCleared);
+                setBonusLocs(newBonus);
+                
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
+                        clearedLocations: newCleared, bonusLocations: newBonus
+                    }, { merge: true });
+                } catch(e) { console.error("Error saving point", e); }
             };
 
-            if (initializing) return <div className="min-h-screen flex items-center justify-center bg-gray-100 text-[#A6192E] font-bold"><i className="fa fa-spinner fa-spin mr-2"></i> Loading Campus...</div>;
+            const handleSaveAddress = async (address) => {
+                const { db, doc, updateDoc, appId, auth } = window.FB;
+                if (!auth?.currentUser) return;
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { address });
+                    setUser(prev => ({...prev, address}));
+                    showNotify(TRANSLATIONS[lang].giftTitle, TRANSLATIONS[lang].savedMsg, "success", "fa-gift");
+                    setGiftOpen(false);
+                } catch(e) { console.error("Error saving address:", e); }
+            };
 
-            if(!user) {
-                return (
-                    <div className={`text-gray-800 lang-${lang}`}>
-                        {tcOpen && <TCModal onClose={() => setTcOpen(false)} lang={lang} />}
-                        <Register onRegister={handleRegister} onCheckUser={handleCheckUser} onAdminLogin={async () => {
-                            const { db, doc, setDoc, auth, appId } = window.FB;
-                            if (auth.currentUser) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
-                            setUser({ name: 'Administrator', email: 'admin@system', role: 'admin', clearedLocations: [] });
-                            setView('map');
-                        }} lang={lang} setLang={setLang} onOpenTC={() => setTcOpen(true)} adminConfig={adminConfig} />
-                    </div>
-                );
-            }
+            const showNotify = (title, message, type = 'info', customIcon = null) => setNotification({ title, message, type, customIcon });
 
-            const currentTotalPoints = cleared.length + bonusLocs.length;
+            if (!initialized) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><i className="fa fa-spinner fa-spin text-4xl text-[#A6192E]"></i></div>;
+            
+            if (!user) return <Register onComplete={handleRegister} lang={lang} setLang={setLang} />;
 
             return (
-                <div className={`text-gray-800 lang-${lang}`}>
-                    {tcOpen && <TCModal onClose={() => setTcOpen(false)} lang={lang} />}
+                <div className={`text-gray-800 lang-${lang} h-screen w-full overflow-hidden`}>
                     {notification && <NotificationModal {...notification} onClose={()=>setNotification(null)} lang={lang} />}
-                    
-                    {view === 'map' && (
-                        <div className="flex flex-col h-screen bg-gray-50/50 backdrop-blur-sm">
-                            <header className="bg-white shadow-sm px-4 py-2 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch relative">
-                                <div className="flex flex-col gap-2 justify-center">
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={()=>setProfileOpen(true)} className="w-10 h-10 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 hover:opacity-90 shadow-sm" title={t.myProfile}><i className="fa fa-user"></i></button>
-                                        <div>
-                                            <h1 className="font-bold text-gray-800 leading-none mb-1 text-lg">{user.name}</h1>
-                                            <span className={`text-[10px] px-2 py-0.5 rounded font-bold whitespace-nowrap ${user.version==='overseas'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}`}>{user.role==='admin'?t.adminMode:t[user.version]}</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-yellow-100 text-yellow-800 px-4 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 border border-yellow-200 shadow-sm h-full w-24">
-                                        <i className="fa fa-star text-2xl"></i><span>{currentTotalPoints} {t.points}</span>
-                                    </div>
-                                    <button onClick={handleLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex flex-col items-center justify-center gap-1 border border-gray-200 shadow-sm hover:bg-gray-200"><i className="fa fa-sign-out-alt text-xl"></i></button>
-                                </div>
-                            </header>
-                            <main className="flex-grow relative overflow-hidden w-full pt-0 pb-4 flex flex-col items-center justify-start">
-                                <div className="map-container shadow-inner border-b border-x border-gray-300 rounded-t-none md:rounded-t-xl md:border-t md:mt-2">
-                                    <img src="./image/CampusMap.png" alt="Campus Map" className="map-image" draggable="false" onError={(e) => { e.target.onerror = null; e.target.src = './image/CampusMap.png'; }} />
-                                    <div className="map-overlay">
-                                        {orderedLocations.map(loc => {
-                                            const hasQuizPoint = cleared.includes(loc.id);
-                                            const hasQRPoint = bonusLocs.includes(loc.id);
-                                            const isFullyCleared = hasQuizPoint && hasQRPoint;
-                                            const isPartiallyCleared = hasQuizPoint || hasQRPoint;
-                                            const isDayUnlocked = unlockedLocationIds.includes(loc.id);
-                                            
-                                            if (!isDayUnlocked) {
-                                                return (
-                                                    <div key={loc.id} className="absolute flex flex-col items-center group map-pin locked" style={{left: `${loc.mapX}%`, top: `${loc.mapY}%`}} onClick={() => showNotify(t.lockedTitle, t.lockedMsg, 'error', 'fa-clock')}>
-                                                        <div className="pin-icon-wrapper bg-gray-400 text-white"><i className="fa fa-lock"></i></div>
-                                                        <div className="pin-label">{loc.name[lang]}</div>
-                                                    </div>
-                                                );
-                                            }
+                    {tutorialOpen && <TutorialModal onClose={()=>setTutorialOpen(false)} lang={lang} />}
+                    {stampBookOpen && <StampBook locations={LOCATIONS} clearedLocations={cleared} bonusLocations={bonusLocs} onClose={()=>setStampBookOpen(false)} lang={lang} />}
+                    {giftOpen && <GiftModal user={user} onClose={()=>setGiftOpen(false)} onSave={handleSaveAddress} lang={lang} />}
 
-                                            return (
-                                                <div key={loc.id} className={`absolute flex flex-col items-center group map-pin cursor-pointer ${isFullyCleared?'opacity-80':''}`} style={{left: `${loc.mapX}%`, top: `${loc.mapY}%`}} onClick={() => setActiveMission(loc)}>
-                                                    <div className={`pin-icon-wrapper ${isFullyCleared?'bg-green-500 text-white':(isPartiallyCleared?'bg-yellow-500 text-white':'bg-[#A6192E] text-white')}`}>
-                                                        <i className={`fa ${isFullyCleared?'fa-check-double':(isPartiallyCleared?'fa-check':loc.icon)}`}></i>
-                                                    </div>
-                                                    <div className="pin-label">{loc.name[lang]}</div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </main>
-                            {user.role === 'admin' && <div className="bg-white border-t p-4"><p className="text-xs text-center text-gray-500 mb-2">Open <a href="./admin.html" className="text-blue-500 underline font-bold">admin.html</a> to manage game.</p></div>}
-                        </div>
-                    )}
-                    
-                    {activeMission && (
+                    {activeLoc && (
                         <MissionOrchestrator 
-                            location={activeMission} 
-                            globalUnlocked={globalUnlocked} 
-                            hasQuizPoint={cleared.includes(activeMission.id)}
-                            hasQRPoint={bonusLocs.includes(activeMission.id)}
-                            onActivate={() => { setGlobalUnlocked(true); try { localStorage.setItem('polyu_hunt_global_unlocked', 'true'); } catch(e){} }} 
-                            onProgress={handleMissionProgress} 
-                            onClose={() => setActiveMission(null)} 
-                            content={content} 
+                            location={activeLoc} 
+                            user={{...user, clearedLocations: cleared, bonusLocations: bonusLocs}} 
+                            content={content}
+                            adminConfig={adminConfig}
                             lang={lang} 
+                            onSavePoints={handleSavePoints}
+                            onClose={()=>setActiveLoc(null)}
+                            showNotify={showNotify}
                         />
                     )}
 
-                    {profileOpen && <ProfileModal user={user} onClose={()=>setProfileOpen(false)} onUpdate={async (updates) => {
-                        const { db, doc, updateDoc, appId, auth } = window.FB;
-                        setUser({ ...user, ...updates });
-                        if (auth && auth.currentUser && db) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), updates);
-                        showNotify("Profile Updated", "Your information has been updated successfully.", "success", "fa-user-check");
-                    }} lang={lang} onOpenTC={() => setTcOpen(true)} />}
+                    <MapScreen 
+                        user={user} 
+                        locations={LOCATIONS} 
+                        clearedLocations={cleared} 
+                        bonusLocations={bonusLocs}
+                        adminConfig={adminConfig}
+                        onSelectLocation={setActiveLoc}
+                        onOpenStampBook={()=>setStampBookOpen(true)}
+                        onOpenGift={()=>setGiftOpen(true)}
+                        lang={lang} setLang={setLang} onLogout={handleLogout} 
+                    />
                 </div>
             );
         };
