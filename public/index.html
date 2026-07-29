@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PolyU Hunt</title>
+    <title>PolyU Treasure Hunt</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts for Typography matching -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -65,25 +65,23 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes stampPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
         
-        /* Language Fonts */
+        /* Language Fonts (Ensures absolute consistency) */
         .lang-en { font-family: 'Inter', sans-serif !important; }
-        .lang-tc { font-family: 'Noto Sans TC', 'PingFang HK', 'Microsoft JhengHei', sans-serif !important; }
-        .lang-sc { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif !important; }
+        .lang-tc { font-family: 'Noto Sans TC', sans-serif !important; }
+        .lang-sc { font-family: 'Noto Sans SC', sans-serif !important; }
         
         /* Map Layout */
         .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('https://placehold.co/1080x1920/e2e8f0/94a3b8?text=PolyU+Campus+Map') center/cover no-repeat; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
-        
         .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; items-align: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
         .loc-pin:active { transform: translate(-50%, -100%) scale(0.9); }
-        
         .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; }
-        .pin-0 { background: #A6192E; } /* Not started */
-        .pin-1 { background: #EAB308; } /* Partially cleared (1 pt) */
-        .pin-2 { background: #22C55E; } /* Fully cleared (2 pts) */
+        
+        .pin-0 { background: #A6192E; } /* Red: 0 pts */
+        .pin-1 { background: #EAB308; } /* Yellow: 1 pt */
+        .pin-2 { background: #22C55E; } /* Green: 2 pts */
         
         .pin-label { background: rgba(255,255,255,0.95); color: #333; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-top: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; border: 1px solid #ddd; text-align: center; line-height: 1.1; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Stamp book style */
         .stamp-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .stamp-earned-0 { background: #f1f5f9; color: #cbd5e1; border: 2px dashed #cbd5e1; }
         .stamp-earned-1 { background: #fef08a; color: #a16207; border: 2px solid #eab308; }
@@ -96,6 +94,10 @@
     <script type="text/babel" data-presets="react">
         const { useState, useEffect, useRef, useMemo } = React;
 
+        const MASTER_KEY = "1937";
+        const MASTER_QR = "master_unlock";
+
+        // Ensures timezone local parsing
         const parseLocalDate = (dateString) => {
             const parts = dateString.split('-');
             if (parts.length === 3) {
@@ -108,13 +110,13 @@
 
         const TRANSLATIONS = {
             en: {
-                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan Location QR / PIN", answerQ: "Answer Question", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", qrPoints: "1 pt", quizPoints: "1 pt", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Not Me 🙅‍♂️", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", welcomeBack: "Welcome Back!", logout: "Logout", pts0: "Not Started", pts1: "Partially Cleared", pts2: "Fully Conquered", unlocksOn: "Unlocks on", tryAgain: "Try Again", wait: "Wait", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", capture: "Capture Photo", retake: "Retake", saveShare: "Save / Share", scanOrPin: "Scan QR or Enter PIN", manualPin: "Manual PIN Entry", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!"
+                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan QR / PIN (1 Pt)", answerQ: "Answer Question (1 Pt)", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!", activateTitle: "Activate Game", activateMsg: "Enter a location PIN or Master Key to start the game!"
             },
             tc: {
-                appTitle: "理大尋寶遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", qrPoints: "1 分", quizPoints: "1 分", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", welcomeBack: "歡迎回來!", logout: "登出", pts0: "未開始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解鎖日期：", tryAgain: "重試", wait: "請等待", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", scanOrPin: "掃描 QR 或輸入 PIN", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！"
+                appTitle: "理大尋寶遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "答錯了！請重試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！", activateTitle: "啟動遊戲", activateMsg: "請輸入地點密碼或掃描 QR 碼以開始遊戲！"
             },
             sc: {
-                appTitle: "理大寻宝游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", qrPoints: "1 分", quizPoints: "1 分", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", welcomeBack: "欢迎回来!", logout: "登出", pts0: "未开始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解锁日期：", tryAgain: "重试", wait: "请等待", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "征服所有地点！", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", scanOrPin: "扫描 QR 或输入 PIN", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！"
+                appTitle: "理大寻宝游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "答错了！请重试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！", activateTitle: "启动游戏", activateMsg: "请输入地点密码或扫描 QR 码以开始游戏！"
             }
         };
 
@@ -144,25 +146,23 @@
             brick_wall: { text: { en: "What is commemorated on the Commemorative Brick Wall?", tc: "紀念磚牆是為了紀念什麼？", sc: "纪念砖墙是为了纪念什么？" }, options: { en: ["Donors and Supporters", "First Graduates", "Former Presidents", "Nobel Laureates"], tc: ["捐贈者和支持者", "首批畢業生", "歷任校長", "諾貝爾獎得主"], sc: ["捐赠者和支持者", "首批毕业生", "历任校长", "诺贝尔奖得主"] }, answer: { en: "Donors and Supporters", tc: "捐贈者和支持者", sc: "捐赠者和支持者" } }
         };
 
-        const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => {
-            return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
-                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl stamp-pop relative overflow-hidden" onClick={e=>e.stopPropagation()}>
-                        <div className={`absolute top-0 left-0 w-full h-3 ${type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-[#A6192E]')}`}></div>
-                        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner 
-                            ${type === 'success' ? 'bg-green-100 text-green-600' : (type === 'error' ? 'bg-red-100 text-red-600' : 'bg-red-50 text-[#A6192E]')}`}>
-                            <i className={`fa ${customIcon || (type === 'success' ? 'fa-check' : (type === 'error' ? 'fa-times' : 'fa-info'))}`}></i>
-                        </div>
-                        <h3 className="text-2xl font-black text-gray-800 mb-2">{title}</h3>
-                        <p className="text-gray-600 font-medium mb-8 leading-relaxed">{message}</p>
-                        <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95
-                            ${type === 'success' ? 'bg-green-500 hover:bg-green-600' : (type === 'error' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#A6192E] hover:bg-red-800')}`}>
-                            {TRANSLATIONS[lang].startBtn}
-                        </button>
+        const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
+                <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl stamp-pop relative overflow-hidden" onClick={e=>e.stopPropagation()}>
+                    <div className={`absolute top-0 left-0 w-full h-3 ${type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-[#A6192E]')}`}></div>
+                    <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner 
+                        ${type === 'success' ? 'bg-green-100 text-green-600' : (type === 'error' ? 'bg-red-100 text-red-600' : 'bg-red-50 text-[#A6192E]')}`}>
+                        <i className={`fa ${customIcon || (type === 'success' ? 'fa-check' : (type === 'error' ? 'fa-times' : 'fa-info'))}`}></i>
                     </div>
+                    <h3 className="text-2xl font-black text-gray-800 mb-2">{title}</h3>
+                    <p className="text-gray-600 font-medium mb-8 leading-relaxed">{message}</p>
+                    <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95
+                        ${type === 'success' ? 'bg-green-500 hover:bg-green-600' : (type === 'error' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#A6192E] hover:bg-red-800')}`}>
+                        {TRANSLATIONS[lang].startBtn}
+                    </button>
                 </div>
-            );
-        };
+            </div>
+        );
 
         const LanguageSwitcher = ({ lang, setLang }) => (
             <div className="flex bg-gray-100 rounded-full p-1 border shadow-inner w-max">
@@ -174,179 +174,81 @@
             </div>
         );
 
-        const TutorialModal = ({ onClose, lang }) => {
+        const Scanner = ({ lang, onScanSuccess }) => {
             const t = TRANSLATIONS[lang];
-            return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative">
-                        <h2 className="text-2xl font-black text-[#A6192E] mb-6">How to Play</h2>
-                        <div className="space-y-6 text-left text-sm text-gray-600 font-medium">
-                            <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-red-100 text-[#A6192E] flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-map-marker-alt"></i></div>
-                                <div><strong className="text-gray-800 block mb-1">1. Find Locations</strong> Explore the campus and find the 10 marked locations on the map.</div>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-qrcode"></i></div>
-                                <div><strong className="text-gray-800 block mb-1">2. Scan or Quiz (1 Pt Each)</strong> Scan the location's QR code (1pt) and answer the daily unlocked Quiz (1pt).</div>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-lg"><i className="fa fa-camera"></i></div>
-                                <div><strong className="text-gray-800 block mb-1">3. Take Photo</strong> Get at least 1 point at a location to unlock its special photo frame!</div>
-                            </div>
-                        </div>
-                        <button onClick={onClose} className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg mt-8 hover:bg-red-800 transition">Let's Go!</button>
-                    </div>
-                </div>
-            );
-        };
+            const videoRef = useRef(null);
+            const canvasRef = useRef(null);
+            const [stream, setStream] = useState(null);
+            const [pinInput, setPinInput] = useState('');
+            const scanLoop = useRef(null);
 
-        const GiftModal = ({ user, onClose, onSave, lang }) => {
-            const t = TRANSLATIONS[lang];
-            const [address, setAddress] = useState(user.address || '');
-            const [loading, setLoading] = useState(false);
+            useEffect(() => {
+                const initScanner = async () => {
+                    try {
+                        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                        if(videoRef.current) { videoRef.current.srcObject = s; setStream(s); }
+                        
+                        const tick = () => {
+                            if(videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+                                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
+                                c.width = v.videoWidth; c.height = v.videoHeight;
+                                ctx.drawImage(v, 0, 0, c.width, c.height);
+                                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                                const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
+                                if (code) {
+                                    // Extract the QR value, see if it matches any location or master
+                                    let match = null;
+                                    if (code.data.includes(MASTER_QR)) match = MASTER_KEY;
+                                    else {
+                                        const locMatch = LOCATIONS.find(l => code.data.includes(l.qrId));
+                                        if (locMatch) match = locMatch.code;
+                                    }
+                                    if (match) {
+                                        onScanSuccess(match); 
+                                        return; 
+                                    }
+                                }
+                            }
+                            scanLoop.current = requestAnimationFrame(tick);
+                        };
+                        scanLoop.current = requestAnimationFrame(tick);
+                    } catch(e) { console.warn("Camera init failed", e); }
+                };
+                initScanner();
+                return () => { if(stream) stream.getTracks().forEach(t=>t.stop()); cancelAnimationFrame(scanLoop.current); };
+            }, []);
 
-            const handleSubmit = async (e) => {
+            const handlePinSubmit = (e) => {
                 e.preventDefault();
-                if (!address.trim()) return;
-                setLoading(true);
-                await onSave(address);
-                setLoading(false);
+                onScanSuccess(pinInput.trim());
+                setPinInput('');
             };
 
             return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
-                        <div className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white text-center">
-                            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40"><i className="fa fa-times"></i></button>
-                            <i className="fa fa-gift text-5xl mb-2 drop-shadow-md"></i>
-                            <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
+                <div className="flex flex-col h-full bg-gray-900 text-white relative fade-in">
+                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
+                        <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover opacity-60"></video>
+                        <canvas ref={canvasRef} className="hidden"></canvas>
+                        
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6">
+                            <div className="w-64 h-64 border-2 border-white/50 rounded-3xl relative overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-400 rounded-tl-xl"></div>
+                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-yellow-400 rounded-tr-xl"></div>
+                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-yellow-400 rounded-bl-xl"></div>
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-yellow-400 rounded-br-xl"></div>
+                                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-red-500/50 shadow-[0_0_10px_red] transform -translate-y-1/2 animate-[scan_2s_ease-in-out_infinite]"></div>
+                            </div>
+                            <p className="mt-8 font-bold text-lg tracking-widest uppercase text-white drop-shadow-md">{t.scanning}</p>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-gray-50">
-                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold shadow-sm">
-                                {t.localOnly}
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-gray-500 ml-1">{t.addressLabel}</label>
-                                <textarea 
-                                    className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" 
-                                    placeholder={lang === 'en' ? "Enter your flat, building, street, and district..." : "請輸入您的室、大廈、街道及地區..."}
-                                    value={address} 
-                                    onChange={e => setAddress(e.target.value)} 
-                                    required
-                                ></textarea>
-                            </div>
-                            <button type="submit" disabled={loading} className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-800 transition">
-                                {loading ? <i className="fa fa-spinner fa-spin"></i> : t.submitBtn}
-                            </button>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-t-3xl relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
+                        <form onSubmit={handlePinSubmit} className="flex gap-3 max-w-sm mx-auto">
+                            <input type="text" placeholder={t.manualPin} className="flex-grow p-4 bg-gray-100 rounded-xl outline-none font-mono text-center text-gray-800 text-lg tracking-widest font-bold focus:border-[#A6192E] border-2 border-transparent transition" value={pinInput} onChange={e=>setPinInput(e.target.value)} maxLength="4" />
+                            <button type="submit" className="px-6 bg-gray-800 text-white rounded-xl font-bold shadow hover:bg-black transition"><i className="fa fa-unlock"></i></button>
                         </form>
                     </div>
-                </div>
-            );
-        };
-
-        const Register = ({ onComplete, lang, setLang }) => {
-            const t = TRANSLATIONS[lang];
-            const [step, setStep] = useState(1);
-            const [form, setForm] = useState({ name: '', email: '', role: 'alumni', version: 'local' });
-            const [loading, setLoading] = useState(false);
-            const [isAdminLogin, setIsAdminLogin] = useState(false);
-            const [adminPass, setAdminPass] = useState('');
-
-            const handleNext = (e) => {
-                e.preventDefault();
-                if (form.name.trim().toLowerCase() === 'pwadmin') {
-                    setIsAdminLogin(true);
-                } else if (form.name.trim() && form.email.trim()) {
-                    setStep(2);
-                }
-            };
-
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                
-                if (isAdminLogin) {
-                    const inputHash = adminPass.trim().split('').map(c => c.charCodeAt(0).toString(16)).join('');
-                    if (inputHash === '7077686f6d65636f6d696e67706f6c79755f32303236') { 
-                        form.name = 'Admin';
-                        form.email = 'admin@polyu.edu.hk';
-                        form.role = 'staff';
-                        form.version = 'local';
-                    } else {
-                        alert("Invalid Admin Password");
-                        setLoading(false);
-                        return;
-                    }
-                }
-                
-                try {
-                    const { auth, signInAnonymously } = window.FB;
-                    const cred = await signInAnonymously(auth);
-                    await onComplete({ ...form, uid: cred.user.uid });
-                } catch(e) {
-                    alert("Registration failed. Check network.");
-                }
-                setLoading(false);
-            };
-
-            return (
-                <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 relative overflow-hidden">
-                    <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-60"></div>
-                    <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-60"></div>
-                    
-                    <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 border border-gray-100">
-                        <div className="flex justify-end mb-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
-                        
-                        <div className="text-center mb-8">
-                            <div className="w-20 h-20 mx-auto bg-[#A6192E] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
-                                <i className="fa fa-university text-4xl text-white transform -rotate-3"></i>
-                            </div>
-                            <h1 className="text-3xl font-black text-gray-800 leading-tight">{t.appTitle}</h1>
-                            <p className="text-[#A6192E] font-bold text-sm tracking-widest uppercase mt-1">{t.subtitle}</p>
-                        </div>
-
-                        {step === 1 && !isAdminLogin ? (
-                            <form onSubmit={handleNext} className="space-y-4 slide-up">
-                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" placeholder="e.g. Chan Tai Man" value={form.name} onChange={e=>setForm({...form, name: e.target.value})} /></div>
-                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.email}</label><input required type="email" className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" placeholder="name@example.com" value={form.email} onChange={e=>setForm({...form, email: e.target.value})} /></div>
-                                <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.startBtn}</button>
-                            </form>
-                        ) : isAdminLogin ? (
-                            <form onSubmit={handleSubmit} className="space-y-4 slide-up">
-                                <div><label className="text-xs font-bold text-gray-500 ml-1">Admin Password</label><input required type="password" className="w-full p-4 mt-1 border-2 border-red-200 rounded-xl bg-red-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" value={adminPass} onChange={e=>setAdminPass(e.target.value)} /></div>
-                                <button type="submit" disabled={loading} className="w-full bg-black text-white py-4 rounded-xl font-bold shadow-lg transition mt-6 text-lg">{loading ? <i className="fa fa-spinner fa-spin"></i> : t.login}</button>
-                            </form>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6 slide-up">
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 ml-1 block mb-2">{t.mode}</label>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {['local', 'overseas'].map(v => (
-                                            <button type="button" key={v} onClick={()=>setForm({...form, version: v})} className={`py-4 rounded-xl font-bold border-2 transition ${form.version === v ? 'border-[#A6192E] bg-red-50 text-[#A6192E]' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
-                                                <i className={`fa ${v === 'local' ? 'fa-map-marker-alt' : 'fa-globe'} block text-xl mb-1`}></i> {t[v]}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500 ml-1 block mb-2">{t.role}</label>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {['alumni', 'student', 'staff', 'visitor'].map(r => (
-                                            <button type="button" key={r} onClick={()=>setForm({...form, role: r})} className={`py-3 rounded-xl font-bold text-sm border-2 transition ${form.role === r ? 'border-[#A6192E] bg-[#A6192E] text-white shadow-md' : 'border-gray-100 bg-gray-50 text-gray-500'}`}>
-                                                {t[r]}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="flex gap-3 mt-6">
-                                    <button type="button" onClick={()=>setStep(1)} className="w-14 h-14 rounded-xl border-2 border-gray-200 text-gray-400 flex items-center justify-center hover:bg-gray-50 transition"><i className="fa fa-arrow-left"></i></button>
-                                    <button type="submit" disabled={loading} className="flex-grow bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition text-lg flex items-center justify-center gap-2">
-                                        {loading ? <i className="fa fa-spinner fa-spin"></i> : <>{t.registerBtn} <i className="fa fa-check-circle"></i></>}
-                                    </button>
-                                </div>
-                            </form>
-                        )}
-                    </div>
+                    <style>{`@keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }`}</style>
                 </div>
             );
         };
@@ -356,14 +258,13 @@
             const q = content?.questions?.[locationId] || DEFAULT_QUESTIONS[locationId];
             const [selected, setSelected] = useState(null);
             const [submitted, setSubmitted] = useState(false);
-            const [btnPos, setBtnPos] = useState({ x: 0, y: 0 });
             
-            const handleHover = () => setBtnPos({ x: (Math.random() - 0.5) * 150, y: (Math.random() - 0.5) * 150 });
-
             const handleSubmit = () => {
                 if(!selected) return;
                 setSubmitted(true);
-                if(selected === q.answer[lang]) setTimeout(() => onClear(), 1500);
+                if(selected === q.answer[lang]) {
+                    setTimeout(() => onClear(), 1500);
+                }
             };
 
             const isWrong = submitted && selected !== q.answer[lang];
@@ -372,7 +273,6 @@
                 <div className="flex flex-col h-full fade-in pb-4">
                     <div className="flex-grow overflow-y-auto px-6 py-4">
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-10"></div>
                             <span className="text-xs font-black uppercase tracking-wider text-blue-500 mb-2 block">{t.challenge}</span>
                             <h3 className="text-lg font-bold text-gray-800 leading-snug">{q.text[lang]}</h3>
                         </div>
@@ -405,20 +305,16 @@
                     
                     <div className="px-6 pt-4 border-t border-gray-100 bg-white relative h-24 flex items-center justify-center">
                         {isWrong ? (
-                            <button onMouseEnter={handleHover} onTouchStart={handleHover} onClick={handleHover} 
-                                style={{ transform: `translate(${btnPos.x}px, ${btnPos.y}px)`, transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
-                                className="px-8 py-4 bg-gray-800 text-white rounded-full font-bold shadow-xl flex items-center gap-2 absolute z-20">
-                                {t.incorrect}
-                            </button>
+                            <div className="flex flex-col items-center gap-2">
+                                <span className="text-red-500 font-bold">{t.incorrect}</span>
+                                <button onClick={() => { setSubmitted(false); setSelected(null); }} className="text-sm underline text-gray-500">{t.tryAgain}</button>
+                            </div>
                         ) : (
                             <button disabled={!selected || submitted} onClick={handleSubmit} 
                                 className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all text-lg
                                 ${!selected ? 'bg-gray-200 text-gray-400' : (submitted ? 'bg-green-500 text-white scale-95' : 'bg-[#A6192E] text-white hover:bg-red-800')}`}>
                                 {submitted ? <i className="fa fa-spinner fa-spin"></i> : t.go}
                             </button>
-                        )}
-                        {isWrong && (
-                            <button onClick={onFail} className="absolute bottom-[-10px] text-xs text-gray-400 underline p-2">{t.tryAgain}</button>
                         )}
                     </div>
                 </div>
@@ -429,25 +325,39 @@
             const t = TRANSLATIONS[lang];
             const videoRef = useRef(null);
             const canvasRef = useRef(null);
+            const streamRef = useRef(null);
             const [photoData, setPhotoData] = useState(null);
-            const [stream, setStream] = useState(null);
+            const [facingMode, setFacingMode] = useState('environment');
+
+            const startCamera = async () => {
+                if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+                try {
+                    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+                    streamRef.current = s;
+                    if (videoRef.current) videoRef.current.srcObject = s;
+                } catch (e) { alert("Camera access denied or unavailable."); }
+            };
 
             useEffect(() => {
-                const initCamera = async () => {
-                    try {
-                        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                        if (videoRef.current) { videoRef.current.srcObject = s; setStream(s); }
-                    } catch (e) { alert("Camera access denied or unavailable."); }
-                };
-                initCamera();
-                return () => { if(stream) stream.getTracks().forEach(t => t.stop()); };
-            }, []);
+                startCamera();
+                return () => { if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop()); };
+            }, [facingMode]);
 
             const capture = () => {
                 if (!videoRef.current || !canvasRef.current) return;
                 const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
                 c.width = v.videoWidth; c.height = v.videoHeight;
+                
+                // If front camera, mirror image for natural feel
+                if (facingMode === 'user') {
+                    ctx.translate(c.width, 0);
+                    ctx.scale(-1, 1);
+                }
                 ctx.drawImage(v, 0, 0, c.width, c.height);
+                // Reset transform for frame
+                if (facingMode === 'user') {
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                }
                 
                 const frame = new Image();
                 frame.crossOrigin = "anonymous";
@@ -464,13 +374,23 @@
                 link.href = photoData; link.click();
             };
 
+            const retake = () => {
+                setPhotoData(null);
+                startCamera(); // Explicitly restart the feed fixing black screen
+            };
+
             return (
                 <div className="flex flex-col h-full bg-black fade-in text-white relative">
                     <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-arrow-left"></i></button>
+                    
+                    {!photoData && (
+                        <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-sync-alt"></i></button>
+                    )}
+
                     <div className="flex-grow relative overflow-hidden flex items-center justify-center">
                         {!photoData ? (
                             <>
-                                <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover"></video>
+                                <video ref={videoRef} autoPlay playsInline className={`absolute w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
                                 <img src={`frame_${locationId}.png`} className="absolute w-full h-full object-cover pointer-events-none opacity-80 border-4 border-dashed border-white/20" alt="" onError={(e)=>e.target.style.display='none'}/>
                                 <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
                                     <button onClick={capture} className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition">
@@ -479,10 +399,12 @@
                                 </div>
                             </>
                         ) : (
-                            <div className="w-full h-full flex flex-col items-center bg-gray-900">
-                                <img src={photoData} className="w-full h-auto max-h-[75vh] object-contain shadow-2xl mb-6" alt="Captured" />
-                                <div className="flex gap-4 px-6 w-full max-w-sm">
-                                    <button onClick={() => setPhotoData(null)} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
+                            <div className="w-full h-full flex flex-col items-center bg-gray-900 pt-16 pb-6">
+                                <div className="flex-grow w-full flex justify-center items-center overflow-hidden px-4">
+                                    <img src={photoData} className="w-full h-auto max-h-full object-contain shadow-2xl rounded-lg" alt="Captured" />
+                                </div>
+                                <div className="flex gap-4 px-6 mt-6 w-full max-w-sm shrink-0">
+                                    <button onClick={retake} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
                                     <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
                                 </div>
                             </div>
@@ -493,80 +415,11 @@
             );
         };
 
-        const Scanner = ({ location, lang, onScanSuccess }) => {
-            const t = TRANSLATIONS[lang];
-            const videoRef = useRef(null);
-            const canvasRef = useRef(null);
-            const [stream, setStream] = useState(null);
-            const [pinInput, setPinInput] = useState('');
-            const scanLoop = useRef(null);
-
-            useEffect(() => {
-                const initScanner = async () => {
-                    try {
-                        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                        if(videoRef.current) { videoRef.current.srcObject = s; setStream(s); }
-                        
-                        const tick = () => {
-                            if(videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-                                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
-                                c.width = v.videoWidth; c.height = v.videoHeight;
-                                ctx.drawImage(v, 0, 0, c.width, c.height);
-                                const imgData = ctx.getImageData(0, 0, c.width, c.height);
-                                const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
-                                if (code && code.data.includes(location.qrId)) { onScanSuccess(); return; }
-                            }
-                            scanLoop.current = requestAnimationFrame(tick);
-                        };
-                        scanLoop.current = requestAnimationFrame(tick);
-                    } catch(e) { console.warn("Camera init failed", e); }
-                };
-                initScanner();
-                return () => { if(stream) stream.getTracks().forEach(t=>t.stop()); cancelAnimationFrame(scanLoop.current); };
-            }, [location]);
-
-            const handlePinSubmit = (e) => {
-                e.preventDefault();
-                if(pinInput === location.code) onScanSuccess();
-                else { alert(t.invalidPin); setPinInput(''); }
-            };
-
-            return (
-                <div className="flex flex-col h-full bg-gray-900 text-white relative fade-in">
-                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
-                        <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover opacity-60"></video>
-                        <canvas ref={canvasRef} className="hidden"></canvas>
-                        
-                        {/* Scanner HUD */}
-                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6">
-                            <div className="w-64 h-64 border-2 border-white/50 rounded-3xl relative overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
-                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-400 rounded-tl-xl"></div>
-                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-yellow-400 rounded-tr-xl"></div>
-                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-yellow-400 rounded-bl-xl"></div>
-                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-yellow-400 rounded-br-xl"></div>
-                                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-red-500/50 shadow-[0_0_10px_red] transform -translate-y-1/2 animate-[scan_2s_ease-in-out_infinite]"></div>
-                            </div>
-                            <p className="mt-8 font-bold text-lg tracking-widest uppercase text-white drop-shadow-md">{t.scanning}</p>
-                            <p className="mt-2 text-sm text-gray-300">Scan QR Code for {location.name[lang]}</p>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white p-6 rounded-t-3xl relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
-                        <form onSubmit={handlePinSubmit} className="flex gap-3 max-w-sm mx-auto">
-                            <input type="text" placeholder={t.manualPin} className="flex-grow p-4 bg-gray-100 rounded-xl outline-none font-mono text-center text-gray-800 text-lg tracking-widest font-bold focus:border-[#A6192E] border-2 border-transparent transition" value={pinInput} onChange={e=>setPinInput(e.target.value)} maxLength="4" />
-                            <button type="submit" className="px-6 bg-gray-800 text-white rounded-xl font-bold shadow hover:bg-black transition"><i className="fa fa-unlock"></i></button>
-                        </form>
-                    </div>
-                    <style>{`@keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }`}</style>
-                </div>
-            );
-        };
-
         const MissionOrchestrator = ({ location, user, content, adminConfig, lang, onSavePoints, onClose, showNotify }) => {
             const t = TRANSLATIONS[lang];
-            const [view, setView] = useState(null); // null = menu, 'qr' = scanner, 'quiz' = quiz module, 'photo' = camera
+            const [view, setView] = useState(null);
             
-            // Calculate progressive unlock status
+            // Progressive unlock logic
             const orderIndex = (adminConfig.locationOrder || LOCATIONS.map(l=>l.id)).indexOf(location.id);
             const startD = parseLocalDate(adminConfig.startDate || '2026-07-28');
             const unlockD = new Date(startD);
@@ -579,7 +432,7 @@
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             const unlockStr = `${unlockD.getDate()} ${months[unlockD.getMonth()]}`;
 
-            // Check completion status
+            // Completion status
             const hasQrPt = (user.bonusLocations || []).includes(location.id);
             const hasQuizPt = (user.clearedLocations || []).includes(location.id);
             const totalPts = (hasQrPt ? 1 : 0) + (hasQuizPt ? 1 : 0);
@@ -590,12 +443,19 @@
                 setView(null);
             };
 
+            const handleScanSuccess = (code) => {
+                if (code === location.code) {
+                    handlePointGained('qr');
+                } else {
+                    alert(t.invalidPin);
+                }
+            };
+
             return (
                 <div className="fixed inset-0 z-40 bg-black/50 flex flex-col justify-end backdrop-blur-sm fade-in">
                     <div className="absolute inset-0" onClick={onClose}></div>
                     <div className={`bg-white w-full rounded-t-3xl overflow-hidden shadow-2xl relative z-50 flex flex-col transition-all duration-300 ${view ? 'h-[90vh]' : 'h-auto max-h-[80vh]'}`}>
                         
-                        {/* Header */}
                         <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
                             <div>
                                 <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
@@ -608,12 +468,10 @@
                             </button>
                         </div>
 
-                        {/* Content Area */}
                         <div className="flex-grow overflow-hidden relative">
                             {!view ? (
                                 <div className="p-6 space-y-4 slide-up overflow-y-auto max-h-full">
-                                    
-                                    {/* Action 1: QR/PIN (1 Pt) */}
+                                    {/* Action 1: QR/PIN Scanner */}
                                     <button onClick={() => setView('qr')} disabled={hasQrPt} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left
                                         ${hasQrPt ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-yellow-400 hover:shadow-md'}`}>
                                         <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0
@@ -622,11 +480,10 @@
                                         </div>
                                         <div className="flex-grow">
                                             <h3 className={`font-bold text-lg ${hasQrPt ? 'text-green-700' : 'text-gray-800'}`}>{t.scanQr}</h3>
-                                            <p className="text-sm font-bold text-gray-400 mt-1">{hasQrPt ? 'Completed' : `+ ${t.qrPoints}`}</p>
                                         </div>
                                     </button>
 
-                                    {/* Action 2: Quiz (1 Pt) */}
+                                    {/* Action 2: Quiz (Progressive) */}
                                     <button onClick={() => setView('quiz')} disabled={hasQuizPt || !isQuizUnlocked} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left relative overflow-hidden
                                         ${hasQuizPt ? 'border-green-500 bg-green-50' : (!isQuizUnlocked ? 'border-gray-100 bg-gray-50 opacity-80' : 'border-gray-200 bg-white hover:border-blue-400 hover:shadow-md')}`}>
                                         <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0 z-10
@@ -635,11 +492,8 @@
                                         </div>
                                         <div className="flex-grow z-10">
                                             <h3 className={`font-bold text-lg ${hasQuizPt ? 'text-green-700' : (!isQuizUnlocked ? 'text-gray-400' : 'text-gray-800')}`}>{t.answerQ}</h3>
-                                            <p className={`text-sm font-bold mt-1 ${!isQuizUnlocked && !hasQuizPt ? 'text-red-500' : 'text-gray-400'}`}>
-                                                {hasQuizPt ? 'Completed' : (!isQuizUnlocked ? `${t.unlocksOn} ${unlockStr}` : `+ ${t.quizPoints}`)}
-                                            </p>
+                                            {!hasQuizPt && !isQuizUnlocked && <p className="text-sm font-bold mt-1 text-red-500">{t.unlocksOn} {unlockStr}</p>}
                                         </div>
-                                        {/* Striped locked background */}
                                         {!isQuizUnlocked && !hasQuizPt && <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 20px)' }}></div>}
                                     </button>
 
@@ -654,7 +508,7 @@
                                     </div>
                                 </div>
                             ) : view === 'qr' ? (
-                                <Scanner location={location} lang={lang} onScanSuccess={()=>handlePointGained('qr')} />
+                                <Scanner lang={lang} onScanSuccess={handleScanSuccess} />
                             ) : view === 'quiz' ? (
                                 <QuizModule locationId={location.id} content={content} lang={lang} onClear={()=>handlePointGained('quiz')} onFail={()=>setView(null)} />
                             ) : (
@@ -666,93 +520,33 @@
             );
         };
 
-        const StampBook = ({ locations, clearedLocations, bonusLocations, onClose, lang }) => {
+        const ActivationModal = ({ onActivate, lang }) => {
             const t = TRANSLATIONS[lang];
-            const total = clearedLocations.length + bonusLocations.length;
             
+            const handleScanSuccess = (code) => {
+                if (code === MASTER_KEY) {
+                    onActivate({ type: 'master' });
+                } else {
+                    const loc = LOCATIONS.find(l => l.code === code);
+                    if (loc) {
+                        onActivate({ type: 'location', locationId: loc.id });
+                    } else {
+                        alert(t.invalidPin);
+                    }
+                }
+            };
+
             return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
-                    <div className="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative slide-up" onClick={e=>e.stopPropagation()}>
-                        <div className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex justify-between items-center shrink-0">
-                            <div>
-                                <h2 className="text-2xl font-black tracking-wide">{t.stamps}</h2>
-                                <p className="text-gray-300 font-bold text-sm mt-1">{total} / 20 Earned</p>
-                            </div>
-                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40"><i className="fa fa-times"></i></button>
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900 text-white">
+                    <div className="w-full h-full max-w-md mx-auto relative flex flex-col">
+                        <div className="p-6 text-center shrink-0 z-20">
+                            <h2 className="text-2xl font-black text-[#A6192E] mb-2">{t.activateTitle}</h2>
+                            <p className="text-gray-400 text-sm font-medium">{t.activateMsg}</p>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
-                            <div className="grid grid-cols-2 gap-3">
-                                {locations.map(loc => {
-                                    const pts = (clearedLocations.includes(loc.id)?1:0) + (bonusLocations.includes(loc.id)?1:0);
-                                    return (
-                                        <div key={loc.id} className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-colors ${pts===2?'border-green-500 bg-green-50 shadow-sm':(pts===1?'border-yellow-400 bg-yellow-50':'border-gray-200 bg-white')}`}>
-                                            <div className={`stamp-circle mb-3 ${pts>0?'stamp-pop':''} stamp-earned-${pts}`}><i className={`fa ${loc.icon}`}></i></div>
-                                            <span className="text-[11px] font-bold text-center leading-tight h-8 flex items-center text-gray-700">{loc.name[lang]}</span>
-                                            <div className="mt-2 flex gap-1">
-                                                <div className={`w-3 h-3 rounded-full ${bonusLocations.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
-                                                <div className={`w-3 h-3 rounded-full ${clearedLocations.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                        <div className="flex-grow relative">
+                            <Scanner lang={lang} onScanSuccess={handleScanSuccess} />
                         </div>
                     </div>
-                </div>
-            );
-        };
-
-        const MapScreen = ({ user, locations, clearedLocations, bonusLocations, adminConfig, onSelectLocation, onOpenStampBook, onOpenGift, lang, setLang, onLogout }) => {
-            const t = TRANSLATIONS[lang];
-            const totalPts = clearedLocations.length + bonusLocations.length; 
-
-            return (
-                <div className="flex flex-col h-screen bg-gray-50 relative">
-                    {/* Header */}
-                    <header className="bg-white/90 backdrop-blur shadow-sm px-4 py-3 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch absolute top-0 w-full rounded-b-3xl border-b border-gray-100">
-                        <div className="flex flex-col gap-2 justify-center">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-black text-xl shadow flex-shrink-0">{user.name.charAt(0).toUpperCase()}</div>
-                                <div className="overflow-hidden">
-                                    <h1 className="font-bold text-gray-800 truncate leading-none mb-1.5 text-lg">{user.name}</h1>
-                                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-700 uppercase tracking-wider">{t[user.version]}</span>
-                                </div>
-                            </div>
-                            <LanguageSwitcher lang={lang} setLang={setLang} />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {user.version === 'local' && (
-                                <button onClick={onOpenGift} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 shadow-sm h-full w-16 hover:bg-purple-200 transition">
-                                    <i className="fa fa-gift text-xl"></i><span>{t.giftBtn}</span>
-                                </button>
-                            )}
-                            <button onClick={onOpenStampBook} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 border border-yellow-200 shadow-sm h-full w-20 hover:bg-yellow-200 transition">
-                                <i className="fa fa-book-open text-xl text-yellow-600"></i><span>{totalPts} {t.stamps}</span>
-                            </button>
-                            <button onClick={onLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center shadow-sm hover:bg-gray-200 transition"><i className="fa fa-sign-out-alt text-lg"></i></button>
-                        </div>
-                    </header>
-
-                    {/* Map Area */}
-                    <main className="flex-grow relative w-full h-full pt-28 pb-4 px-2">
-                        <div className="map-container h-full max-h-[800px]">
-                            {locations.map(loc => {
-                                const hasQr = bonusLocations.includes(loc.id);
-                                const hasQuiz = clearedLocations.includes(loc.id);
-                                const pts = (hasQr?1:0) + (hasQuiz?1:0);
-                                const isUnlocked = true; // All pins visible and clickable immediately
-                                
-                                return (
-                                    <div key={loc.id} className="loc-pin" style={loc.pos} onClick={() => onSelectLocation(loc)}>
-                                        <div className={`pin-icon ${pts===2?'pin-2':(pts===1?'pin-1':'pin-0')}`}>
-                                            <i className={`fa ${pts===2 ? 'fa-check-double' : (pts===1 ? 'fa-check' : 'fa-map-marker-alt')}`}></i>
-                                        </div>
-                                        <div className="pin-label">{loc.name[lang]}</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </main>
                 </div>
             );
         };
@@ -764,7 +558,6 @@
             const [notification, setNotification] = useState(null); 
             const [stampBookOpen, setStampBookOpen] = useState(false);
             const [giftOpen, setGiftOpen] = useState(false);
-            const [tutorialOpen, setTutorialOpen] = useState(false);
             
             const [cleared, setCleared] = useState([]); // Quiz points
             const [bonusLocs, setBonusLocs] = useState([]); // QR points
@@ -777,11 +570,9 @@
                     const savedEmail = localStorage.getItem('polyu_hunt_email');
                     const { auth, db, doc, onSnapshot, appId } = window.FB;
                     
-                    // Listen to global config and content
                     onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main'), snap => setContent(snap.data() || {}));
                     onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2'), snap => setAdminConfig(snap.data() || {}));
 
-                    // Restore session
                     window.FB.onAuthStateChanged(auth, async (fbUser) => {
                         if (fbUser && savedEmail) {
                             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'participants', fbUser.uid), snap => {
@@ -803,13 +594,44 @@
                 initApp();
             }, []);
 
-            const handleRegister = async (userData) => {
-                const { db, doc, setDoc, appId } = window.FB;
-                const fullData = { ...userData, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [] };
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', userData.uid), fullData);
-                localStorage.setItem('polyu_hunt_email', userData.email);
-                setUser(fullData);
-                setTutorialOpen(true);
+            const handleRegister = async (e) => {
+                e.preventDefault();
+                const form = { name: e.target.name.value, email: e.target.email.value, version: e.target.version.value, role: 'alumni' };
+                const { auth, signInAnonymously, db, doc, setDoc, appId } = window.FB;
+                
+                try {
+                    const cred = await signInAnonymously(auth);
+                    const fullData = { ...form, uid: cred.user.uid, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [], hasActivated: false };
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', cred.user.uid), fullData);
+                    localStorage.setItem('polyu_hunt_email', form.email);
+                    setUser(fullData);
+                } catch(err) { alert("Registration failed. Check network."); }
+            };
+
+            const handleActivate = async (result) => {
+                const { db, doc, updateDoc, appId, auth } = window.FB;
+                if (!auth?.currentUser) return;
+                
+                let newBonus = [...bonusLocs];
+                if (result.type === 'location' && !bonusLocs.includes(result.locationId)) {
+                    newBonus.push(result.locationId);
+                    setBonusLocs(newBonus);
+                }
+                
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
+                        hasActivated: true,
+                        bonusLocations: newBonus
+                    });
+                    setUser(prev => ({ ...prev, hasActivated: true }));
+                    if (result.type === 'location') {
+                        showNotify(TRANSLATIONS[lang].stampCollectedTitle, "Game Activated! 1 Point Earned for location.", "success", "fa-star");
+                        const loc = LOCATIONS.find(l => l.id === result.locationId);
+                        if (loc) setActiveLoc(loc);
+                    } else {
+                        showNotify("Map Unlocked!", "Master key used. Game is active.", "success", "fa-unlock");
+                    }
+                } catch(e) { console.error(e); }
             };
 
             const handleLogout = async () => {
@@ -819,77 +641,149 @@
             };
 
             const handleSavePoints = async (locId, type) => {
-                const { db, doc, setDoc, appId, auth } = window.FB;
+                const { db, doc, updateDoc, appId, auth } = window.FB;
                 if (!auth?.currentUser) return;
-                
                 let newCleared = [...cleared];
                 let newBonus = [...bonusLocs];
                 if (type === 'quiz' && !cleared.includes(locId)) newCleared.push(locId);
                 if (type === 'qr' && !bonusLocs.includes(locId)) newBonus.push(locId);
                 
-                setCleared(newCleared);
-                setBonusLocs(newBonus);
-                
+                setCleared(newCleared); setBonusLocs(newBonus);
                 try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
                         clearedLocations: newCleared, bonusLocations: newBonus
-                    }, { merge: true });
-                } catch(e) { console.error("Error saving point", e); }
-            };
-
-            const handleSaveAddress = async (address) => {
-                const { db, doc, updateDoc, appId, auth } = window.FB;
-                if (!auth?.currentUser) return;
-                try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), { address });
-                    setUser(prev => ({...prev, address}));
-                    showNotify(TRANSLATIONS[lang].giftTitle, TRANSLATIONS[lang].savedMsg, "success", "fa-gift");
-                    setGiftOpen(false);
-                } catch(e) { console.error("Error saving address:", e); }
+                    });
+                } catch(e) {}
             };
 
             const showNotify = (title, message, type = 'info', customIcon = null) => setNotification({ title, message, type, customIcon });
 
+            const fontClass = lang === 'sc' ? 'lang-sc' : (lang === 'tc' ? 'lang-tc' : 'lang-en');
+            const t = TRANSLATIONS[lang];
+            const totalPts = cleared.length + bonusLocs.length; 
+
             if (!initialized) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><i className="fa fa-spinner fa-spin text-4xl text-[#A6192E]"></i></div>;
             
-            // FIX: Wrap the Register component in the language class so fonts apply to the login screen
             if (!user) return (
-                <div className={`lang-${lang}`}>
-                    <Register onComplete={handleRegister} lang={lang} setLang={setLang} />
+                <div className={`min-h-screen flex items-center justify-center p-4 bg-gray-50 relative overflow-hidden ${fontClass}`}>
+                    <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 border border-gray-100 slide-up">
+                        <div className="flex justify-end mb-4"><LanguageSwitcher lang={lang} setLang={setLang} /></div>
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 mx-auto bg-[#A6192E] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4"><i className="fa fa-university text-4xl text-white transform -rotate-3"></i></div>
+                            <h1 className="text-3xl font-black text-gray-800 leading-tight">{t.appTitle}</h1>
+                            <p className="text-[#A6192E] font-bold text-sm tracking-widest uppercase mt-1">{t.subtitle}</p>
+                        </div>
+                        <form onSubmit={handleRegister} className="space-y-4">
+                            <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input name="name" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
+                            <div><label className="text-xs font-bold text-gray-500 ml-1">{t.email}</label><input type="email" name="email" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="local" defaultChecked className="accent-[#A6192E] w-4 h-4" /> {t.local}</label>
+                                <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
+                            </div>
+                            <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.startBtn}</button>
+                        </form>
+                    </div>
                 </div>
             );
 
             return (
-                <div className={`text-gray-800 lang-${lang} h-screen w-full overflow-hidden`}>
+                <div className={`text-gray-800 ${fontClass} h-screen w-full overflow-hidden flex flex-col relative`}>
                     {notification && <NotificationModal {...notification} onClose={()=>setNotification(null)} lang={lang} />}
-                    {tutorialOpen && <TutorialModal onClose={()=>setTutorialOpen(false)} lang={lang} />}
-                    {stampBookOpen && <StampBook locations={LOCATIONS} clearedLocations={cleared} bonusLocations={bonusLocs} onClose={()=>setStampBookOpen(false)} lang={lang} />}
-                    {giftOpen && <GiftModal user={user} onClose={()=>setGiftOpen(false)} onSave={handleSaveAddress} lang={lang} />}
+                    
+                    {/* Activation Gate */}
+                    {user && !user.hasActivated && <ActivationModal onActivate={handleActivate} lang={lang} />}
 
+                    {/* Modals & Screens */}
                     {activeLoc && (
                         <MissionOrchestrator 
-                            location={activeLoc} 
-                            user={{...user, clearedLocations: cleared, bonusLocations: bonusLocs}} 
-                            content={content}
-                            adminConfig={adminConfig}
-                            lang={lang} 
-                            onSavePoints={handleSavePoints}
-                            onClose={()=>setActiveLoc(null)}
-                            showNotify={showNotify}
+                            location={activeLoc} user={{...user, clearedLocations: cleared, bonusLocations: bonusLocs}} 
+                            content={content} adminConfig={adminConfig} lang={lang} 
+                            onSavePoints={handleSavePoints} onClose={()=>setActiveLoc(null)} showNotify={showNotify}
                         />
                     )}
+                    
+                    {giftOpen && (
+                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
+                            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
+                                <div className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white text-center">
+                                    <button onClick={()=>setGiftOpen(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40"><i className="fa fa-times"></i></button>
+                                    <i className="fa fa-gift text-5xl mb-2 drop-shadow-md"></i>
+                                    <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
+                                </div>
+                                <form onSubmit={(e)=>{e.preventDefault(); alert('Saved!'); setGiftOpen(false);}} className="p-6 space-y-4 bg-gray-50">
+                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">{t.localOnly}</div>
+                                    <textarea className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" required></textarea>
+                                    <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg">{t.submitBtn}</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
 
-                    <MapScreen 
-                        user={user} 
-                        locations={LOCATIONS} 
-                        clearedLocations={cleared} 
-                        bonusLocations={bonusLocs}
-                        adminConfig={adminConfig}
-                        onSelectLocation={setActiveLoc}
-                        onOpenStampBook={()=>setStampBookOpen(true)}
-                        onOpenGift={()=>setGiftOpen(true)}
-                        lang={lang} setLang={setLang} onLogout={handleLogout} 
-                    />
+                    {stampBookOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm" onClick={()=>setStampBookOpen(false)}>
+                            <div className="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative slide-up" onClick={e=>e.stopPropagation()}>
+                                <div className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex justify-between items-center shrink-0">
+                                    <div><h2 className="text-2xl font-black">{t.stamps}</h2><p className="text-gray-300 font-bold text-sm mt-1">{totalPts} Earned</p></div>
+                                    <button onClick={()=>setStampBookOpen(false)} className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"><i className="fa fa-times"></i></button>
+                                </div>
+                                <div className="flex-grow overflow-y-auto p-4 bg-gray-50 grid grid-cols-2 gap-3">
+                                    {LOCATIONS.map(loc => {
+                                        const pts = (cleared.includes(loc.id)?1:0) + (bonusLocs.includes(loc.id)?1:0);
+                                        return (
+                                            <div key={loc.id} className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-colors ${pts===2?'border-green-500 bg-green-50':(pts===1?'border-yellow-400 bg-yellow-50':'border-gray-200 bg-white')}`}>
+                                                <div className={`stamp-circle mb-3 stamp-earned-${pts}`}><i className={`fa ${loc.icon}`}></i></div>
+                                                <span className="text-[11px] font-bold text-center leading-tight h-8 flex items-center text-gray-700">{loc.name[lang]}</span>
+                                                <div className="mt-2 flex gap-1">
+                                                    <div className={`w-3 h-3 rounded-full ${bonusLocs.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
+                                                    <div className={`w-3 h-3 rounded-full ${cleared.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Header */}
+                    <header className="bg-white/90 backdrop-blur shadow-sm px-4 py-3 z-10 grid grid-cols-[1fr_auto] gap-4 items-stretch absolute top-0 w-full rounded-b-3xl border-b border-gray-100">
+                        <div className="flex flex-col gap-2 justify-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#A6192E] rounded-full flex items-center justify-center text-white font-black text-xl shadow flex-shrink-0">{user.name.charAt(0).toUpperCase()}</div>
+                                <div className="overflow-hidden">
+                                    <h1 className="font-bold text-gray-800 truncate leading-none mb-1.5 text-lg">{user.name}</h1>
+                                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-red-100 text-red-700 uppercase tracking-wider">{t[user.version]}</span>
+                                </div>
+                            </div>
+                            <LanguageSwitcher lang={lang} setLang={setLang} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {user.version === 'local' && (
+                                <button onClick={()=>setGiftOpen(true)} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 shadow-sm h-full w-16 hover:bg-purple-200 transition">
+                                    <i className="fa fa-gift text-xl"></i><span>{t.giftBtn}</span>
+                                </button>
+                            )}
+                            <button onClick={()=>setStampBookOpen(true)} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 border border-yellow-200 shadow-sm h-full w-20 hover:bg-yellow-200 transition">
+                                <i className="fa fa-book-open text-xl text-yellow-600"></i><span>{totalPts} {t.stamps}</span>
+                            </button>
+                            <button onClick={handleLogout} className="w-12 h-full rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center shadow-sm hover:bg-gray-200 transition"><i className="fa fa-sign-out-alt text-lg"></i></button>
+                        </div>
+                    </header>
+
+                    {/* Map Area */}
+                    <main className="flex-grow relative w-full h-full pt-28 pb-4 px-2 bg-gray-50">
+                        <div className="map-container h-full max-h-[800px]">
+                            {LOCATIONS.map(loc => {
+                                const pts = (bonusLocs.includes(loc.id)?1:0) + (cleared.includes(loc.id)?1:0);
+                                return (
+                                    <div key={loc.id} className="loc-pin" style={loc.pos} onClick={() => setActiveLoc(loc)}>
+                                        <div className={`pin-icon ${pts===2?'pin-2':(pts===1?'pin-1':'pin-0')}`}><i className={`fa ${pts===2?'fa-check-double':(pts===1?'fa-check':'fa-map-marker-alt')}`}></i></div>
+                                        <div className="pin-label">{loc.name[lang]}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </main>
                 </div>
             );
         };
