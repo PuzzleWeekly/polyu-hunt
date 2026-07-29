@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -66,7 +66,9 @@
         @keyframes stampPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
         
         /* Language Fonts */
-        .lang-tc, .lang-sc { font-family: 'Noto Sans TC', 'PingFang HK', 'Microsoft JhengHei', sans-serif; }
+        .lang-en { font-family: 'Inter', sans-serif !important; }
+        .lang-tc { font-family: 'Noto Sans TC', 'PingFang HK', 'Microsoft JhengHei', sans-serif !important; }
+        .lang-sc { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif !important; }
         
         /* Map Layout */
         .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('https://placehold.co/1080x1920/e2e8f0/94a3b8?text=PolyU+Campus+Map') center/cover no-repeat; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
@@ -106,13 +108,13 @@
 
         const TRANSLATIONS = {
             en: {
-                appTitle: "PolyU Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan Location QR / PIN", answerQ: "Answer Question", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", qrPoints: "1 pt", quizPoints: "1 pt", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Not Me 🙅‍♂️", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", welcomeBack: "Welcome Back!", logout: "Logout", pts0: "Not Started", pts1: "Partially Cleared", pts2: "Fully Conquered", unlocksOn: "Unlocks on", tryAgain: "Try Again", wait: "Wait", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", capture: "Capture Photo", retake: "Retake", saveShare: "Save / Share", scanOrPin: "Scan QR or Enter PIN", manualPin: "Manual PIN Entry", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!"
+                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan Location QR / PIN", answerQ: "Answer Question", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", qrPoints: "1 pt", quizPoints: "1 pt", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Not Me 🙅‍♂️", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", welcomeBack: "Welcome Back!", logout: "Logout", pts0: "Not Started", pts1: "Partially Cleared", pts2: "Fully Conquered", unlocksOn: "Unlocks on", tryAgain: "Try Again", wait: "Wait", grandSuccessTitle: "GRAND SUCCESS!", grandSuccessMsg: "All locations conquered!", capture: "Capture Photo", retake: "Retake", saveShare: "Save / Share", scanOrPin: "Scan QR or Enter PIN", manualPin: "Manual PIN Entry", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!"
             },
             tc: {
-                appTitle: "理大解謎遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", qrPoints: "1 分", quizPoints: "1 分", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", welcomeBack: "歡迎回來!", logout: "登出", pts0: "未開始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解鎖日期：", tryAgain: "重試", wait: "請等待", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", scanOrPin: "掃描 QR 或輸入 PIN", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！"
+                appTitle: "理大尋寶遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", qrPoints: "1 分", quizPoints: "1 分", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", welcomeBack: "歡迎回來!", logout: "登出", pts0: "未開始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解鎖日期：", tryAgain: "重試", wait: "請等待", grandSuccessTitle: "大獲全勝！", grandSuccessMsg: "征服所有地點！", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", scanOrPin: "掃描 QR 或輸入 PIN", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！"
             },
             sc: {
-                appTitle: "理大解谜游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", qrPoints: "1 分", quizPoints: "1 分", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", welcomeBack: "欢迎回来!", logout: "登出", pts0: "未开始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解锁日期：", tryAgain: "重试", wait: "请等待", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "征服所有地点！", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", scanOrPin: "扫描 QR 或输入 PIN", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！"
+                appTitle: "理大寻宝游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", qrPoints: "1 分", quizPoints: "1 分", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "不是我 🙅‍♂️", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", welcomeBack: "欢迎回来!", logout: "登出", pts0: "未开始", pts1: "部分完成", pts2: "完全征服", unlocksOn: "解锁日期：", tryAgain: "重试", wait: "请等待", grandSuccessTitle: "大获全胜！", grandSuccessMsg: "征服所有地点！", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", scanOrPin: "扫描 QR 或输入 PIN", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！"
             }
         };
 
@@ -850,7 +852,12 @@
 
             if (!initialized) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><i className="fa fa-spinner fa-spin text-4xl text-[#A6192E]"></i></div>;
             
-            if (!user) return <Register onComplete={handleRegister} lang={lang} setLang={setLang} />;
+            // FIX: Wrap the Register component in the language class so fonts apply to the login screen
+            if (!user) return (
+                <div className={`lang-${lang}`}>
+                    <Register onComplete={handleRegister} lang={lang} setLang={setLang} />
+                </div>
+            );
 
             return (
                 <div className={`text-gray-800 lang-${lang} h-screen w-full overflow-hidden`}>
