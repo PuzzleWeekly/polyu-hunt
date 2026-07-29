@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PolyU Treasure Hunt</title>
+    <title>PolyU Treasure Hunt | 理大尋寶遊戲</title>
     
     <!-- Google Fonts for Typography matching -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
     
     <!-- Tailwind CSS -->
@@ -39,7 +39,7 @@
             appId: "1:958809195745:web:1be0bc46e7cdf88a6e63a0",
             measurementId: "G-S3HQ8XDE59"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const appId = "polyu_hunt_game_v6"; // Main Database Node
@@ -56,7 +56,7 @@
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #f8fafc; overflow: hidden; overscroll-behavior-y: contain; touch-action: pan-x pan-y; }
+        body { -webkit-tap-highlight-color: transparent; background-color: #f8fafc; overflow: hidden; overscroll-behavior-y: contain; touch-action: pan-x pan-y; margin: 0; padding: 0; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .stamp-pop { animation: stampPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -65,27 +65,22 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes stampPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
         
-        /* Language Fonts (Ensures absolute consistency) */
+        /* Strict Language Fonts assigned to Root */
         .lang-en { font-family: 'Inter', sans-serif !important; }
         .lang-tc { font-family: 'Noto Sans TC', sans-serif !important; }
         .lang-sc { font-family: 'Noto Sans SC', sans-serif !important; }
         
         /* Map Layout */
         .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('https://placehold.co/1080x1920/e2e8f0/94a3b8?text=PolyU+Campus+Map') center/cover no-repeat; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
-        .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; items-align: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
+        .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
         .loc-pin:active { transform: translate(-50%, -100%) scale(0.9); }
-        .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; }
+        .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; transition: all 0.3s ease; }
         
         .pin-0 { background: #A6192E; } /* Red: 0 pts */
         .pin-1 { background: #EAB308; } /* Yellow: 1 pt */
-        .pin-2 { background: #22C55E; } /* Green: 2 pts */
+        .pin-2 { background: #22C55E; } /* Green: 2 pts (or 1 pt for overseas) */
         
         .pin-label { background: rgba(255,255,255,0.95); color: #333; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-top: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; border: 1px solid #ddd; text-align: center; line-height: 1.1; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
-
-        .stamp-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        .stamp-earned-0 { background: #f1f5f9; color: #cbd5e1; border: 2px dashed #cbd5e1; }
-        .stamp-earned-1 { background: #fef08a; color: #a16207; border: 2px solid #eab308; }
-        .stamp-earned-2 { background: #bbf7d0; color: #15803d; border: 2px solid #22c55e; }
     </style>
 </head>
 <body>
@@ -97,7 +92,7 @@
         const MASTER_KEY = "1937";
         const MASTER_QR = "master_unlock";
 
-        // Ensures timezone local parsing
+        // Ensures timezone local parsing for correct day unlocks (Fixes Hong Kong offset bug)
         const parseLocalDate = (dateString) => {
             const parts = dateString.split('-');
             if (parts.length === 3) {
@@ -110,13 +105,46 @@
 
         const TRANSLATIONS = {
             en: {
-                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", startBtn: "Next", registerBtn: "Complete Registration", stamps: "Points", scanQr: "Scan QR / PIN (1 Pt)", answerQ: "Answer Question (1 Pt)", takePhoto: "Take Photo", lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", login: "Login", wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", savedMsg: "Address saved successfully!", activateTitle: "Activate Game", activateMsg: "Enter a location PIN or Master Key to start the game!"
+                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", 
+                emailPrompt: "Enter Email to Start", nextBtn: "Next", newAccountPrompt: "Welcome! Complete your profile:",
+                fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", 
+                role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", registerBtn: "Complete Registration", login: "Login", 
+                stamps: "Points", scanQr: "Scan Location QR / PIN (1 Pt)", answerQ: "Answer Question (1 Pt)", takePhoto: "Take Photo", 
+                lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", lockedPhotoOverseas: "Answer the quiz to unlock Photo Booth!",
+                scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", 
+                challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
+                wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", 
+                capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", 
+                giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", 
+                activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!"
             },
             tc: {
-                appTitle: "理大尋寶遊戲", subtitle: "理大校友週", fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", startBtn: "下一步", registerBtn: "完成註冊", stamps: "積分", scanQr: "掃描地點 QR / PIN", answerQ: "回答問題", takePhoto: "拍照留念", lockedPhoto: "完成掃描或問題解鎖相機！", scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", challenge: "問題挑戰", incorrect: "答錯了！請重試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", login: "登入", wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", savedMsg: "地址已成功儲存！", activateTitle: "啟動遊戲", activateMsg: "請輸入地點密碼或掃描 QR 碼以開始遊戲！"
+                appTitle: "理大尋寶遊戲", subtitle: "理大校友週", 
+                emailPrompt: "輸入電郵以開始", nextBtn: "下一步", newAccountPrompt: "歡迎！請完成您的個人資料：",
+                fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", 
+                role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", registerBtn: "完成註冊", login: "登入", 
+                stamps: "積分", scanQr: "掃描地點 QR / PIN (1 分)", answerQ: "回答問題 (1 分)", takePhoto: "拍照留念", 
+                lockedPhoto: "完成掃描或問題解鎖相機！", lockedPhotoOverseas: "回答問題以解鎖相機！",
+                scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", 
+                challenge: "問題挑戰", incorrect: "答錯了！請重試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
+                wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", 
+                capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", 
+                giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", 
+                activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！"
             },
             sc: {
-                appTitle: "理大寻宝游戏", subtitle: "理大校友周", fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", startBtn: "下一步", registerBtn: "完成注册", stamps: "积分", scanQr: "扫描地点 QR / PIN", answerQ: "回答问题", takePhoto: "拍照留念", lockedPhoto: "完成扫描或问题解锁相机！", scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", challenge: "问题挑战", incorrect: "答错了！请重试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", login: "登入", wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", savedMsg: "地址已成功保存！", activateTitle: "启动游戏", activateMsg: "请输入地点密码或扫描 QR 码以开始游戏！"
+                appTitle: "理大寻宝游戏", subtitle: "理大校友周", 
+                emailPrompt: "输入电邮以开始", nextBtn: "下一步", newAccountPrompt: "欢迎！请完成您的个人资料：",
+                fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", 
+                role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", registerBtn: "完成注册", login: "登入", 
+                stamps: "积分", scanQr: "扫描地点 QR / PIN (1 分)", answerQ: "回答问题 (1 分)", takePhoto: "拍照留念", 
+                lockedPhoto: "完成扫描或问题解锁相机！", lockedPhotoOverseas: "回答问题以解锁相机！",
+                scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", 
+                challenge: "问题挑战", incorrect: "答错了！请重试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
+                wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", 
+                capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", 
+                giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", 
+                activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！"
             }
         };
 
@@ -133,19 +161,6 @@
             { id: 'brick_wall', qrId: 'w2N9cZ5b', name: { en: "Brick Wall", tc: "紀念磚牆", sc: "纪念砖墙" }, icon: 'fa-th-large', pos: { top: '85%', left: '30%' }, code: '2835' }
         ];
 
-        const DEFAULT_QUESTIONS = {
-            alumni_atrium: { text: { en: "In what year was PolyU officially granted university status?", tc: "理大於哪一年正式獲得大學地位？", sc: "理大于哪一年正式获得大学地位？" }, options: { en: ["1990", "1994", "1997", "2000"], tc: ["1990", "1994", "1997", "2000"], sc: ["1990", "1994", "1997", "2000"] }, answer: { en: "1994", tc: "1994", sc: "1994" } },
-            core_a: { text: { en: "What is PolyU's motto?", tc: "理大的校訓是什麼？", sc: "理大的校训是什么？" }, options: { en: ["To Learn and To Apply", "To learn and to apply, for the benefit of mankind", "Innovation for all", "Excellence in Education"], tc: ["開物成務", "開物成務 勵學利民", "創新為民", "卓越教育"], sc: ["开物成务", "开物成务 励学利民", "创新为民", "卓越教育"] }, answer: { en: "To learn and to apply, for the benefit of mankind", tc: "開物成務 勵學利民", sc: "开物成务 励学利民" } },
-            uni_gallery: { text: { en: "What color is predominantly associated with PolyU?", tc: "理大的代表顏色是什麼？", sc: "理大的代表颜色是什么？" }, options: { en: ["Blue", "Green", "Brick Red", "Yellow"], tc: ["藍色", "綠色", "磚紅色", "黃色"], sc: ["蓝色", "绿色", "砖红色", "黄色"] }, answer: { en: "Brick Red", tc: "磚紅色", sc: "砖红色" } },
-            logo_square: { text: { en: "Who designed the current PolyU logo?", tc: "理大現時的校徽由誰設計？", sc: "理大现时的校徽由谁设计？" }, options: { en: ["Alan Chan", "Kan Tai-keung", "Freeman Lau", "Tommy Li"], tc: ["陳幼堅", "靳埭強", "劉小康", "李永銓"], sc: ["陈幼坚", "靳埭强", "刘小康", "李永铨"] }, answer: { en: "Alan Chan", tc: "陳幼堅", sc: "陈幼坚" } },
-            va_kiosk: { text: { en: "Which building core is closest to the VA Kiosk?", tc: "哪一座教學樓最靠近 VA 亭？", sc: "哪一座教学楼最靠近 VA 亭？" }, options: { en: ["Core A", "Core V", "Core P", "Core W"], tc: ["A 座", "V 座", "P 座", "W 座"], sc: ["A 座", "V 座", "P 座", "W 座"] }, answer: { en: "Core V", tc: "V 座", sc: "V 座" } },
-            core_w: { text: { en: "What facility is mainly housed in the Lee Shau Kee Building?", tc: "李兆基樓主要設有什麼設施？", sc: "李兆基楼主要设有什么设施？" }, options: { en: ["Sports Hall", "Library", "Lecture Theatres", "Canteen"], tc: ["體育館", "圖書館", "演講廳", "飯堂"], sc: ["体育馆", "图书馆", "演讲厅", "饭堂"] }, answer: { en: "Lecture Theatres", tc: "演講廳", sc: "演讲厅" } },
-            library: { text: { en: "Who is the Pao Yue-kong Library named after?", tc: "包玉剛圖書館是以誰的名字命名的？", sc: "包玉刚图书馆是以谁的名字命名的？" }, options: { en: ["A famous architect", "A shipping magnate", "A former president", "A government official"], tc: ["一位著名建築師", "一位航運巨頭", "一位前任校長", "一位政府官員"], sc: ["一位著名建筑师", "一位航运巨头", "一位前任校长", "一位政府官员"] }, answer: { en: "A shipping magnate", tc: "一位航運巨頭", sc: "一位航运巨头" } },
-            house_of_innovation: { text: { en: "What does the House of Innovation showcase?", tc: "創新館主要展示什麼？", sc: "创新馆主要展示什么？" }, options: { en: ["Student Art", "Historical Artifacts", "Research Achievements", "Sports Trophies"], tc: ["學生藝術品", "歷史文物", "科研成就", "體育獎盃"], sc: ["学生艺术品", "历史文物", "科研成就", "体育奖杯"] }, answer: { en: "Research Achievements", tc: "科研成就", sc: "科研成就" } },
-            innovation_tower: { text: { en: "Who was the architect of the Jockey Club Innovation Tower?", tc: "賽馬會創新樓的建築師是誰？", sc: "赛马会创新楼的建筑师是谁？" }, options: { en: ["Norman Foster", "I.M. Pei", "Zaha Hadid", "Frank Gehry"], tc: ["諾曼·福斯特", "貝聿銘", "扎哈·哈迪德", "弗蘭克·蓋里"], sc: ["诺曼·福斯特", "贝聿铭", "扎哈·哈迪德", "弗兰克·盖里"] }, answer: { en: "Zaha Hadid", tc: "扎哈·哈迪德", sc: "扎哈·哈迪德" } },
-            brick_wall: { text: { en: "What is commemorated on the Commemorative Brick Wall?", tc: "紀念磚牆是為了紀念什麼？", sc: "纪念砖墙是为了纪念什么？" }, options: { en: ["Donors and Supporters", "First Graduates", "Former Presidents", "Nobel Laureates"], tc: ["捐贈者和支持者", "首批畢業生", "歷任校長", "諾貝爾獎得主"], sc: ["捐赠者和支持者", "首批毕业生", "历任校长", "诺贝尔奖得主"] }, answer: { en: "Donors and Supporters", tc: "捐贈者和支持者", sc: "捐赠者和支持者" } }
-        };
-
         const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
                 <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl stamp-pop relative overflow-hidden" onClick={e=>e.stopPropagation()}>
@@ -158,7 +173,7 @@
                     <p className="text-gray-600 font-medium mb-8 leading-relaxed">{message}</p>
                     <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95
                         ${type === 'success' ? 'bg-green-500 hover:bg-green-600' : (type === 'error' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#A6192E] hover:bg-red-800')}`}>
-                        {TRANSLATIONS[lang].startBtn}
+                        {TRANSLATIONS[lang].nextBtn}
                     </button>
                 </div>
             </div>
@@ -196,7 +211,6 @@
                                 const imgData = ctx.getImageData(0, 0, c.width, c.height);
                                 const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
                                 if (code) {
-                                    // Extract the QR value, see if it matches any location or master
                                     let match = null;
                                     if (code.data.includes(MASTER_QR)) match = MASTER_KEY;
                                     else {
@@ -229,7 +243,6 @@
                     <div className="flex-grow relative overflow-hidden flex items-center justify-center">
                         <video ref={videoRef} autoPlay playsInline className="absolute w-full h-full object-cover opacity-60"></video>
                         <canvas ref={canvasRef} className="hidden"></canvas>
-                        
                         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6">
                             <div className="w-64 h-64 border-2 border-white/50 rounded-3xl relative overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
                                 <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-400 rounded-tl-xl"></div>
@@ -241,7 +254,6 @@
                             <p className="mt-8 font-bold text-lg tracking-widest uppercase text-white drop-shadow-md">{t.scanning}</p>
                         </div>
                     </div>
-                    
                     <div className="bg-white p-6 rounded-t-3xl relative z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
                         <form onSubmit={handlePinSubmit} className="flex gap-3 max-w-sm mx-auto">
                             <input type="text" placeholder={t.manualPin} className="flex-grow p-4 bg-gray-100 rounded-xl outline-none font-mono text-center text-gray-800 text-lg tracking-widest font-bold focus:border-[#A6192E] border-2 border-transparent transition" value={pinInput} onChange={e=>setPinInput(e.target.value)} maxLength="4" />
@@ -253,18 +265,103 @@
             );
         };
 
+        const PhotoBooth = ({ locationId, lang, onBack }) => {
+            const t = TRANSLATIONS[lang];
+            const videoRef = useRef(null);
+            const canvasRef = useRef(null);
+            const [stream, setStream] = useState(null);
+            const [photoData, setPhotoData] = useState(null);
+            const [facingMode, setFacingMode] = useState('environment');
+
+            const startCamera = async () => {
+                if (stream) stream.getTracks().forEach(track => track.stop());
+                try {
+                    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+                    setStream(s);
+                    if (videoRef.current) videoRef.current.srcObject = s;
+                } catch (e) { alert("Camera access denied or unavailable."); }
+            };
+
+            useEffect(() => {
+                startCamera();
+                return () => { if (stream) stream.getTracks().forEach(t => t.stop()); };
+            }, [facingMode]);
+
+            const capture = () => {
+                if (!videoRef.current || !canvasRef.current) return;
+                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
+                c.width = v.videoWidth; c.height = v.videoHeight;
+                
+                if (facingMode === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
+                ctx.drawImage(v, 0, 0, c.width, c.height);
+                if (facingMode === 'user') ctx.setTransform(1, 0, 0, 1, 0, 0);
+                
+                const frame = new Image();
+                frame.crossOrigin = "anonymous";
+                frame.src = `frame_${locationId}.png`;
+                frame.onload = () => {
+                    ctx.drawImage(frame, 0, 0, c.width, c.height);
+                    setPhotoData(c.toDataURL('image/png'));
+                };
+                frame.onerror = () => { setPhotoData(c.toDataURL('image/png')); };
+            };
+
+            const download = () => {
+                const link = document.createElement('a'); link.download = `polyu_hunt_${locationId}.png`;
+                link.href = photoData; link.click();
+            };
+
+            const retake = () => {
+                setPhotoData(null);
+                setTimeout(() => startCamera(), 100); 
+            };
+
+            return (
+                <div className="flex flex-col h-full bg-black fade-in text-white relative">
+                    <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-arrow-left"></i></button>
+                    {!photoData && (
+                        <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-sync-alt"></i></button>
+                    )}
+                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
+                        {!photoData ? (
+                            <>
+                                <video ref={videoRef} autoPlay playsInline className={`absolute w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
+                                <img src={`frame_${locationId}.png`} className="absolute w-full h-full object-cover pointer-events-none opacity-80 border-4 border-dashed border-white/20" alt="" onError={(e)=>e.target.style.display='none'}/>
+                                <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
+                                    <button onClick={capture} className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition">
+                                        <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"></div>
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center bg-gray-900 pt-16 pb-6">
+                                <div className="flex-grow w-full flex justify-center items-center overflow-hidden px-4">
+                                    <img src={photoData} className="w-full h-auto max-h-full object-contain shadow-2xl rounded-lg" alt="Captured" />
+                                </div>
+                                <div className="flex gap-4 px-6 mt-6 w-full max-w-sm shrink-0">
+                                    <button onClick={retake} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
+                                    <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <canvas ref={canvasRef} className="hidden"></canvas>
+                </div>
+            );
+        };
+
         const QuizModule = ({ locationId, content, lang, onClear, onFail }) => {
             const t = TRANSLATIONS[lang];
-            const q = content?.questions?.[locationId] || DEFAULT_QUESTIONS[locationId];
+            const q = content?.questions?.[locationId];
             const [selected, setSelected] = useState(null);
             const [submitted, setSubmitted] = useState(false);
             
+            if (!q) return <div className="p-6 text-center text-gray-500">Question data missing.</div>;
+
             const handleSubmit = () => {
                 if(!selected) return;
                 setSubmitted(true);
-                if(selected === q.answer[lang]) {
-                    setTimeout(() => onClear(), 1500);
-                }
+                if(selected === q.answer[lang]) setTimeout(() => onClear(), 1500);
             };
 
             const isWrong = submitted && selected !== q.answer[lang];
@@ -321,121 +418,26 @@
             );
         };
 
-        const PhotoBooth = ({ locationId, lang, onBack }) => {
-            const t = TRANSLATIONS[lang];
-            const videoRef = useRef(null);
-            const canvasRef = useRef(null);
-            const streamRef = useRef(null);
-            const [photoData, setPhotoData] = useState(null);
-            const [facingMode, setFacingMode] = useState('environment');
-
-            const startCamera = async () => {
-                if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-                try {
-                    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
-                    streamRef.current = s;
-                    if (videoRef.current) videoRef.current.srcObject = s;
-                } catch (e) { alert("Camera access denied or unavailable."); }
-            };
-
-            useEffect(() => {
-                startCamera();
-                return () => { if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop()); };
-            }, [facingMode]);
-
-            const capture = () => {
-                if (!videoRef.current || !canvasRef.current) return;
-                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
-                c.width = v.videoWidth; c.height = v.videoHeight;
-                
-                // If front camera, mirror image for natural feel
-                if (facingMode === 'user') {
-                    ctx.translate(c.width, 0);
-                    ctx.scale(-1, 1);
-                }
-                ctx.drawImage(v, 0, 0, c.width, c.height);
-                // Reset transform for frame
-                if (facingMode === 'user') {
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                }
-                
-                const frame = new Image();
-                frame.crossOrigin = "anonymous";
-                frame.src = `frame_${locationId}.png`;
-                frame.onload = () => {
-                    ctx.drawImage(frame, 0, 0, c.width, c.height);
-                    setPhotoData(c.toDataURL('image/png'));
-                };
-                frame.onerror = () => { setPhotoData(c.toDataURL('image/png')); };
-            };
-
-            const download = () => {
-                const link = document.createElement('a'); link.download = `polyu_hunt_${locationId}.png`;
-                link.href = photoData; link.click();
-            };
-
-            const retake = () => {
-                setPhotoData(null);
-                startCamera(); // Explicitly restart the feed fixing black screen
-            };
-
-            return (
-                <div className="flex flex-col h-full bg-black fade-in text-white relative">
-                    <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-arrow-left"></i></button>
-                    
-                    {!photoData && (
-                        <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-sync-alt"></i></button>
-                    )}
-
-                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
-                        {!photoData ? (
-                            <>
-                                <video ref={videoRef} autoPlay playsInline className={`absolute w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
-                                <img src={`frame_${locationId}.png`} className="absolute w-full h-full object-cover pointer-events-none opacity-80 border-4 border-dashed border-white/20" alt="" onError={(e)=>e.target.style.display='none'}/>
-                                <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
-                                    <button onClick={capture} className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition">
-                                        <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"></div>
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="w-full h-full flex flex-col items-center bg-gray-900 pt-16 pb-6">
-                                <div className="flex-grow w-full flex justify-center items-center overflow-hidden px-4">
-                                    <img src={photoData} className="w-full h-auto max-h-full object-contain shadow-2xl rounded-lg" alt="Captured" />
-                                </div>
-                                <div className="flex gap-4 px-6 mt-6 w-full max-w-sm shrink-0">
-                                    <button onClick={retake} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
-                                    <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <canvas ref={canvasRef} className="hidden"></canvas>
-                </div>
-            );
-        };
-
         const MissionOrchestrator = ({ location, user, content, adminConfig, lang, onSavePoints, onClose, showNotify }) => {
             const t = TRANSLATIONS[lang];
             const [view, setView] = useState(null);
             
-            // Progressive unlock logic
+            // Progressive unlock logic based on local time
             const orderIndex = (adminConfig.locationOrder || LOCATIONS.map(l=>l.id)).indexOf(location.id);
-            const startD = parseLocalDate(adminConfig.startDate || '2026-07-28');
-            const unlockD = new Date(startD);
+            const unlockD = parseLocalDate(adminConfig.startDate || '2026-07-28');
             unlockD.setDate(unlockD.getDate() + (orderIndex >= 0 ? orderIndex : 0));
             
-            const today = new Date();
-            today.setHours(0,0,0,0);
+            const today = new Date(); today.setHours(0,0,0,0);
             const isQuizUnlocked = today >= unlockD;
-            
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             const unlockStr = `${unlockD.getDate()} ${months[unlockD.getMonth()]}`;
 
-            // Completion status
-            const hasQrPt = (user.bonusLocations || []).includes(location.id);
+            // Points check
+            const isOverseas = user.version === 'overseas';
+            const hasQrPt = isOverseas ? false : (user.bonusLocations || []).includes(location.id);
             const hasQuizPt = (user.clearedLocations || []).includes(location.id);
             const totalPts = (hasQrPt ? 1 : 0) + (hasQuizPt ? 1 : 0);
+            const maxPts = isOverseas ? 1 : 2;
 
             const handlePointGained = async (type) => {
                 await onSavePoints(location.id, type);
@@ -444,11 +446,8 @@
             };
 
             const handleScanSuccess = (code) => {
-                if (code === location.code) {
-                    handlePointGained('qr');
-                } else {
-                    alert(t.invalidPin);
-                }
+                if (code === location.code) handlePointGained('qr');
+                else alert(t.invalidPin);
             };
 
             return (
@@ -461,7 +460,7 @@
                                 <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
                                     <i className={`fa ${location.icon} text-[#A6192E]`}></i> {location.name[lang]}
                                 </h2>
-                                <p className="text-xs font-bold text-gray-500 mt-0.5">{totalPts}/2 {t.stamps}</p>
+                                <p className="text-xs font-bold text-gray-500 mt-0.5">{totalPts}/{maxPts} {t.stamps}</p>
                             </div>
                             <button onClick={() => view ? setView(null) : onClose()} className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300 transition shrink-0">
                                 <i className={`fa ${view ? 'fa-arrow-down' : 'fa-times'}`}></i>
@@ -471,19 +470,22 @@
                         <div className="flex-grow overflow-hidden relative">
                             {!view ? (
                                 <div className="p-6 space-y-4 slide-up overflow-y-auto max-h-full">
-                                    {/* Action 1: QR/PIN Scanner */}
-                                    <button onClick={() => setView('qr')} disabled={hasQrPt} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left
-                                        ${hasQrPt ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-yellow-400 hover:shadow-md'}`}>
-                                        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0
-                                            ${hasQrPt ? 'bg-green-500 text-white' : 'bg-yellow-100 text-yellow-600'}`}>
-                                            <i className={`fa ${hasQrPt ? 'fa-check' : 'fa-qrcode'}`}></i>
-                                        </div>
-                                        <div className="flex-grow">
-                                            <h3 className={`font-bold text-lg ${hasQrPt ? 'text-green-700' : 'text-gray-800'}`}>{t.scanQr}</h3>
-                                        </div>
-                                    </button>
+                                    
+                                    {/* Action 1: QR/PIN (Local Only) */}
+                                    {!isOverseas && (
+                                        <button onClick={() => setView('qr')} disabled={hasQrPt} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left
+                                            ${hasQrPt ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-yellow-400 hover:shadow-md'}`}>
+                                            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0
+                                                ${hasQrPt ? 'bg-green-500 text-white' : 'bg-yellow-100 text-yellow-600'}`}>
+                                                <i className={`fa ${hasQrPt ? 'fa-check' : 'fa-qrcode'}`}></i>
+                                            </div>
+                                            <div className="flex-grow">
+                                                <h3 className={`font-bold text-lg ${hasQrPt ? 'text-green-700' : 'text-gray-800'}`}>{t.scanQr}</h3>
+                                            </div>
+                                        </button>
+                                    )}
 
-                                    {/* Action 2: Quiz (Progressive) */}
+                                    {/* Action 2: Quiz (Both, Progressive) */}
                                     <button onClick={() => setView('quiz')} disabled={hasQuizPt || !isQuizUnlocked} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left relative overflow-hidden
                                         ${hasQuizPt ? 'border-green-500 bg-green-50' : (!isQuizUnlocked ? 'border-gray-100 bg-gray-50 opacity-80' : 'border-gray-200 bg-white hover:border-blue-400 hover:shadow-md')}`}>
                                         <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0 z-10
@@ -503,7 +505,7 @@
                                             ${totalPts > 0 ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
                                             <i className={`fa fa-camera text-4xl mb-3 ${totalPts > 0 ? 'text-purple-500' : 'text-gray-300'}`}></i>
                                             <span className={`font-black text-lg ${totalPts > 0 ? 'text-purple-800' : 'text-gray-400'}`}>{t.takePhoto}</span>
-                                            {totalPts === 0 && <span className="text-xs font-bold text-gray-400 mt-2 text-center max-w-[200px]">{t.lockedPhoto}</span>}
+                                            {totalPts === 0 && <span className="text-xs font-bold text-gray-400 mt-2 text-center max-w-[200px]">{isOverseas ? t.lockedPhotoOverseas : t.lockedPhoto}</span>}
                                         </button>
                                     </div>
                                 </div>
@@ -520,28 +522,22 @@
             );
         };
 
-        const ActivationModal = ({ onActivate, lang }) => {
+        const ActivationModal = ({ onActivate, lang, userVersion }) => {
             const t = TRANSLATIONS[lang];
-            
             const handleScanSuccess = (code) => {
-                if (code === MASTER_KEY) {
-                    onActivate({ type: 'master' });
-                } else {
+                if (code === MASTER_KEY) onActivate({ type: 'master' });
+                else {
                     const loc = LOCATIONS.find(l => l.code === code);
-                    if (loc) {
-                        onActivate({ type: 'location', locationId: loc.id });
-                    } else {
-                        alert(t.invalidPin);
-                    }
+                    if (loc) onActivate({ type: 'location', locationId: loc.id });
+                    else alert(t.invalidPin);
                 }
             };
-
             return (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900 text-white">
                     <div className="w-full h-full max-w-md mx-auto relative flex flex-col">
                         <div className="p-6 text-center shrink-0 z-20">
                             <h2 className="text-2xl font-black text-[#A6192E] mb-2">{t.activateTitle}</h2>
-                            <p className="text-gray-400 text-sm font-medium">{t.activateMsg}</p>
+                            <p className="text-gray-400 text-sm font-medium">{userVersion === 'overseas' ? t.activateMsgOverseas : t.activateMsgLocal}</p>
                         </div>
                         <div className="flex-grow relative">
                             <Scanner lang={lang} onScanSuccess={handleScanSuccess} />
@@ -559,73 +555,111 @@
             const [stampBookOpen, setStampBookOpen] = useState(false);
             const [giftOpen, setGiftOpen] = useState(false);
             
-            const [cleared, setCleared] = useState([]); // Quiz points
-            const [bonusLocs, setBonusLocs] = useState([]); // QR points
+            const [cleared, setCleared] = useState([]); 
+            const [bonusLocs, setBonusLocs] = useState([]); 
             const [content, setContent] = useState({});
             const [adminConfig, setAdminConfig] = useState({});
             const [initialized, setInitialized] = useState(false);
 
+            // 2-Step Login state
+            const [loginStep, setLoginStep] = useState(1);
+            const [loginEmail, setLoginEmail] = useState('');
+
             useEffect(() => {
                 const initApp = async () => {
                     const savedEmail = localStorage.getItem('polyu_hunt_email');
-                    const { auth, db, doc, onSnapshot, appId } = window.FB;
+                    const { db, appId } = window.FB;
                     
-                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main'), snap => setContent(snap.data() || {}));
-                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2'), snap => setAdminConfig(snap.data() || {}));
+                    db.collection('artifacts').doc(appId).collection('public').doc('data').collection('content').doc('main').onSnapshot(snap => setContent(snap.data() || {}));
+                    db.collection('artifacts').doc(appId).collection('public').doc('data').collection('content').doc('admin_settings_v2').onSnapshot(snap => setAdminConfig(snap.data() || {}));
 
-                    window.FB.onAuthStateChanged(auth, async (fbUser) => {
-                        if (fbUser && savedEmail) {
-                            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'participants', fbUser.uid), snap => {
-                                if (snap.exists) {
-                                    const data = snap.data();
-                                    setUser({ ...data, uid: fbUser.uid });
-                                    setCleared(data.clearedLocations || []);
-                                    setBonusLocs(data.bonusLocations || []);
-                                    setInitialized(true);
-                                } else {
-                                    handleLogout(); setInitialized(true);
-                                }
-                            });
-                        } else {
-                            setInitialized(true);
+                    if (savedEmail) {
+                        const snapshot = await db.collection(`artifacts/${appId}/public/data/participants`).where('email', '==', savedEmail).get();
+                        if (!snapshot.empty) {
+                            const data = snapshot.docs[0].data();
+                            setUser({ ...data, uid: snapshot.docs[0].id });
+                            setCleared(data.clearedLocations || []);
+                            setBonusLocs(data.bonusLocations || []);
                         }
-                    });
+                    }
+                    setInitialized(true);
                 };
                 initApp();
             }, []);
 
-            const handleRegister = async (e) => {
+            useEffect(() => {
+                if (user?.uid) {
+                    const { db, appId } = window.FB;
+                    const unsub = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('participants').doc(user.uid).onSnapshot(snap => {
+                        if (snap.exists) {
+                            const data = snap.data();
+                            setUser(prev => ({ ...prev, ...data }));
+                            setCleared(data.clearedLocations || []);
+                            setBonusLocs(data.bonusLocations || []);
+                        }
+                    });
+                    return () => unsub();
+                }
+            }, [user?.uid]);
+
+            const handleCheckEmail = async (e) => {
                 e.preventDefault();
-                const form = { name: e.target.name.value, email: e.target.email.value, version: e.target.version.value, role: 'alumni' };
-                const { auth, signInAnonymously, db, doc, setDoc, appId } = window.FB;
+                const email = e.target.email.value.trim().toLowerCase();
+                setLoginEmail(email);
+                const { db, appId } = window.FB;
                 
                 try {
-                    const cred = await signInAnonymously(auth);
+                    const snapshot = await db.collection(`artifacts/${appId}/public/data/participants`).where('email', '==', email).get();
+                    if (!snapshot.empty) {
+                        const existingDoc = snapshot.docs[0];
+                        const fullData = { ...existingDoc.data(), uid: existingDoc.id };
+                        localStorage.setItem('polyu_hunt_email', fullData.email);
+                        setUser(fullData);
+                        setCleared(fullData.clearedLocations || []);
+                        setBonusLocs(fullData.bonusLocations || []);
+                    } else {
+                        setLoginStep(2); // Ask for details
+                    }
+                } catch(err) { alert("Network error checking email."); }
+            };
+
+            const handleRegisterDetails = async (e) => {
+                e.preventDefault();
+                const form = { 
+                    name: e.target.name.value, 
+                    email: loginEmail, 
+                    version: e.target.version.value, 
+                    role: e.target.role.value 
+                };
+                const { auth, db, appId } = window.FB;
+                try {
+                    const cred = await auth.signInAnonymously();
                     const fullData = { ...form, uid: cred.user.uid, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [], hasActivated: false };
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', cred.user.uid), fullData);
+                    await db.collection(`artifacts/${appId}/public/data/participants`).doc(cred.user.uid).set(fullData);
                     localStorage.setItem('polyu_hunt_email', form.email);
                     setUser(fullData);
-                } catch(err) { alert("Registration failed. Check network."); }
+                } catch(err) { alert("Registration failed."); }
             };
 
             const handleActivate = async (result) => {
-                const { db, doc, updateDoc, appId, auth } = window.FB;
-                if (!auth?.currentUser) return;
+                const { db, appId } = window.FB;
+                if (!user) return;
                 
                 let newBonus = [...bonusLocs];
-                if (result.type === 'location' && !bonusLocs.includes(result.locationId)) {
+                // Only grant QR point if they are Local and used a Location PIN
+                if (result.type === 'location' && user.version === 'local' && !bonusLocs.includes(result.locationId)) {
                     newBonus.push(result.locationId);
                     setBonusLocs(newBonus);
                 }
                 
                 try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
-                        hasActivated: true,
-                        bonusLocations: newBonus
+                    await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('participants').doc(user.uid).update({
+                        hasActivated: true, bonusLocations: newBonus
                     });
                     setUser(prev => ({ ...prev, hasActivated: true }));
+                    
                     if (result.type === 'location') {
-                        showNotify(TRANSLATIONS[lang].stampCollectedTitle, "Game Activated! 1 Point Earned for location.", "success", "fa-star");
+                        if(user.version === 'local') showNotify(TRANSLATIONS[lang].stampCollectedTitle, "Game Activated! 1 Point Earned.", "success", "fa-star");
                         const loc = LOCATIONS.find(l => l.id === result.locationId);
                         if (loc) setActiveLoc(loc);
                     } else {
@@ -635,14 +669,13 @@
             };
 
             const handleLogout = async () => {
-                if (window.FB.auth) try { await window.FB.auth.signOut(); } catch (e) {}
-                setUser(null); setCleared([]); setBonusLocs([]);
+                setUser(null); setCleared([]); setBonusLocs([]); setLoginStep(1); setLoginEmail('');
                 try { localStorage.removeItem('polyu_hunt_email'); } catch (e) {}
             };
 
             const handleSavePoints = async (locId, type) => {
-                const { db, doc, updateDoc, appId, auth } = window.FB;
-                if (!auth?.currentUser) return;
+                const { db, appId } = window.FB;
+                if (!user) return;
                 let newCleared = [...cleared];
                 let newBonus = [...bonusLocs];
                 if (type === 'quiz' && !cleared.includes(locId)) newCleared.push(locId);
@@ -650,7 +683,7 @@
                 
                 setCleared(newCleared); setBonusLocs(newBonus);
                 try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', auth.currentUser.uid), {
+                    await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('participants').doc(user.uid).update({
                         clearedLocations: newCleared, bonusLocations: newBonus
                     });
                 } catch(e) {}
@@ -660,7 +693,8 @@
 
             const fontClass = lang === 'sc' ? 'lang-sc' : (lang === 'tc' ? 'lang-tc' : 'lang-en');
             const t = TRANSLATIONS[lang];
-            const totalPts = cleared.length + bonusLocs.length; 
+            const isOverseas = user?.version === 'overseas';
+            const totalPts = isOverseas ? cleared.length : cleared.length + bonusLocs.length; 
 
             if (!initialized) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><i className="fa fa-spinner fa-spin text-4xl text-[#A6192E]"></i></div>;
             
@@ -673,15 +707,29 @@
                             <h1 className="text-3xl font-black text-gray-800 leading-tight">{t.appTitle}</h1>
                             <p className="text-[#A6192E] font-bold text-sm tracking-widest uppercase mt-1">{t.subtitle}</p>
                         </div>
-                        <form onSubmit={handleRegister} className="space-y-4">
-                            <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input name="name" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
-                            <div><label className="text-xs font-bold text-gray-500 ml-1">{t.email}</label><input type="email" name="email" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
-                            <div className="grid grid-cols-2 gap-3 mt-4">
-                                <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="local" defaultChecked className="accent-[#A6192E] w-4 h-4" /> {t.local}</label>
-                                <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
-                            </div>
-                            <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.startBtn}</button>
-                        </form>
+                        
+                        {loginStep === 1 ? (
+                            <form onSubmit={handleCheckEmail} className="space-y-4 fade-in">
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.emailPrompt}</label><input type="email" name="email" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
+                                <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.nextBtn}</button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleRegisterDetails} className="space-y-4 fade-in">
+                                <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-bold border border-green-200 mb-2">{t.newAccountPrompt}</div>
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input name="name" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
+                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.role}</label>
+                                    <select name="role" className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium text-gray-700">
+                                        <option value="alumni">{t.alumni}</option><option value="student">{t.student}</option><option value="staff">{t.staff}</option><option value="visitor">{t.visitor}</option>
+                                    </select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mt-4">
+                                    <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="local" defaultChecked className="accent-[#A6192E] w-4 h-4" /> {t.local}</label>
+                                    <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
+                                </div>
+                                <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.registerBtn}</button>
+                                <button type="button" onClick={()=>setLoginStep(1)} className="w-full text-sm font-bold text-gray-500 mt-2 hover:text-gray-800">Back</button>
+                            </form>
+                        )}
                     </div>
                 </div>
             );
@@ -691,9 +739,9 @@
                     {notification && <NotificationModal {...notification} onClose={()=>setNotification(null)} lang={lang} />}
                     
                     {/* Activation Gate */}
-                    {user && !user.hasActivated && <ActivationModal onActivate={handleActivate} lang={lang} />}
+                    {user && !user.hasActivated && <ActivationModal onActivate={handleActivate} lang={lang} userVersion={user.version} />}
 
-                    {/* Modals & Screens */}
+                    {/* Modals */}
                     {activeLoc && (
                         <MissionOrchestrator 
                             location={activeLoc} user={{...user, clearedLocations: cleared, bonusLocations: bonusLocs}} 
@@ -728,14 +776,19 @@
                                 </div>
                                 <div className="flex-grow overflow-y-auto p-4 bg-gray-50 grid grid-cols-2 gap-3">
                                     {LOCATIONS.map(loc => {
-                                        const pts = (cleared.includes(loc.id)?1:0) + (bonusLocs.includes(loc.id)?1:0);
+                                        const baseDone = cleared.includes(loc.id);
+                                        const bonusDone = isOverseas ? false : bonusLocs.includes(loc.id);
+                                        const locPts = (baseDone?1:0) + (bonusDone?1:0);
+                                        // Display logic varies based on mode
+                                        const isCompleted = isOverseas ? baseDone : locPts === 2;
+                                        
                                         return (
-                                            <div key={loc.id} className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-colors ${pts===2?'border-green-500 bg-green-50':(pts===1?'border-yellow-400 bg-yellow-50':'border-gray-200 bg-white')}`}>
-                                                <div className={`stamp-circle mb-3 stamp-earned-${pts}`}><i className={`fa ${loc.icon}`}></i></div>
+                                            <div key={loc.id} className={`flex flex-col items-center p-4 rounded-2xl border-2 transition-colors ${isCompleted?'border-green-500 bg-green-50':(!isOverseas && locPts===1?'border-yellow-400 bg-yellow-50':'border-gray-200 bg-white')}`}>
+                                                <div className={`stamp-circle mb-3 ${isCompleted?'stamp-earned-2':(!isOverseas && locPts===1?'stamp-earned-1':'stamp-earned-0')}`}><i className={`fa ${loc.icon}`}></i></div>
                                                 <span className="text-[11px] font-bold text-center leading-tight h-8 flex items-center text-gray-700">{loc.name[lang]}</span>
-                                                <div className="mt-2 flex gap-1">
-                                                    <div className={`w-3 h-3 rounded-full ${bonusLocs.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
-                                                    <div className={`w-3 h-3 rounded-full ${cleared.includes(loc.id)?'bg-green-500':'bg-gray-200'}`}></div>
+                                                <div className="mt-2 flex gap-1 justify-center w-full">
+                                                    {!isOverseas && <div className={`w-3 h-3 rounded-full ${bonusDone?'bg-green-500':'bg-gray-200'}`}></div>}
+                                                    <div className={`w-3 h-3 rounded-full ${baseDone?'bg-green-500':'bg-gray-200'}`}></div>
                                                 </div>
                                             </div>
                                         );
@@ -774,10 +827,16 @@
                     <main className="flex-grow relative w-full h-full pt-28 pb-4 px-2 bg-gray-50">
                         <div className="map-container h-full max-h-[800px]">
                             {LOCATIONS.map(loc => {
-                                const pts = (bonusLocs.includes(loc.id)?1:0) + (cleared.includes(loc.id)?1:0);
+                                const baseDone = cleared.includes(loc.id);
+                                const bonusDone = isOverseas ? false : bonusLocs.includes(loc.id);
+                                const pts = (baseDone?1:0) + (bonusDone?1:0);
+                                // Visual pin state
+                                const pinStateClass = isOverseas ? (baseDone ? 'pin-2' : 'pin-0') : (pts===2?'pin-2':(pts===1?'pin-1':'pin-0'));
+                                const iconClass = isOverseas ? (baseDone?'fa-check':'fa-map-marker-alt') : (pts===2?'fa-check-double':(pts===1?'fa-check':'fa-map-marker-alt'));
+
                                 return (
                                     <div key={loc.id} className="loc-pin" style={loc.pos} onClick={() => setActiveLoc(loc)}>
-                                        <div className={`pin-icon ${pts===2?'pin-2':(pts===1?'pin-1':'pin-0')}`}><i className={`fa ${pts===2?'fa-check-double':(pts===1?'fa-check':'fa-map-marker-alt')}`}></i></div>
+                                        <div className={`pin-icon ${pinStateClass}`}><i className={`fa ${iconClass}`}></i></div>
                                         <div className="pin-label">{loc.name[lang]}</div>
                                     </div>
                                 );
