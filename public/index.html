@@ -89,8 +89,10 @@
     <script type="text/babel" data-presets="react">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        const MASTER_KEY = "1937";
-        const MASTER_QR = "master_unlock";
+        const MASTER_KEY_LOCAL = "1937";
+        const MASTER_QR_LOCAL = "master_unlock_local";
+        const MASTER_KEY_OVERSEAS = "1994";
+        const MASTER_QR_OVERSEAS = "master_unlock_overseas";
 
         // Ensures timezone local parsing for correct day unlocks (Fixes Hong Kong offset bug)
         const parseLocalDate = (dateString) => {
@@ -115,8 +117,9 @@
                 challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
                 wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", 
                 capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", 
-                giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", submitBtn: "Submit Address", 
-                activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!"
+                giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", overseasOnly: "⚠️ Please note: Only non-Hong Kong addresses are accepted for overseas gift delivery. If you are in Hong Kong, we recommend playing the On-campus version.", submitBtn: "Submit Address", 
+                activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!",
+                wrongModeCode: "Incorrect code for your chosen mode (On-campus vs Off-campus)."
             },
             tc: {
                 appTitle: "理大尋寶遊戲", subtitle: "理大校友週", 
@@ -129,8 +132,9 @@
                 challenge: "問題挑戰", incorrect: "答錯了！請重試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
                 wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", 
                 capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", 
-                giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", submitBtn: "提交地址", 
-                activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！"
+                giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", overseasOnly: "⚠️ 請注意：僅接受非香港地址作海外禮物派送。如果您身在香港，建議您參與「校園內」模式。", submitBtn: "提交地址", 
+                activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！",
+                wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（校內/海外）。"
             },
             sc: {
                 appTitle: "理大寻宝游戏", subtitle: "理大校友周", 
@@ -143,8 +147,9 @@
                 challenge: "问题挑战", incorrect: "答错了！请重试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
                 wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", 
                 capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", 
-                giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", submitBtn: "提交地址", 
-                activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！"
+                giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", overseasOnly: "⚠️ 请注意：仅接受非香港地址作海外礼物派送。如果您身在香港，建议您参与“校园内”模式。", submitBtn: "提交地址", 
+                activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！",
+                wrongModeCode: "此密码/二维码不适用于您选择的参与模式（校内/海外）。"
             }
         };
 
@@ -212,7 +217,8 @@
                                 const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
                                 if (code) {
                                     let match = null;
-                                    if (code.data.includes(MASTER_QR)) match = MASTER_KEY;
+                                    if (code.data.includes(MASTER_QR_LOCAL)) match = MASTER_KEY_LOCAL;
+                                    else if (code.data.includes(MASTER_QR_OVERSEAS)) match = MASTER_KEY_OVERSEAS;
                                     else {
                                         const locMatch = LOCATIONS.find(l => code.data.includes(l.qrId));
                                         if (locMatch) match = locMatch.code;
@@ -525,11 +531,22 @@
         const ActivationModal = ({ onActivate, lang, userVersion }) => {
             const t = TRANSLATIONS[lang];
             const handleScanSuccess = (code) => {
-                if (code === MASTER_KEY) onActivate({ type: 'master' });
-                else {
-                    const loc = LOCATIONS.find(l => l.code === code);
-                    if (loc) onActivate({ type: 'location', locationId: loc.id });
-                    else alert(t.invalidPin);
+                const expectedMaster = userVersion === 'overseas' ? MASTER_KEY_OVERSEAS : MASTER_KEY_LOCAL;
+                const wrongMaster = userVersion === 'overseas' ? MASTER_KEY_LOCAL : MASTER_KEY_OVERSEAS;
+
+                if (code === expectedMaster) {
+                    onActivate({ type: 'master' });
+                } else if (code === wrongMaster) {
+                    alert(t.wrongModeCode);
+                } else {
+                    if (userVersion === 'overseas') {
+                        // Overseas players can only activate with their master key
+                        alert(t.invalidPin);
+                    } else {
+                        const loc = LOCATIONS.find(l => l.code === code);
+                        if (loc) onActivate({ type: 'location', locationId: loc.id });
+                        else alert(t.invalidPin);
+                    }
                 }
             };
             return (
@@ -759,7 +776,9 @@
                                     <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
                                 </div>
                                 <form onSubmit={(e)=>{e.preventDefault(); alert('Saved!'); setGiftOpen(false);}} className="p-6 space-y-4 bg-gray-50">
-                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">{t.localOnly}</div>
+                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">
+                                        {user.version === 'overseas' ? t.overseasOnly : t.localOnly}
+                                    </div>
                                     <textarea className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" required></textarea>
                                     <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg">{t.submitBtn}</button>
                                 </form>
@@ -811,11 +830,9 @@
                             <LanguageSwitcher lang={lang} setLang={setLang} />
                         </div>
                         <div className="flex items-center gap-2">
-                            {user.version === 'local' && (
-                                <button onClick={()=>setGiftOpen(true)} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 shadow-sm h-full w-16 hover:bg-purple-200 transition">
-                                    <i className="fa fa-gift text-xl"></i><span>{t.giftBtn}</span>
-                                </button>
-                            )}
+                            <button onClick={()=>setGiftOpen(true)} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 shadow-sm h-full w-16 hover:bg-purple-200 transition">
+                                <i className="fa fa-gift text-xl"></i><span>{t.giftBtn}</span>
+                            </button>
                             <button onClick={()=>setStampBookOpen(true)} className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 border border-yellow-200 shadow-sm h-full w-20 hover:bg-yellow-200 transition">
                                 <i className="fa fa-book-open text-xl text-yellow-600"></i><span>{totalPts} {t.stamps}</span>
                             </button>

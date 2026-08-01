@@ -553,8 +553,8 @@
                                             <div className="absolute top-0 left-0 w-full h-2 bg-[#A6192E]"></div>
                                             <h3 className="font-black text-[#A6192E] mb-2 h-10 flex items-center justify-center text-lg w-full">On-Campus Master</h3>
                                             <p className="text-xs text-red-600 font-bold mb-4">Use to instantly unlock game for physical attendees.</p>
-                                            <canvas ref={el => { if(el) new QRious({ element: el, value: `https://polyu-hunt.web.app/?scan=master_unlock`, size: 180 }) }} className="mb-4 shadow-md border-4 border-white rounded-xl bg-white"></canvas>
-                                            <div className="bg-white w-full p-2 rounded text-xs font-mono text-gray-500 break-all select-all border shadow-inner">https://polyu-hunt.web.app/?scan=master_unlock</div>
+                                            <canvas ref={el => { if(el) new QRious({ element: el, value: `https://polyu-hunt.web.app/?scan=master_unlock_local`, size: 180 }) }} className="mb-4 shadow-md border-4 border-white rounded-xl bg-white"></canvas>
+                                            <div className="bg-white w-full p-2 rounded text-xs font-mono text-gray-500 break-all select-all border shadow-inner">https://polyu-hunt.web.app/?scan=master_unlock_local</div>
                                             <div className="mt-4 p-3 bg-red-100 text-[#A6192E] font-black text-lg border border-red-200 rounded-lg w-full shadow-sm">Master PIN: 1937</div>
                                         </div>
                                         
@@ -563,9 +563,9 @@
                                             <div className="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
                                             <h3 className="font-black text-blue-800 mb-2 h-10 flex items-center justify-center text-lg w-full">Off-Campus (Overseas) Master</h3>
                                             <p className="text-xs text-blue-600 font-bold mb-4">Use to instantly unlock map for remote players.</p>
-                                            <canvas ref={el => { if(el) new QRious({ element: el, value: `https://polyu-hunt.web.app/?scan=master_unlock`, size: 180 }) }} className="mb-4 shadow-md border-4 border-white rounded-xl bg-white"></canvas>
-                                            <div className="bg-white w-full p-2 rounded text-xs font-mono text-gray-500 break-all select-all border shadow-inner">https://polyu-hunt.web.app/?scan=master_unlock</div>
-                                            <div className="mt-4 p-3 bg-blue-100 text-blue-800 font-black text-lg border border-blue-200 rounded-lg w-full shadow-sm">Master PIN: 1937</div>
+                                            <canvas ref={el => { if(el) new QRious({ element: el, value: `https://polyu-hunt.web.app/?scan=master_unlock_overseas`, size: 180 }) }} className="mb-4 shadow-md border-4 border-white rounded-xl bg-white"></canvas>
+                                            <div className="bg-white w-full p-2 rounded text-xs font-mono text-gray-500 break-all select-all border shadow-inner">https://polyu-hunt.web.app/?scan=master_unlock_overseas</div>
+                                            <div className="mt-4 p-3 bg-blue-100 text-blue-800 font-black text-lg border border-blue-200 rounded-lg w-full shadow-sm">Master PIN: 1994</div>
                                         </div>
                                     </div>
 
