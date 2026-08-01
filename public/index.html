@@ -71,7 +71,7 @@
         .lang-sc { font-family: 'Noto Sans SC', sans-serif !important; }
         
         /* Map Layout */
-        .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('https://placehold.co/1080x1920/e2e8f0/94a3b8?text=PolyU+Campus+Map') center/cover no-repeat; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('image/CampusMap.png') center/cover no-repeat; background-color: #e2e8f0; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
         .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
         .loc-pin:active { transform: translate(-50%, -100%) scale(0.9); }
         .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; transition: all 0.3s ease; }
@@ -278,6 +278,7 @@
             const [stream, setStream] = useState(null);
             const [photoData, setPhotoData] = useState(null);
             const [facingMode, setFacingMode] = useState('environment');
+            const [isCapturing, setIsCapturing] = useState(false);
 
             const startCamera = async () => {
                 if (stream) stream.getTracks().forEach(track => track.stop());
@@ -295,21 +296,50 @@
 
             const capture = () => {
                 if (!videoRef.current || !canvasRef.current) return;
-                const v = videoRef.current; const c = canvasRef.current; const ctx = c.getContext('2d');
-                c.width = v.videoWidth; c.height = v.videoHeight;
+                setIsCapturing(true);
+                const v = videoRef.current; 
+                const c = canvasRef.current; 
+                const ctx = c.getContext('2d');
                 
+                // STRICT 9:16 VERTICAL ASPECT RATIO (1080x1920)
+                const targetWidth = 1080;
+                const targetHeight = 1920;
+                c.width = targetWidth;
+                c.height = targetHeight;
+                
+                // Calculate Object-Cover Cropping to avoid stretching
+                const vRatio = v.videoWidth / v.videoHeight;
+                const targetRatio = targetWidth / targetHeight;
+                let sWidth = v.videoWidth;
+                let sHeight = v.videoHeight;
+                let sx = 0, sy = 0;
+
+                if (vRatio > targetRatio) {
+                    sWidth = sHeight * targetRatio;
+                    sx = (v.videoWidth - sWidth) / 2;
+                } else {
+                    sHeight = sWidth / targetRatio;
+                    sy = (v.videoHeight - sHeight) / 2;
+                }
+
+                // Handle front camera flip
                 if (facingMode === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
-                ctx.drawImage(v, 0, 0, c.width, c.height);
+                ctx.drawImage(v, sx, sy, sWidth, sHeight, 0, 0, targetWidth, targetHeight);
                 if (facingMode === 'user') ctx.setTransform(1, 0, 0, 1, 0, 0);
                 
+                // Draw Overlay Frame (from new /image/ directory)
                 const frame = new Image();
                 frame.crossOrigin = "anonymous";
-                frame.src = `frame_${locationId}.png`;
+                frame.src = `image/frame_${locationId}.png`;
                 frame.onload = () => {
-                    ctx.drawImage(frame, 0, 0, c.width, c.height);
+                    ctx.drawImage(frame, 0, 0, targetWidth, targetHeight);
                     setPhotoData(c.toDataURL('image/png'));
+                    setIsCapturing(false);
                 };
-                frame.onerror = () => { setPhotoData(c.toDataURL('image/png')); };
+                frame.onerror = () => { 
+                    setPhotoData(c.toDataURL('image/png')); 
+                    setIsCapturing(false);
+                };
             };
 
             const download = () => {
@@ -319,37 +349,42 @@
 
             const retake = () => {
                 setPhotoData(null);
-                setTimeout(() => startCamera(), 100); 
+                setTimeout(() => startCamera(), 100); // Small delay to ensure clean unmount
             };
 
             return (
                 <div className="flex flex-col h-full bg-black fade-in text-white relative">
-                    <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-arrow-left"></i></button>
+                    <button onClick={onBack} className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/80 transition"><i className="fa fa-arrow-left"></i></button>
                     {!photoData && (
-                        <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"><i className="fa fa-sync-alt"></i></button>
+                        <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/80 transition shadow-lg border border-white/20"><i className="fa fa-sync-alt"></i></button>
                     )}
-                    <div className="flex-grow relative overflow-hidden flex items-center justify-center">
+                    <div className="flex-grow relative overflow-hidden flex flex-col items-center justify-center bg-gray-900">
                         {!photoData ? (
-                            <>
-                                <video ref={videoRef} autoPlay playsInline className={`absolute w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
-                                <img src={`frame_${locationId}.png`} className="absolute w-full h-full object-cover pointer-events-none opacity-80 border-4 border-dashed border-white/20" alt="" onError={(e)=>e.target.style.display='none'}/>
-                                <div className="absolute inset-x-0 bottom-8 flex justify-center z-10">
-                                    <button onClick={capture} className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition">
-                                        <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full"></div>
-                                    </button>
-                                </div>
-                            </>
+                            <div className="relative w-full max-w-sm aspect-[9/16] bg-black overflow-hidden flex shadow-2xl mx-auto rounded-xl">
+                                <video ref={videoRef} autoPlay playsInline className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
+                                <img src={`image/frame_${locationId}.png`} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" alt="" onError={(e)=>e.target.style.display='none'}/>
+                            </div>
                         ) : (
-                            <div className="w-full h-full flex flex-col items-center bg-gray-900 pt-16 pb-6">
-                                <div className="flex-grow w-full flex justify-center items-center overflow-hidden px-4">
-                                    <img src={photoData} className="w-full h-auto max-h-full object-contain shadow-2xl rounded-lg" alt="Captured" />
-                                </div>
-                                <div className="flex gap-4 px-6 mt-6 w-full max-w-sm shrink-0">
+                            <div className="relative w-full max-w-sm aspect-[9/16] bg-black overflow-hidden flex shadow-2xl mx-auto rounded-xl">
+                                <img src={photoData} className="w-full h-full object-contain" alt="Captured" />
+                            </div>
+                        )}
+
+                        {/* Controls Bottom Area */}
+                        <div className="w-full max-w-sm px-6 py-6 flex items-center justify-center shrink-0 min-h-[100px]">
+                            {!photoData ? (
+                                <button onClick={capture} disabled={isCapturing} className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 shadow-xl flex items-center justify-center transform active:scale-95 transition mx-auto disabled:opacity-50">
+                                    <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
+                                        {isCapturing && <i className="fa fa-spinner fa-spin text-gray-400"></i>}
+                                    </div>
+                                </button>
+                            ) : (
+                                <div className="flex gap-4 w-full">
                                     <button onClick={retake} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
                                     <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                     <canvas ref={canvasRef} className="hidden"></canvas>
                 </div>
@@ -585,7 +620,13 @@
             useEffect(() => {
                 const initApp = async () => {
                     const savedEmail = localStorage.getItem('polyu_hunt_email');
-                    const { db, appId } = window.FB;
+                    const { db, auth, appId } = window.FB;
+                    
+                    try {
+                        await auth.signInAnonymously();
+                    } catch (e) {
+                        console.error("Auth failed on init:", e);
+                    }
                     
                     db.collection('artifacts').doc(appId).collection('public').doc('data').collection('content').doc('main').onSnapshot(snap => setContent(snap.data() || {}));
                     db.collection('artifacts').doc(appId).collection('public').doc('data').collection('content').doc('admin_settings_v2').onSnapshot(snap => setAdminConfig(snap.data() || {}));
@@ -623,9 +664,10 @@
                 e.preventDefault();
                 const email = e.target.email.value.trim().toLowerCase();
                 setLoginEmail(email);
-                const { db, appId } = window.FB;
+                const { db, auth, appId } = window.FB;
                 
                 try {
+                    await auth.signInAnonymously();
                     const snapshot = await db.collection(`artifacts/${appId}/public/data/participants`).where('email', '==', email).get();
                     if (!snapshot.empty) {
                         const existingDoc = snapshot.docs[0];
@@ -637,7 +679,10 @@
                     } else {
                         setLoginStep(2); // Ask for details
                     }
-                } catch(err) { alert("Network error checking email."); }
+                } catch(err) { 
+                    console.error("Login error: ", err);
+                    alert("Network error checking email. Please check your connection and try again."); 
+                }
             };
 
             const handleRegisterDetails = async (e) => {
