@@ -107,63 +107,75 @@
 
         const TRANSLATIONS = {
             en: {
-                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Homecoming Week", 
+                appTitle: "PolyU Treasure Hunt", subtitle: "PolyU Alumni Week", 
                 emailPrompt: "Enter Email to Start", nextBtn: "Next", newAccountPrompt: "Welcome! Complete your profile:",
-                fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "On-campus", overseas: "Off-campus", 
-                role: "Role:", visitor: "Visitor", student: "Student", alumni: "Alumni", staff: "Staff", registerBtn: "Complete Registration", login: "Login", 
+                fullName: "Full Name", email: "Email Address", mode: "Participation Mode", local: "Local Alumni", overseas: "Overseas Alumni", 
+                registerBtn: "Complete Registration", login: "Login", 
                 stamps: "Points", scanQr: "Scan Location QR / PIN (1 Pt)", answerQ: "Answer Question (1 Pt)", takePhoto: "Take Photo", 
                 lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", lockedPhotoOverseas: "Answer the quiz to unlock Photo Booth!",
                 scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", 
-                challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
+                challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", retry: "Retry", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
                 wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", 
                 capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", 
-                giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", overseasOnly: "⚠️ Please note: Only non-Hong Kong addresses are accepted for overseas gift delivery. If you are in Hong Kong, we recommend playing the On-campus version.", submitBtn: "Submit Address", 
+                giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", overseasOnly: "⚠️ Please note: Only non-Hong Kong addresses are accepted for overseas gift delivery. If you are in Hong Kong, we recommend playing the Local Alumni version.", submitBtn: "Submit Address", 
                 activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!",
-                wrongModeCode: "Incorrect code for your chosen mode (On-campus vs Off-campus)."
+                wrongModeCode: "Incorrect code for your chosen mode (Local Alumni vs Overseas Alumni).",
+                rulesBtn: "Rules and Terms", rulesTitle: "Rules & Terms",
+                giftSuccessMsg: "Your address has been saved. The gift will be mailed to the submitted address once your alumni identity has been validated.",
+                giftNeedPointsMsg: "Keep exploring! You need at least 10 points to redeem a gift. You currently have",
+                close: "Close"
             },
             tc: {
                 appTitle: "理大尋寶遊戲", subtitle: "理大校友週", 
                 emailPrompt: "輸入電郵以開始", nextBtn: "下一步", newAccountPrompt: "歡迎！請完成您的個人資料：",
-                fullName: "全名", email: "電郵地址", mode: "參與模式", local: "校園內", overseas: "校園外", 
-                role: "身份：", visitor: "訪客", student: "學生", alumni: "校友", staff: "教職員", registerBtn: "完成註冊", login: "登入", 
+                fullName: "全名", email: "電郵地址", mode: "參與模式", local: "本地校友", overseas: "海外校友", 
+                registerBtn: "完成註冊", login: "登入", 
                 stamps: "積分", scanQr: "掃描地點 QR / PIN (1 分)", answerQ: "回答問題 (1 分)", takePhoto: "拍照留念", 
                 lockedPhoto: "完成掃描或問題解鎖相機！", lockedPhotoOverseas: "回答問題以解鎖相機！",
                 scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", 
-                challenge: "問題挑戰", incorrect: "答錯了！請重試。", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
+                challenge: "問題挑戰", incorrect: "答錯了！請重試。", retry: "重試", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
                 wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", 
                 capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", 
-                giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", overseasOnly: "⚠️ 請注意：僅接受非香港地址作海外禮物派送。如果您身在香港，建議您參與「校園內」模式。", submitBtn: "提交地址", 
+                giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", overseasOnly: "⚠️ 請注意：僅接受非香港地址作海外禮物派送。如果您身在香港，建議您參與「本地校友」模式。", submitBtn: "提交地址", 
                 activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！",
-                wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（校內/海外）。"
+                wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（本地校友/海外校友）。",
+                rulesBtn: "規則與條款", rulesTitle: "規則與條款",
+                giftSuccessMsg: "你的地址已儲存，待你的校友身份驗證通過後，禮品將會送至所提交的地址。",
+                giftNeedPointsMsg: "繼續探索吧！你需要至少 10 分才能換領禮物。你目前累積了",
+                close: "關閉"
             },
             sc: {
                 appTitle: "理大寻宝游戏", subtitle: "理大校友周", 
                 emailPrompt: "输入电邮以开始", nextBtn: "下一步", newAccountPrompt: "欢迎！请完成您的个人资料：",
-                fullName: "全名", email: "电邮地址", mode: "参与模式", local: "校园内", overseas: "校园外", 
-                role: "身份：", visitor: "访客", student: "学生", alumni: "校友", staff: "教职员", registerBtn: "完成注册", login: "登入", 
+                fullName: "全名", email: "电邮地址", mode: "参与模式", local: "本地校友", overseas: "海外校友", 
+                registerBtn: "完成注册", login: "登入", 
                 stamps: "积分", scanQr: "扫描地点 QR / PIN (1 分)", answerQ: "回答问题 (1 分)", takePhoto: "拍照留念", 
                 lockedPhoto: "完成扫描或问题解锁相机！", lockedPhotoOverseas: "回答问题以解锁相机！",
                 scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", 
-                challenge: "问题挑战", incorrect: "答错了！请重试。", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
+                challenge: "问题挑战", incorrect: "答错了！请重试。", retry: "重试", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
                 wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", 
                 capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", 
-                giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", overseasOnly: "⚠️ 请注意：仅接受非香港地址作海外礼物派送。如果您身在香港，建议您参与“校园内”模式。", submitBtn: "提交地址", 
+                giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", overseasOnly: "⚠️ 请注意：仅接受非香港地址作海外礼物派送。如果您身在香港，建议您参与“本地校友”模式。", submitBtn: "提交地址", 
                 activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！",
-                wrongModeCode: "此密码/二维码不适用于您选择的参与模式（校内/海外）。"
+                wrongModeCode: "此密码/二维码不适用于您选择的参与模式（本地校友/海外校友）。",
+                rulesBtn: "规则与条款", rulesTitle: "规则与条款",
+                giftSuccessMsg: "您的地址已保存，待您的校友身份验证通过后，礼品将会送至所提交的地址。",
+                giftNeedPointsMsg: "继续探索吧！您需要至少 10 分才能换领礼物。您目前积累了",
+                close: "关闭"
             }
         };
 
         const LOCATIONS = [
-            { id: 'alumni_atrium', qrId: 'x7K9pM2v', name: { en: "Alumni Atrium", tc: "校友薈", sc: "校友荟" }, icon: 'fa-users', pos: { top: '35%', left: '30%' }, code: '4829' },
-            { id: 'core_a', qrId: 'b3N8vC1x', name: { en: "Main Entrance", tc: "主校門", sc: "主校门" }, icon: 'fa-door-open', pos: { top: '75%', left: '45%' }, code: '7153' },
-            { id: 'uni_gallery', qrId: 'p8L4jT6n', name: { en: "University Gallery", tc: "大學展覽館", sc: "大学展览馆" }, icon: 'fa-images', pos: { top: '65%', left: '55%' }, code: '8371' },
-            { id: 'logo_square', qrId: 'r2Y7cX5h', name: { en: "Logo Square", tc: "陳瑞球林滿珍伉儷廣場", sc: "陈瑞球林满珍伉俪广场" }, icon: 'fa-cube', pos: { top: '45%', left: '60%' }, code: '5692' },
-            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: { en: "VA Kiosk", tc: "VA 亭", sc: "VA 亭" }, icon: 'fa-store', pos: { top: '25%', left: '40%' }, code: '3184' },
-            { id: 'core_w', qrId: 'c2M5nB8k', name: { en: "Lee Shau Kee Bldg", tc: "李兆基樓", sc: "李兆基楼" }, icon: 'fa-building', pos: { top: '20%', left: '70%' }, code: '1892' },
-            { id: 'library', qrId: 'L9p1xZ4m', name: { en: "Library", tc: "包玉剛圖書館", sc: "包玉刚图书馆" }, icon: 'fa-book', pos: { top: '55%', left: '35%' }, code: '4017' },
-            { id: 'house_of_innovation', qrId: 'h7J3vC2n', name: { en: "House of Innovation", tc: "創新館", sc: "创新馆" }, icon: 'fa-lightbulb', pos: { top: '40%', left: '75%' }, code: '6351' },
-            { id: 'innovation_tower', qrId: 'T5b8kM1x', name: { en: "Innovation Tower", tc: "賽馬會創新樓", sc: "赛马会创新楼" }, icon: 'fa-drafting-compass', pos: { top: '15%', left: '20%' }, code: '9274' },
-            { id: 'brick_wall', qrId: 'w2N9cZ5b', name: { en: "Brick Wall", tc: "紀念磚牆", sc: "纪念砖墙" }, icon: 'fa-th-large', pos: { top: '85%', left: '30%' }, code: '2835' }
+            { id: 'uni_gallery', qrId: 'x7K9pM2v', name: { en: "University Gallery", tc: "大學展覽館", sc: "大学展览馆" }, icon: 'fa-images', pos: { top: '65%', left: '55%' }, code: '8371' },
+            { id: 'main_entrance', qrId: 'b3N8vC1x', name: { en: "Main Entrance", tc: "主校門", sc: "主校门" }, icon: 'fa-door-open', pos: { top: '75%', left: '45%' }, code: '7153' },
+            { id: 'alumni_atrium', qrId: 'p8L4jT6n', name: { en: "Alumni Atrium", tc: "校友薈", sc: "校友荟" }, icon: 'fa-users', pos: { top: '35%', left: '30%' }, code: '4829' },
+            { id: 'u_garden', qrId: 'r2Y7cX5h', name: { en: "U Garden", tc: "U花園", sc: "U花园" }, icon: 'fa-leaf', pos: { top: '50%', left: '40%' }, code: '5692' },
+            { id: 'shaw_amenities', qrId: 'k9F3vB8m', name: { en: "Shaw Amenities Building", tc: "邵逸夫樓", sc: "邵逸夫楼" }, icon: 'fa-building', pos: { top: '30%', left: '60%' }, code: '3184' },
+            { id: 'innovation_tower', qrId: 'c2M5nB8k', name: { en: "Jockey Club Innovation Tower", tc: "賽馬會創新樓", sc: "赛马会创新楼" }, icon: 'fa-drafting-compass', pos: { top: '15%', left: '20%' }, code: '9274' },
+            { id: 'jc_auditorium', qrId: 'L9p1xZ4m', name: { en: "Jockey Club Auditorium", tc: "賽馬會綜藝館", sc: "赛马会综艺馆" }, icon: 'fa-theater-masks', pos: { top: '40%', left: '75%' }, code: '4017' },
+            { id: 'alumni_affairs', qrId: 'h7J3vC2n', name: { en: "Alumni Affairs Office", tc: "校友事務及拓展處", sc: "校友事务及拓展处" }, icon: 'fa-briefcase', pos: { top: '60%', left: '80%' }, code: '6351' },
+            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: { en: "Global Student Hub", tc: "黃文及鄧潔華環球學生中心", sc: "黄文及邓洁华环球学生中心" }, icon: 'fa-globe', pos: { top: '20%', left: '50%' }, code: '1892' },
+            { id: 'logo_square', qrId: 'w2N9cZ5b', name: { en: "Logo Square", tc: "陳瑞球林滿珍伉儷廣場", sc: "陈瑞球林满珍伉俪广场" }, icon: 'fa-cube', pos: { top: '45%', left: '60%' }, code: '2835' }
         ];
 
         const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => (
@@ -178,11 +190,32 @@
                     <p className="text-gray-600 font-medium mb-8 leading-relaxed">{message}</p>
                     <button onClick={onClose} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95
                         ${type === 'success' ? 'bg-green-500 hover:bg-green-600' : (type === 'error' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#A6192E] hover:bg-red-800')}`}>
-                        {TRANSLATIONS[lang].nextBtn}
+                        {TRANSLATIONS[lang].close}
                     </button>
                 </div>
             </div>
         );
+
+        const TermsModal = ({ lang, onClose }) => {
+            const t = TRANSLATIONS[lang];
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
+                    <div className="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl slide-up overflow-hidden" onClick={e=>e.stopPropagation()}>
+                        <div className="p-6 bg-gray-100 border-b flex justify-between items-center shrink-0">
+                            <h2 className="text-xl font-black text-gray-800">{t.rulesTitle}</h2>
+                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center hover:bg-gray-400 transition"><i className="fa fa-times text-gray-600"></i></button>
+                        </div>
+                        <div className="flex-grow p-6 overflow-y-auto text-sm text-gray-600 space-y-4">
+                            <p>1. The PolyU Treasure Hunt is intended for PolyU alumni and verified guests.</p>
+                            <p>2. Points are awarded upon successful scanning of valid location QR codes or entering valid PINs, and by answering trivia questions correctly.</p>
+                            <p>3. Gifts are subject to availability and will only be mailed upon successful verification of alumni identity.</p>
+                            <p>4. The organizer reserves the right to modify the rules or terms without prior notice.</p>
+                            <p>5. Please ensure your delivery address is accurate. We are not responsible for lost packages due to incorrect addresses.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         const LanguageSwitcher = ({ lang, setLang }) => (
             <div className="flex bg-gray-100 rounded-full p-1 border shadow-inner w-max">
@@ -421,9 +454,13 @@
                                 let btnClass = "w-full text-left p-4 rounded-xl font-bold transition-all border-2 text-sm ";
                                 
                                 if (submitted) {
-                                    if (isCorrect) btnClass += "border-green-500 bg-green-50 text-green-700 shadow-sm";
-                                    else if (isSelected) btnClass += "border-red-500 bg-red-50 text-red-700 opacity-50";
-                                    else btnClass += "border-gray-100 bg-gray-50 text-gray-400 opacity-50";
+                                    // Modified Logic: Only highlight if selected. Do not highlight correct answer if wrong choice was made.
+                                    if (isSelected) {
+                                        if (isCorrect) btnClass += "border-green-500 bg-green-50 text-green-700 shadow-sm";
+                                        else btnClass += "border-red-500 bg-red-50 text-red-700 opacity-50";
+                                    } else {
+                                        btnClass += "border-gray-100 bg-gray-50 text-gray-400 opacity-50";
+                                    }
                                 } else {
                                     btnClass += isSelected ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md" : "border-gray-200 bg-white text-gray-600 hover:border-blue-300";
                                 }
@@ -432,7 +469,7 @@
                                     <button key={i} disabled={submitted} onClick={() => setSelected(opt)} className={btnClass}>
                                         <div className="flex justify-between items-center">
                                             <span>{opt}</span>
-                                            {submitted && isCorrect && <i className="fa fa-check text-green-500 text-lg"></i>}
+                                            {submitted && isSelected && isCorrect && <i className="fa fa-check text-green-500 text-lg"></i>}
                                             {submitted && isSelected && !isCorrect && <i className="fa fa-times text-red-500 text-lg"></i>}
                                         </div>
                                     </button>
@@ -443,10 +480,9 @@
                     
                     <div className="px-6 pt-4 border-t border-gray-100 bg-white relative h-24 flex items-center justify-center">
                         {isWrong ? (
-                            <div className="flex flex-col items-center gap-2">
-                                <span className="text-red-500 font-bold">{t.incorrect}</span>
-                                <button onClick={() => { setSubmitted(false); setSelected(null); }} className="text-sm underline text-gray-500">{t.tryAgain}</button>
-                            </div>
+                            <button onClick={() => { setSubmitted(false); setSelected(null); }} className="w-full py-4 rounded-xl font-bold shadow-lg transition-all text-lg bg-gray-500 text-white hover:bg-gray-600 active:scale-95">
+                                <i className="fa fa-redo mr-2"></i> {t.retry}
+                            </button>
                         ) : (
                             <button disabled={!selected || submitted} onClick={handleSubmit} 
                                 className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all text-lg
@@ -606,6 +642,7 @@
             const [notification, setNotification] = useState(null); 
             const [stampBookOpen, setStampBookOpen] = useState(false);
             const [giftOpen, setGiftOpen] = useState(false);
+            const [termsOpen, setTermsOpen] = useState(false);
             
             const [cleared, setCleared] = useState([]); 
             const [bonusLocs, setBonusLocs] = useState([]); 
@@ -617,13 +654,27 @@
             const [loginStep, setLoginStep] = useState(1);
             const [loginEmail, setLoginEmail] = useState('');
 
+            // Helper to ensure auth is complete before querying Firestore
+            const ensureAuth = () => {
+                return new Promise((resolve, reject) => {
+                    const { auth } = window.FB;
+                    const unsubscribe = auth.onAuthStateChanged(user => {
+                        if (user) {
+                            unsubscribe();
+                            resolve(user);
+                        }
+                    }, reject);
+                    auth.signInAnonymously().catch(reject);
+                });
+            };
+
             useEffect(() => {
                 const initApp = async () => {
                     const savedEmail = localStorage.getItem('polyu_hunt_email');
-                    const { db, auth, appId } = window.FB;
+                    const { db, appId } = window.FB;
                     
                     try {
-                        await auth.signInAnonymously();
+                        await ensureAuth();
                     } catch (e) {
                         console.error("Auth failed on init:", e);
                     }
@@ -664,10 +715,10 @@
                 e.preventDefault();
                 const email = e.target.email.value.trim().toLowerCase();
                 setLoginEmail(email);
-                const { db, auth, appId } = window.FB;
+                const { db, appId } = window.FB;
                 
                 try {
-                    await auth.signInAnonymously();
+                    await ensureAuth();
                     const snapshot = await db.collection(`artifacts/${appId}/public/data/participants`).where('email', '==', email).get();
                     if (!snapshot.empty) {
                         const existingDoc = snapshot.docs[0];
@@ -690,14 +741,13 @@
                 const form = { 
                     name: e.target.name.value, 
                     email: loginEmail, 
-                    version: e.target.version.value, 
-                    role: e.target.role.value 
+                    version: e.target.version.value
                 };
-                const { auth, db, appId } = window.FB;
+                const { db, appId } = window.FB;
                 try {
-                    const cred = await auth.signInAnonymously();
-                    const fullData = { ...form, uid: cred.user.uid, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [], hasActivated: false };
-                    await db.collection(`artifacts/${appId}/public/data/participants`).doc(cred.user.uid).set(fullData);
+                    const authenticatedUser = await ensureAuth();
+                    const fullData = { ...form, uid: authenticatedUser.uid, joinedAt: new Date().toISOString(), clearedLocations: [], bonusLocations: [], hasActivated: false };
+                    await db.collection(`artifacts/${appId}/public/data/participants`).doc(authenticatedUser.uid).set(fullData);
                     localStorage.setItem('polyu_hunt_email', form.email);
                     setUser(fullData);
                 } catch(err) { alert("Registration failed."); }
@@ -753,6 +803,12 @@
 
             const showNotify = (title, message, type = 'info', customIcon = null) => setNotification({ title, message, type, customIcon });
 
+            const handleGiftSubmit = (e) => {
+                e.preventDefault();
+                setGiftOpen(false);
+                showNotify("Success / 成功", TRANSLATIONS[lang].giftSuccessMsg, "success", "fa-gift");
+            };
+
             const fontClass = lang === 'sc' ? 'lang-sc' : (lang === 'tc' ? 'lang-tc' : 'lang-en');
             const t = TRANSLATIONS[lang];
             const isOverseas = user?.version === 'overseas';
@@ -779,11 +835,6 @@
                             <form onSubmit={handleRegisterDetails} className="space-y-4 fade-in">
                                 <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-bold border border-green-200 mb-2">{t.newAccountPrompt}</div>
                                 <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input name="name" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
-                                <div><label className="text-xs font-bold text-gray-500 ml-1">{t.role}</label>
-                                    <select name="role" className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium text-gray-700">
-                                        <option value="alumni">{t.alumni}</option><option value="student">{t.student}</option><option value="staff">{t.staff}</option><option value="visitor">{t.visitor}</option>
-                                    </select>
-                                </div>
                                 <div className="grid grid-cols-2 gap-3 mt-4">
                                     <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="local" defaultChecked className="accent-[#A6192E] w-4 h-4" /> {t.local}</label>
                                     <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
@@ -792,13 +843,18 @@
                                 <button type="button" onClick={()=>setLoginStep(1)} className="w-full text-sm font-bold text-gray-500 mt-2 hover:text-gray-800">Back</button>
                             </form>
                         )}
+                        <div className="mt-8 text-center border-t pt-4">
+                            <button onClick={() => setTermsOpen(true)} className="text-xs font-bold text-gray-400 hover:text-gray-600 transition underline decoration-gray-300 underline-offset-4">{t.rulesBtn}</button>
+                        </div>
                     </div>
+                    {termsOpen && <TermsModal lang={lang} onClose={() => setTermsOpen(false)} />}
                 </div>
             );
 
             return (
                 <div className={`text-gray-800 ${fontClass} h-screen w-full overflow-hidden flex flex-col relative`}>
                     {notification && <NotificationModal {...notification} onClose={()=>setNotification(null)} lang={lang} />}
+                    {termsOpen && <TermsModal lang={lang} onClose={() => setTermsOpen(false)} />}
                     
                     {/* Activation Gate */}
                     {user && !user.hasActivated && <ActivationModal onActivate={handleActivate} lang={lang} userVersion={user.version} />}
@@ -814,19 +870,32 @@
                     
                     {giftOpen && (
                         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm">
-                            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden">
+                            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden slide-up">
                                 <div className="p-6 bg-gradient-to-br from-purple-600 to-indigo-700 text-white text-center">
                                     <button onClick={()=>setGiftOpen(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40"><i className="fa fa-times"></i></button>
                                     <i className="fa fa-gift text-5xl mb-2 drop-shadow-md"></i>
                                     <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
                                 </div>
-                                <form onSubmit={(e)=>{e.preventDefault(); alert('Saved!'); setGiftOpen(false);}} className="p-6 space-y-4 bg-gray-50">
-                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">
-                                        {user.version === 'overseas' ? t.overseasOnly : t.localOnly}
+                                
+                                {totalPts >= 10 ? (
+                                    <form onSubmit={handleGiftSubmit} className="p-6 space-y-4 bg-gray-50">
+                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">
+                                            {user.version === 'overseas' ? t.overseasOnly : t.localOnly}
+                                        </div>
+                                        <textarea className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" required placeholder={t.addressLabel}></textarea>
+                                        <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-700 transition">{t.submitBtn}</button>
+                                    </form>
+                                ) : (
+                                    <div className="p-8 text-center bg-gray-50">
+                                        <div className="w-16 h-16 mx-auto bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-2xl mb-4">
+                                            <i className="fa fa-lock"></i>
+                                        </div>
+                                        <p className="text-gray-600 font-bold leading-relaxed mb-6">
+                                            {t.giftNeedPointsMsg} <span className="text-purple-600 text-xl">{totalPts}</span>!
+                                        </p>
+                                        <button onClick={()=>setGiftOpen(false)} className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-900 transition">{t.close}</button>
                                     </div>
-                                    <textarea className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" required></textarea>
-                                    <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg">{t.submitBtn}</button>
-                                </form>
+                                )}
                             </div>
                         </div>
                     )}
