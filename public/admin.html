@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -16,7 +16,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
@@ -72,24 +71,24 @@
             { id: 'uni_gallery', qrId: 'x7K9pM2v', name: 'University Gallery (大學展覽館)', code: '8371' },
             { id: 'main_entrance', qrId: 'b3N8vC1x', name: 'Main Entrance (主校門)', code: '7153' },
             { id: 'alumni_atrium', qrId: 'p8L4jT6n', name: 'Alumni Atrium (校友薈)', code: '4829' },
-            { id: 'u_garden', qrId: 'r2Y7cX5h', name: 'U Garden (U花園)', code: '5692' },
+            { id: 'u_garden', qrId: 'r2Y7cX5h', name: 'U Garden (花園 理)', code: '5692' },
             { id: 'shaw_amenities', qrId: 'k9F3vB8m', name: 'Shaw Amenities Building (邵逸夫樓)', code: '3184' },
             { id: 'innovation_tower', qrId: 'c2M5nB8k', name: 'Jockey Club Innovation Tower (賽馬會創新樓)', code: '9274' },
             { id: 'jc_auditorium', qrId: 'L9p1xZ4m', name: 'Jockey Club Auditorium (賽馬會綜藝館)', code: '4017' },
-            { id: 'alumni_affairs', qrId: 'h7J3vC2n', name: 'Alumni Affairs Office (校友事務及拓展處)', code: '6351' },
-            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: 'Global Student Hub (環球學生中心)', code: '1892' },
+            { id: 'alumni_affairs', qrId: 'h7J3vC2n', name: 'Alumni Affairs Office (校友事務處)', code: '6351' },
+            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: 'Global Student Hub (環球學生薈)', code: '1892' },
             { id: 'logo_square', qrId: 'w2N9cZ5b', name: 'Logo Square (陳瑞球林滿珍伉儷廣場)', code: '2835' }
         ];
 
         const DEFAULT_QUESTIONS = {
             'alumni_atrium': { text: { en: "Which building is the Alumni Atrium located in?", tc: "校友薈坐落於哪一座建築內？", sc: "校友荟坐落于哪一座建筑内？" }, options: { en: ["Li Ka Shing Tower", "Chung Sze Yuen Building", "Jockey Club Innovation Tower", "William M.W. Mong Building"], tc: ["李嘉誠樓", "鍾士元樓", "賽馬會創新樓", "蒙民偉樓"], sc: ["李嘉诚楼", "钟士元楼", "赛马会创新楼", "蒙民伟楼"] }, answer: { en: "Chung Sze Yuen Building", tc: "鍾士元樓", sc: "钟士元楼" } },
             'main_entrance': { text: { en: "Walking into the current Main Entrance at Block A, what contemporary design feature—showcasing 'vitality'—can be seen alongside the iconic red bricks?", tc: "走進現在的A座主入口，除了經典的紅磚，還能看到哪種展現「生機勃勃」的當代設計？", sc: "走进现在的A座主入口，除了经典的红砖，还能看到哪种展现“生机勃勃”的当代设计？" }, options: { en: ["A giant fountain", "A vertical green wall", "Rainbow-colored floor tiles", "Solar umbrellas"], tc: ["巨大的噴泉", "垂直綠化牆", "彩虹色的地磚", "太陽能雨傘"], sc: ["巨大的喷泉", "垂直绿化墙", "彩虹色的地砖", "太阳能雨伞"] }, answer: { en: "A vertical green wall", tc: "垂直綠化牆", sc: "垂直绿化墙" } },
-            'u_garden': { text: { en: "Which of the following best describes the design feature of PolyU’s new restaurant, U GARDEN?", tc: "以下哪一項最能形容理大新餐廳「U GARDEN 花園 理」的設計特色？", sc: "以下哪一项最能形容理大新餐厅「U GARDEN 花园 理」的设计特色？" }, options: { en: ["An industrial style with metal walls and black lighting", "A blend of old campus elements and modern greenery", "A sports-themed interior with tracks and court patterns", "A pure minimalist white design with no decoration"], tc: ["以工業風為主，設有金屬牆身和黑色燈飾", "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", "以運動主題裝修，設有跑道和球場圖案", "以全白極簡風格為主，沒有任何裝飾"], sc: ["以工业风为主，设有金属墙身和黑色灯饰", "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境", "以运动主题装修，设有跑道和球场图案", "以全白极简风格为主，没有任何装饰"] }, answer: { en: "A blend of old campus elements and modern greenery", tc: "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", sc: "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境" } },
+            'u_garden': { text: { en: "Which of the following best describes the design feature of PolyU’s new restaurant, U GARDEN?", tc: "以下哪一項最能形容理大新餐廳「U GARDEN 花園 理」的設計特色？", sc: "以下哪一项最能形容理大新餐厅「U GARDEN 花园 理」的设计特色？" }, options: { en: ["An industrial style with metal walls and black lighting", "A blend of old campus elements and modern greenery, creating a cozy dining space", "A sports-themed interior with tracks and court patterns", "A pure minimalist white design with no decoration"], tc: ["以工業風為主，設有金屬牆身和黑色燈飾", "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", "以運動主題裝修，設有跑道和球場圖案", "以全白極簡風格為主，沒有任何裝飾"], sc: ["以工业风为主，设有金属墙身和黑色灯饰", "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境", "以运动主题装修，设有跑道和球场图案", "以全白极简风格为主，没有任何装饰"] }, answer: { en: "A blend of old campus elements and modern greenery, creating a cozy dining space", tc: "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", sc: "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境" } },
             'uni_gallery': { text: { en: "The front wall of the University Gallery features a modern twist on PolyU’s iconic red brick identity. What special material, developed by PolyU’s own researchers, is used to make the hollow blocks in this wall?", tc: "大學展覽館的正門外牆以現代手法重新演繹了理大標誌性的紅磚特色。這面牆上的空心磚是由理大研究人員研發的哪種特殊材料製成的？", sc: "大学展览馆的正门外墙以现代手法重新演绎了理大标志性的红砖特色。这面墙上的空心砖是由理大研究人员研发的哪种特殊材料制成的？" }, options: { en: ["Recycled terracotta clay", "Reclaimed red bricks from old campus buildings", "Sustainable cement", "3D-printed environmentally friendly plastic"], tc: ["回收陶土", "從舊校園建築回收的紅磚", "可持續水泥", "3D 打印環保塑料"], sc: ["回收陶土", "从旧校园建筑回收的红砖", "可持续水泥", "3D 打印环保塑料"] }, answer: { en: "Sustainable cement", tc: "可持續水泥", sc: "可持续水泥" } },
             'logo_square': { text: { en: "Which of the following activities is NOT typically held at Logo Square?", tc: "以下哪一項通常不會在校徽廣場舉辦的活動？", sc: "以下哪一项通常不会在校徽广场举办的活动？" }, options: { en: ["Concerts", "Student markets", "Cultural exhibitions", "Academic seminars"], tc: ["音樂會", "學生市集", "文化展覽", "學術研討會"], sc: ["音乐会", "学生市集", "文化展览", "学术研讨会"] }, answer: { en: "Academic seminars", tc: "學術研討會", sc: "学术研讨会" } },
             'shaw_amenities': { text: { en: "Which of the following reopened at the VA Podium in 2025?", tc: "以下哪一個於2025年在VA平台重新開幕的？", sc: "以下哪一个于2025年在VA平台重新开幕的？" }, options: { en: ["Above & Beyond", "U Garden", "Gourmet Shop", "U Green"], tc: ["天外天", "花園 理", "Gourmet Shop", "U.Green"], sc: ["天外天", "花园 理", "Gourmet Shop", "U.Green"] }, answer: { en: "Gourmet Shop", tc: "Gourmet Shop", sc: "Gourmet Shop" } },
             'innovation_tower': { text: { en: "Which world-famous architect designed the Jockey Club Innovation Tower?", tc: "哪位世界著名的建築師設計了賽馬會創新樓？", sc: "哪位世界著名的建筑师设计了赛马会创新楼？" }, options: { en: ["Norman Foster", "Zaha Hadid", "Frank Gehry", "Rem Koolhaas"], tc: ["諾曼·福斯特", "扎哈·哈迪德", "弗蘭克·蓋里", "雷姆·庫哈斯"], sc: ["诺曼·福斯特", "扎哈·哈迪德", "弗兰克·盖里", "雷姆·库哈斯"] }, answer: { en: "Zaha Hadid", tc: "扎哈·哈迪德", sc: "扎哈·哈迪德" } },
-            'alumni_affairs': { text: { en: "Which of the following is NOT an upcoming activity organized or promoted by the PolyU Alumni Affairs Office?", tc: "下列哪一項不是香港理工大學校友事務處即將舉辦或推廣的活動？", sc: "下列哪一项不是香港理工大学校友事务处即将举办或推广的活动？" }, options: { en: ["Virtual Treasure Hunt", "Sai Kung Boat Trip 2026", "Alumni Entrepreneurs Talk", "PolyU Campus Marathon 2026"], tc: ["虛擬校園尋寶遊", "西貢水上樂悠悠", "「生活 x 創業」校友講堂", "理大校園馬拉松"], sc: ["虚拟校园寻宝游", "西贡水上乐悠悠", "「生活 x 创业」校友讲堂", "理大校园马拉松"] }, answer: { en: "PolyU Campus Marathon 2026", tc: "理大校園馬拉松", sc: "理大校园马拉松" } },
+            'alumni_affairs': { text: { en: "Which of the following is NOT an upcoming activity organized or promoted by the PolyU Alumni Affairs Office?", tc: "下列哪一項不是香港理工大學校友事務處即將舉辦或推廣的活動？", sc: "下列哪一项不是香港理工大学校友事务处即将举办或推广的活动？" }, options: { en: ["【PolyU Alumni Week】Around PolyU-Virtual Treasure Hunt", "Sai Kung Boat Trip 2026", "【PolyU Alumni Week】Living x Innovation: Alumni Entrepreneurs Talk", "PolyU Campus Marathon 2026"], tc: ["【理大校友週】遊走理大：虛擬校園尋寶遊", "西貢水上樂悠悠", "【理大校友週】「生活 x 創業」校友講堂", "理大校園馬拉松"], sc: ["【理大校友周】游走理大：虚拟校园寻宝游", "西贡水上乐悠悠", "【理大校友周】「生活 x 创业」校友讲堂", "理大校园马拉松"] }, answer: { en: "PolyU Campus Marathon 2026", tc: "理大校園馬拉松", sc: "理大校园马拉松" } },
             'global_student_hub': { text: { en: "About how many people can the Wong Man and Tang Kit Wah Global Student Hub accommodate?", tc: "黃民鄧潔華伉儷環球學生薈大約可容納多少人？", sc: "黄民邓洁华伉俪环球学生荟大约可容纳多少人？" }, options: { en: ["50 people", "100 people", "Over 200 people", "Over 500 people"], tc: ["50人", "100人", "超過200人", "超過500人"], sc: ["50人", "100人", "超过200人", "超过500人"] }, answer: { en: "Over 200 people", tc: "超過200人", sc: "超过200人" } },
             'jc_auditorium': { text: { en: "What kind of activities is the Jockey Club Auditorium mainly used for?", tc: "理大賽馬會綜藝館主要用作舉辦哪類活動？", sc: "理大赛马会综艺馆主要用作举办哪类活动？" }, options: { en: ["Only internal meetings and office work", "Academic ceremonies, cultural performances, and talks", "Residential hall social activities", "Sports competitions and training"], tc: ["只舉辦校內會議和辦公室工作", "學術典禮、文化表演及講座活動", "宿舍聯誼活動", "體育比賽和訓練"], sc: ["只举办校内会议和办公室工作", "学术典礼、文化表演及讲座活动", "宿舍联谊活动", "体育比赛和训练"] }, answer: { en: "Academic ceremonies, cultural performances, and talks", tc: "學術典禮、文化表演及講座活動", sc: "学术典礼、文化表演及讲座活动" } }
         };
@@ -133,17 +132,9 @@
                             <p className="text-sm text-gray-500">PolyU Homecoming Week</p>
                         </div>
                         <form onSubmit={handleLogin} className="space-y-4">
-                            <input 
-                                type="password" 
-                                placeholder="Admin Password" 
-                                className={`w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-[#A6192E] ${error ? 'border-red-500' : ''}`}
-                                value={pass} 
-                                onChange={e => { setPass(e.target.value); setError(false); }} 
-                            />
+                            <input type="password" placeholder="Admin Password" className={`w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-[#A6192E] ${error ? 'border-red-500' : ''}`} value={pass} onChange={e => { setPass(e.target.value); setError(false); }} />
                             {error && <p className="text-red-500 text-xs text-center font-bold">Incorrect Password</p>}
-                            <button type="submit" className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">
-                                Access Dashboard
-                            </button>
+                            <button type="submit" className="w-full bg-[#A6192E] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-800 transition">Access Dashboard</button>
                         </form>
                     </div>
                 </div>
@@ -204,7 +195,6 @@
                 init();
             }, []);
 
-            // Handle loading editor content when location/language changes (now with Auto-Fallback to DEFAULT_QUESTIONS)
             useEffect(() => {
                 const defaultQ = DEFAULT_QUESTIONS[editLoc];
                 if (content && content.questions && content.questions[editLoc]) {
@@ -240,17 +230,19 @@
 
             const handleExport = (type) => {
                 const users = allUsers.filter(u => u.version === type);
-                const headers = ["Name", "Email", "Version", "Quiz Points", "QR Points", "Total Points", "Joined At", "Completed At", "Duration"];
+                // "Address" column safely extracted for gifts
+                const headers = ["Name", "Email", "Version", "Quiz Points", "QR Points", "Total Points", "Joined At", "Address"];
                 
                 const rows = [headers, ...users.map(u => {
                     const basePts = (u.clearedLocations || []).length;
                     const bonusPts = (u.bonusLocations || []).length;
-                    const baseArr = [
+                    const cleanAddress = u.address ? String(u.address).replace(/"/g, '""').replace(/\r?\n|\r/g, ' ') : 'N/A';
+                    
+                    return [
                         `"${u.name || ''}"`, `"${u.email || ''}"`, `"${u.version || ''}"`,
                         basePts, bonusPts, basePts + bonusPts,
-                        `"${formatTime(u.joinedAt)}"`, `"${formatTime(u.completedAt)}"`, `"${formatDuration(u.joinedAt, u.completedAt)}"`
+                        `"${formatTime(u.joinedAt)}"`, `"${cleanAddress}"`
                     ];
-                    return baseArr;
                 })];
 
                 downloadCSV(`polyu_hunt_${type}_users.csv`, rows);
@@ -280,7 +272,6 @@
                         }
                     } catch (e) {
                         alert("Error deleting user.");
-                        console.error(e);
                     }
                 }
             };
@@ -288,7 +279,6 @@
             const handleSaveUser = async () => {
                 if (!editingUser) return;
                 const { db, doc, setDoc, appId } = window.FB;
-                
                 try {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', editingUser.id), {
                         clearedLocations: editedBaseLocs,
@@ -378,7 +368,6 @@
                     <div className="flex-grow overflow-y-auto bg-gray-50 p-8">
                         <div className="max-w-6xl mx-auto fade-in">
                             
-                            {/* DASHBOARD TAB */}
                             {activeTab === 'dashboard' && (
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
@@ -396,21 +385,9 @@
                                             <div><p className="text-sm font-bold text-gray-400 uppercase">Overseas Players</p><p className="text-3xl font-black text-gray-800">{allUsers.filter(u=>u.version==='overseas').length}</p></div>
                                         </div>
                                     </div>
-                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                                        <div className="px-6 py-4 border-b bg-gray-50"><h3 className="font-bold text-gray-700">Recent Registrations</h3></div>
-                                        <table className="w-full text-left text-sm whitespace-nowrap">
-                                            <thead className="bg-white text-gray-400 border-b"><tr><th className="px-6 py-3">Name</th><th className="px-6 py-3">Email</th><th className="px-6 py-3">Mode</th><th className="px-6 py-3">Joined At</th></tr></thead>
-                                            <tbody>
-                                                {allUsers.sort((a,b)=>new Date(b.joinedAt)-new Date(a.joinedAt)).slice(0, 5).map(u => (
-                                                    <tr key={u.id} className="border-b last:border-0 hover:bg-gray-50"><td className="px-6 py-4 font-bold text-gray-800">{u.name}</td><td className="px-6 py-4 text-gray-600">{u.email}</td><td className="px-6 py-4 capitalize text-xs font-bold text-gray-500">{u.version}</td><td className="px-6 py-4 text-gray-500">{formatTime(u.joinedAt)}</td></tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </div>
                             )}
 
-                            {/* USERS TAB */}
                             {activeTab === 'users' && (
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">Manage Users</h2>
@@ -494,9 +471,8 @@
                                                                         setEditedBaseLocs(u.clearedLocations || []);
                                                                         setEditedBonusLocs(u.bonusLocations || []);
                                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                                                                    }} className="text-blue-500 hover:text-blue-700 mr-4 font-bold" title="Edit Progress"><i className="fa fa-edit"></i> Edit</button>
-                                                                    
-                                                                    <button onClick={() => handleDeleteUser(u)} className="text-red-500 hover:text-red-700 font-bold" title="Delete Account"><i className="fa fa-trash"></i> Delete</button>
+                                                                    }} className="text-blue-500 hover:text-blue-700 mr-4 font-bold"><i className="fa fa-edit"></i> Edit</button>
+                                                                    <button onClick={() => handleDeleteUser(u)} className="text-red-500 hover:text-red-700 font-bold"><i className="fa fa-trash"></i> Delete</button>
                                                                 </td>
                                                             </tr>
                                                         );
@@ -509,7 +485,6 @@
                                 </div>
                             )}
 
-                            {/* EXPORT TAB */}
                             {activeTab === 'export' && (
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">Data Exports</h2>
@@ -530,7 +505,6 @@
                                 </div>
                             )}
 
-                            {/* QR CODES TAB */}
                             {activeTab === 'qr' && (
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-end">
@@ -573,7 +547,6 @@
                                 </div>
                             )}
 
-                            {/* EDITOR TAB */}
                             {activeTab === 'editor' && (
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">Quiz Questions Editor</h2>
@@ -611,7 +584,6 @@
                                 </div>
                             )}
 
-                            {/* SETTINGS TAB */}
                             {activeTab === 'settings' && (
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">System Settings</h2>
