@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PolyU Treasure Hunt | 理大尋寶遊戲</title>
     
-    <!-- Google Fonts for Typography matching -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- jsQR for QR Scanning -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-    <!-- FIREBASE COMPAT SETUP -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
@@ -42,7 +34,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const appId = "polyu_hunt_game_v6"; // Main Database Node
+        const appId = "polyu_hunt_game_v6"; 
         window.FB = { auth, db, appId,
             signInAnonymously: (a) => a.signInAnonymously(),
             onAuthStateChanged: (a, cb) => a.onAuthStateChanged(cb),
@@ -63,22 +55,20 @@
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes stampPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
-        
         /* Strict Language Fonts assigned to Root */
         .lang-en { font-family: 'Inter', sans-serif !important; }
         .lang-tc { font-family: 'Noto Sans TC', sans-serif !important; }
         .lang-sc { font-family: 'Noto Sans SC', sans-serif !important; }
         
         /* Map Layout */
-        .map-container { position: relative; width: 100%; max-width: 500px; aspect-ratio: 9/16; margin: 0 auto; background: url('image/CampusMap.png') center/cover no-repeat; background-color: #e2e8f0; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .map-container { position: relative; width: 100%; max-width: 600px; aspect-ratio: 970 / 1350; margin: 0 auto; background: url('image/CampusMap.png') center/100% 100% no-repeat; background-color: #e2e8f0; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
         .loc-pin { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; z-index: 10; }
         .loc-pin:active { transform: translate(-50%, -100%) scale(0.9); }
         .pin-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; transition: all 0.3s ease; }
         
-        .pin-0 { background: #A6192E; } /* Red: 0 pts */
-        .pin-1 { background: #EAB308; } /* Yellow: 1 pt */
-        .pin-2 { background: #22C55E; } /* Green: 2 pts (or 1 pt for overseas) */
+        .pin-0 { background: #A6192E; } 
+        .pin-1 { background: #EAB308; } 
+        .pin-2 { background: #22C55E; } 
         
         .pin-label { background: rgba(255,255,255,0.95); color: #333; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 12px; margin-top: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; border: 1px solid #ddd; text-align: center; line-height: 1.1; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
     </style>
@@ -94,7 +84,6 @@
         const MASTER_KEY_OVERSEAS = "1994";
         const MASTER_QR_OVERSEAS = "master_unlock_overseas";
 
-        // Ensures timezone local parsing for correct day unlocks (Fixes Hong Kong offset bug)
         const parseLocalDate = (dateString) => {
             const parts = dateString.split('-');
             if (parts.length === 3) {
@@ -114,16 +103,15 @@
                 stamps: "Points", scanQr: "Scan Location QR / PIN (1 Pt)", answerQ: "Answer Question (1 Pt)", takePhoto: "Take Photo", 
                 lockedPhoto: "Clear QR or Quiz to unlock Photo Booth!", lockedPhotoOverseas: "Answer the quiz to unlock Photo Booth!",
                 scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", 
-                challenge: "Quiz Challenge", incorrect: "Incorrect! Try again.", retry: "Retry", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
-                wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", 
+                challenge: "Quiz Challenge", tryAgain: "Try Again", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned 1 point!", 
+                wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", 
                 capture: "Capture", retake: "Retake", saveShare: "Save / Share", manualPin: "Manual PIN", 
                 giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", overseasOnly: "⚠️ Please note: Only non-Hong Kong addresses are accepted for overseas gift delivery. If you are in Hong Kong, we recommend playing the Local Alumni version.", submitBtn: "Submit Address", 
                 activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!",
                 wrongModeCode: "Incorrect code for your chosen mode (Local Alumni vs Overseas Alumni).",
                 rulesBtn: "Rules and Terms", rulesTitle: "Rules & Terms",
-                giftSuccessMsg: "Your address has been saved. The gift will be mailed to the submitted address once your alumni identity has been validated.",
-                giftNeedPointsMsg: "Keep exploring! You need at least 10 points to redeem a gift. You currently have",
-                close: "Close"
+                giftSuccessTitle: "Success", giftSuccessMsg: "Your address has been saved. The gift will be mailed to the submitted address once your alumni identity has been validated.",
+                giftNeedPointsMsg: "Keep exploring! You need at least 10 points to redeem a gift. You currently have", close: "Close"
             },
             tc: {
                 appTitle: "理大尋寶遊戲", subtitle: "理大校友週", 
@@ -133,16 +121,15 @@
                 stamps: "積分", scanQr: "掃描地點 QR / PIN (1 分)", answerQ: "回答問題 (1 分)", takePhoto: "拍照留念", 
                 lockedPhoto: "完成掃描或問題解鎖相機！", lockedPhotoOverseas: "回答問題以解鎖相機！",
                 scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", 
-                challenge: "問題挑戰", incorrect: "答錯了！請重試。", retry: "重試", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
-                wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", 
+                challenge: "問題挑戰", tryAgain: "重試", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 1 分！", 
+                wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", 
                 capture: "拍照", retake: "重拍", saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", 
                 giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", overseasOnly: "⚠️ 請注意：僅接受非香港地址作海外禮物派送。如果您身在香港，建議您參與「本地校友」模式。", submitBtn: "提交地址", 
                 activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！",
                 wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（本地校友/海外校友）。",
                 rulesBtn: "規則與條款", rulesTitle: "規則與條款",
-                giftSuccessMsg: "你的地址已儲存，待你的校友身份驗證通過後，禮品將會送至所提交的地址。",
-                giftNeedPointsMsg: "繼續探索吧！你需要至少 10 分才能換領禮物。你目前累積了",
-                close: "關閉"
+                giftSuccessTitle: "成功", giftSuccessMsg: "你的地址已儲存，待你的校友身份驗證通過後，禮品將會送至所提交的地址。",
+                giftNeedPointsMsg: "繼續探索吧！你需要至少 10 分才能換領禮物。你目前累積了", close: "關閉"
             },
             sc: {
                 appTitle: "理大寻宝游戏", subtitle: "理大校友周", 
@@ -152,16 +139,15 @@
                 stamps: "积分", scanQr: "扫描地点 QR / PIN (1 分)", answerQ: "回答问题 (1 分)", takePhoto: "拍照留念", 
                 lockedPhoto: "完成扫描或问题解锁相机！", lockedPhotoOverseas: "回答问题以解锁相机！",
                 scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", 
-                challenge: "问题挑战", incorrect: "答错了！请重试。", retry: "重试", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
-                wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", 
+                challenge: "问题挑战", tryAgain: "重试", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 1 分！", 
+                wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", 
                 capture: "拍照", retake: "重拍", saveShare: "保存 / 分享", manualPin: "手动输入 PIN", 
                 giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", overseasOnly: "⚠️ 请注意：仅接受非香港地址作海外礼物派送。如果您身在香港，建议您参与“本地校友”模式。", submitBtn: "提交地址", 
                 activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！",
                 wrongModeCode: "此密码/二维码不适用于您选择的参与模式（本地校友/海外校友）。",
                 rulesBtn: "规则与条款", rulesTitle: "规则与条款",
-                giftSuccessMsg: "您的地址已保存，待您的校友身份验证通过后，礼品将会送至所提交的地址。",
-                giftNeedPointsMsg: "继续探索吧！您需要至少 10 分才能换领礼物。您目前积累了",
-                close: "关闭"
+                giftSuccessTitle: "成功", giftSuccessMsg: "您的地址已保存，待您的校友身份验证通过后，礼品将会送至所提交的地址。",
+                giftNeedPointsMsg: "继续探索吧！您需要至少 10 分才能换领礼物。您目前积累了", close: "关闭"
             }
         };
 
@@ -174,9 +160,23 @@
             { id: 'innovation_tower', qrId: 'c2M5nB8k', name: { en: "Jockey Club Innovation Tower", tc: "賽馬會創新樓", sc: "赛马会创新楼" }, icon: 'fa-drafting-compass', pos: { top: '15%', left: '20%' }, code: '9274' },
             { id: 'jc_auditorium', qrId: 'L9p1xZ4m', name: { en: "Jockey Club Auditorium", tc: "賽馬會綜藝館", sc: "赛马会综艺馆" }, icon: 'fa-theater-masks', pos: { top: '40%', left: '75%' }, code: '4017' },
             { id: 'alumni_affairs', qrId: 'h7J3vC2n', name: { en: "Alumni Affairs Office", tc: "校友事務及拓展處", sc: "校友事务及拓展处" }, icon: 'fa-briefcase', pos: { top: '60%', left: '80%' }, code: '6351' },
-            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: { en: "Global Student Hub", tc: "黃文及鄧潔華環球學生中心", sc: "黄文及邓洁华环球学生中心" }, icon: 'fa-globe', pos: { top: '20%', left: '50%' }, code: '1892' },
+            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: { en: "Global Student Hub", tc: "環球學生中心", sc: "环球学生中心" }, icon: 'fa-globe', pos: { top: '20%', left: '50%' }, code: '1892' },
             { id: 'logo_square', qrId: 'w2N9cZ5b', name: { en: "Logo Square", tc: "陳瑞球林滿珍伉儷廣場", sc: "陈瑞球林满珍伉俪广场" }, icon: 'fa-cube', pos: { top: '45%', left: '60%' }, code: '2835' }
         ];
+
+        // Hardcoded Default Questions
+        const DEFAULT_QUESTIONS = {
+            'alumni_atrium': { text: { en: "Which building is the Alumni Atrium located in?", tc: "校友薈坐落於哪一座建築內？", sc: "校友荟坐落于哪一座建筑内？" }, options: { en: ["Li Ka Shing Tower", "Chung Sze Yuen Building", "Jockey Club Innovation Tower", "William M.W. Mong Building"], tc: ["李嘉誠樓", "鍾士元樓", "賽馬會創新樓", "蒙民偉樓"], sc: ["李嘉诚楼", "钟士元楼", "赛马会创新楼", "蒙民伟楼"] }, answer: { en: "Chung Sze Yuen Building", tc: "鍾士元樓", sc: "钟士元楼" } },
+            'main_entrance': { text: { en: "Walking into the current Main Entrance at Block A, what contemporary design feature—showcasing 'vitality'—can be seen alongside the iconic red bricks?", tc: "走進現在的A座主入口，除了經典的紅磚，還能看到哪種展現「生機勃勃」的當代設計？", sc: "走进现在的A座主入口，除了经典的红砖，还能看到哪种展现“生机勃勃”的当代设计？" }, options: { en: ["A giant fountain", "A vertical green wall", "Rainbow-colored floor tiles", "Solar umbrellas"], tc: ["巨大的噴泉", "垂直綠化牆", "彩虹色的地磚", "太陽能雨傘"], sc: ["巨大的喷泉", "垂直绿化墙", "彩虹色的地砖", "太阳能雨伞"] }, answer: { en: "A vertical green wall", tc: "垂直綠化牆", sc: "垂直绿化墙" } },
+            'u_garden': { text: { en: "Which of the following best describes the design feature of PolyU’s new restaurant, U GARDEN?", tc: "以下哪一項最能形容理大新餐廳「U GARDEN 花園 理」的設計特色？", sc: "以下哪一项最能形容理大新餐厅「U GARDEN 花园 理」的设计特色？" }, options: { en: ["An industrial style with metal walls and black lighting", "A blend of old campus elements and modern greenery", "A sports-themed interior with tracks and court patterns", "A pure minimalist white design with no decoration"], tc: ["以工業風為主，設有金屬牆身和黑色燈飾", "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", "以運動主題裝修，設有跑道和球場圖案", "以全白極簡風格為主，沒有任何裝飾"], sc: ["以工业风为主，设有金属墙身和黑色灯饰", "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境", "以运动主题装修，设有跑道和球场图案", "以全白极简风格为主，没有任何装饰"] }, answer: { en: "A blend of old campus elements and modern greenery", tc: "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", sc: "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境" } },
+            'uni_gallery': { text: { en: "The front wall of the University Gallery features a modern twist on PolyU’s iconic red brick identity. What special material, developed by PolyU’s own researchers, is used to make the hollow blocks in this wall?", tc: "大學展覽館的正門外牆以現代手法重新演繹了理大標誌性的紅磚特色。這面牆上的空心磚是由理大研究人員研發的哪種特殊材料製成的？", sc: "大学展览馆的正门外墙以现代手法重新演绎了理大标志性的红砖特色。这面墙上的空心砖是由理大研究人员研发的哪种特殊材料制成的？" }, options: { en: ["Recycled terracotta clay", "Reclaimed red bricks from old campus buildings", "Sustainable cement", "3D-printed environmentally friendly plastic"], tc: ["回收陶土", "從舊校園建築回收的紅磚", "可持續水泥", "3D 打印環保塑料"], sc: ["回收陶土", "从旧校园建筑回收的红砖", "可持续水泥", "3D 打印环保塑料"] }, answer: { en: "Sustainable cement", tc: "可持續水泥", sc: "可持续水泥" } },
+            'logo_square': { text: { en: "Which of the following activities is NOT typically held at Logo Square?", tc: "以下哪一項通常不會在校徽廣場舉辦的活動？", sc: "以下哪一项通常不会在校徽广场举办的活动？" }, options: { en: ["Concerts", "Student markets", "Cultural exhibitions", "Academic seminars"], tc: ["音樂會", "學生市集", "文化展覽", "學術研討會"], sc: ["音乐会", "学生市集", "文化展览", "学术研讨会"] }, answer: { en: "Academic seminars", tc: "學術研討會", sc: "学术研讨会" } },
+            'shaw_amenities': { text: { en: "Which of the following reopened at the VA Podium in 2025?", tc: "以下哪一個於2025年在VA平台重新開幕的？", sc: "以下哪一个于2025年在VA平台重新开幕的？" }, options: { en: ["Above & Beyond", "U Garden", "Gourmet Shop", "U Green"], tc: ["天外天", "花園 理", "Gourmet Shop", "U.Green"], sc: ["天外天", "花园 理", "Gourmet Shop", "U.Green"] }, answer: { en: "Gourmet Shop", tc: "Gourmet Shop", sc: "Gourmet Shop" } },
+            'innovation_tower': { text: { en: "Which world-famous architect designed the Jockey Club Innovation Tower?", tc: "哪位世界著名的建築師設計了賽馬會創新樓？", sc: "哪位世界著名的建筑师设计了赛马会创新楼？" }, options: { en: ["Norman Foster", "Zaha Hadid", "Frank Gehry", "Rem Koolhaas"], tc: ["諾曼·福斯特", "扎哈·哈迪德", "弗蘭克·蓋里", "雷姆·庫哈斯"], sc: ["诺曼·福斯特", "扎哈·哈迪德", "弗兰克·盖里", "雷姆·库哈斯"] }, answer: { en: "Zaha Hadid", tc: "扎哈·哈迪德", sc: "扎哈·哈迪德" } },
+            'alumni_affairs': { text: { en: "Which of the following is NOT an upcoming activity organized or promoted by the PolyU Alumni Affairs Office?", tc: "下列哪一項不是香港理工大學校友事務處即將舉辦或推廣的活動？", sc: "下列哪一项不是香港理工大学校友事务处即将举办或推广的活动？" }, options: { en: ["Virtual Treasure Hunt", "Sai Kung Boat Trip 2026", "Alumni Entrepreneurs Talk", "PolyU Campus Marathon 2026"], tc: ["虛擬校園尋寶遊", "西貢水上樂悠悠", "「生活 x 創業」校友講堂", "理大校園馬拉松"], sc: ["虚拟校园寻宝游", "西贡水上乐悠悠", "「生活 x 创业」校友讲堂", "理大校园马拉松"] }, answer: { en: "PolyU Campus Marathon 2026", tc: "理大校園馬拉松", sc: "理大校园马拉松" } },
+            'global_student_hub': { text: { en: "About how many people can the Wong Man and Tang Kit Wah Global Student Hub accommodate?", tc: "黃民鄧潔華伉儷環球學生薈大約可容納多少人？", sc: "黄民邓洁华伉俪环球学生荟大约可容纳多少人？" }, options: { en: ["50 people", "100 people", "Over 200 people", "Over 500 people"], tc: ["50人", "100人", "超過200人", "超過500人"], sc: ["50人", "100人", "超过200人", "超过500人"] }, answer: { en: "Over 200 people", tc: "超過200人", sc: "超过200人" } },
+            'jc_auditorium': { text: { en: "What kind of activities is the Jockey Club Auditorium mainly used for?", tc: "理大賽馬會綜藝館主要用作舉辦哪類活動？", sc: "理大赛马会综艺馆主要用作举办哪类活动？" }, options: { en: ["Only internal meetings and office work", "Academic ceremonies, cultural performances, and talks", "Residential hall social activities", "Sports competitions and training"], tc: ["只舉辦校內會議和辦公室工作", "學術典禮、文化表演及講座活動", "宿舍聯誼活動", "體育比賽和訓練"], sc: ["只举办校内会议和办公室工作", "学术典礼、文化表演及讲座活动", "宿舍联谊活动", "体育比赛和训练"] }, answer: { en: "Academic ceremonies, cultural performances, and talks", tc: "學術典禮、文化表演及講座活動", sc: "学术典礼、文化表演及讲座活动" } }
+        };
 
         const NotificationModal = ({ title, message, type = 'info', customIcon, onClose, lang }) => (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 fade-in backdrop-blur-sm" onClick={onClose}>
@@ -355,12 +355,10 @@
                     sy = (v.videoHeight - sHeight) / 2;
                 }
 
-                // Handle front camera flip
                 if (facingMode === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
                 ctx.drawImage(v, sx, sy, sWidth, sHeight, 0, 0, targetWidth, targetHeight);
                 if (facingMode === 'user') ctx.setTransform(1, 0, 0, 1, 0, 0);
                 
-                // Draw Overlay Frame (from new /image/ directory)
                 const frame = new Image();
                 frame.crossOrigin = "anonymous";
                 frame.src = `image/frame_${locationId}.png`;
@@ -382,7 +380,7 @@
 
             const retake = () => {
                 setPhotoData(null);
-                setTimeout(() => startCamera(), 100); // Small delay to ensure clean unmount
+                setTimeout(() => startCamera(), 100); 
             };
 
             return (
@@ -391,14 +389,14 @@
                     {!photoData && (
                         <button onClick={() => setFacingMode(f => f === 'environment' ? 'user' : 'environment')} className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/80 transition shadow-lg border border-white/20"><i className="fa fa-sync-alt"></i></button>
                     )}
-                    <div className="flex-grow relative overflow-hidden flex flex-col items-center justify-center bg-gray-900">
+                    <div className="flex-grow relative overflow-hidden flex flex-col items-center justify-center bg-gray-900 pt-16">
                         {!photoData ? (
-                            <div className="relative w-full max-w-sm aspect-[9/16] bg-black overflow-hidden flex shadow-2xl mx-auto rounded-xl">
+                            <div className="relative bg-black overflow-hidden shadow-2xl rounded-xl shrink-0" style={{ width: '100%', maxWidth: 'calc(65vh * (1080 / 1920))', aspectRatio: '1080 / 1920', margin: '0 auto' }}>
                                 <video ref={videoRef} autoPlay playsInline className={`absolute inset-0 w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}></video>
-                                <img src={`image/frame_${locationId}.png`} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" alt="" onError={(e)=>e.target.style.display='none'}/>
+                                <img src={`image/frame_${locationId}.png`} className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10" alt="" onError={(e)=>e.target.style.display='none'}/>
                             </div>
                         ) : (
-                            <div className="relative w-full max-w-sm aspect-[9/16] bg-black overflow-hidden flex shadow-2xl mx-auto rounded-xl">
+                            <div className="relative bg-black overflow-hidden shadow-2xl rounded-xl shrink-0" style={{ width: '100%', maxWidth: 'calc(65vh * (1080 / 1920))', aspectRatio: '1080 / 1920', margin: '0 auto' }}>
                                 <img src={photoData} className="w-full h-full object-contain" alt="Captured" />
                             </div>
                         )}
@@ -424,9 +422,10 @@
             );
         };
 
-        const QuizModule = ({ locationId, content, lang, onClear, onFail }) => {
+        const QuizModule = ({ locationId, content, lang, onClear }) => {
             const t = TRANSLATIONS[lang];
-            const q = content?.questions?.[locationId];
+            // Uses Database Questions if set, otherwise strictly falls back to the Hardcoded Defaults
+            const q = content?.questions?.[locationId] || DEFAULT_QUESTIONS[locationId];
             const [selected, setSelected] = useState(null);
             const [submitted, setSubmitted] = useState(false);
             
@@ -439,6 +438,7 @@
             };
 
             const isWrong = submitted && selected !== q.answer[lang];
+            const isCorrect = submitted && selected === q.answer[lang];
 
             return (
                 <div className="flex flex-col h-full fade-in pb-4">
@@ -450,14 +450,14 @@
                         <div className="space-y-3">
                             {q.options[lang].map((opt, i) => {
                                 const isSelected = selected === opt;
-                                const isCorrect = opt === q.answer[lang];
                                 let btnClass = "w-full text-left p-4 rounded-xl font-bold transition-all border-2 text-sm ";
                                 
                                 if (submitted) {
-                                    // Modified Logic: Only highlight if selected. Do not highlight correct answer if wrong choice was made.
-                                    if (isSelected) {
-                                        if (isCorrect) btnClass += "border-green-500 bg-green-50 text-green-700 shadow-sm";
-                                        else btnClass += "border-red-500 bg-red-50 text-red-700 opacity-50";
+                                    if (isSelected && isCorrect) {
+                                        btnClass += "border-green-500 bg-green-50 text-green-700 shadow-sm";
+                                    } else if (isSelected && isWrong) {
+                                        // Highlight wrong answer in red, leave others grayed out
+                                        btnClass += "border-red-500 bg-red-50 text-red-700 shadow-sm";
                                     } else {
                                         btnClass += "border-gray-100 bg-gray-50 text-gray-400 opacity-50";
                                     }
@@ -470,7 +470,7 @@
                                         <div className="flex justify-between items-center">
                                             <span>{opt}</span>
                                             {submitted && isSelected && isCorrect && <i className="fa fa-check text-green-500 text-lg"></i>}
-                                            {submitted && isSelected && !isCorrect && <i className="fa fa-times text-red-500 text-lg"></i>}
+                                            {submitted && isSelected && isWrong && <i className="fa fa-times text-red-500 text-lg"></i>}
                                         </div>
                                     </button>
                                 );
@@ -481,7 +481,7 @@
                     <div className="px-6 pt-4 border-t border-gray-100 bg-white relative h-24 flex items-center justify-center">
                         {isWrong ? (
                             <button onClick={() => { setSubmitted(false); setSelected(null); }} className="w-full py-4 rounded-xl font-bold shadow-lg transition-all text-lg bg-gray-500 text-white hover:bg-gray-600 active:scale-95">
-                                <i className="fa fa-redo mr-2"></i> {t.retry}
+                                <i className="fa fa-redo mr-2"></i> {t.tryAgain}
                             </button>
                         ) : (
                             <button disabled={!selected || submitted} onClick={handleSubmit} 
@@ -499,7 +499,6 @@
             const t = TRANSLATIONS[lang];
             const [view, setView] = useState(null);
             
-            // Progressive unlock logic based on local time
             const orderIndex = (adminConfig.locationOrder || LOCATIONS.map(l=>l.id)).indexOf(location.id);
             const unlockD = parseLocalDate(adminConfig.startDate || '2026-07-28');
             unlockD.setDate(unlockD.getDate() + (orderIndex >= 0 ? orderIndex : 0));
@@ -509,7 +508,6 @@
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             const unlockStr = `${unlockD.getDate()} ${months[unlockD.getMonth()]}`;
 
-            // Points check
             const isOverseas = user.version === 'overseas';
             const hasQrPt = isOverseas ? false : (user.bonusLocations || []).includes(location.id);
             const hasQuizPt = (user.clearedLocations || []).includes(location.id);
@@ -548,7 +546,6 @@
                             {!view ? (
                                 <div className="p-6 space-y-4 slide-up overflow-y-auto max-h-full">
                                     
-                                    {/* Action 1: QR/PIN (Local Only) */}
                                     {!isOverseas && (
                                         <button onClick={() => setView('qr')} disabled={hasQrPt} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left
                                             ${hasQrPt ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-yellow-400 hover:shadow-md'}`}>
@@ -562,7 +559,6 @@
                                         </button>
                                     )}
 
-                                    {/* Action 2: Quiz (Both, Progressive) */}
                                     <button onClick={() => setView('quiz')} disabled={hasQuizPt || !isQuizUnlocked} className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition text-left relative overflow-hidden
                                         ${hasQuizPt ? 'border-green-500 bg-green-50' : (!isQuizUnlocked ? 'border-gray-100 bg-gray-50 opacity-80' : 'border-gray-200 bg-white hover:border-blue-400 hover:shadow-md')}`}>
                                         <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0 z-10
@@ -576,7 +572,6 @@
                                         {!isQuizUnlocked && !hasQuizPt && <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 20px)' }}></div>}
                                     </button>
 
-                                    {/* Action 3: Photo Booth */}
                                     <div className="pt-4 border-t border-gray-100 mt-2">
                                         <button onClick={() => setView('photo')} disabled={totalPts === 0} className={`w-full flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition
                                             ${totalPts > 0 ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
@@ -589,7 +584,7 @@
                             ) : view === 'qr' ? (
                                 <Scanner lang={lang} onScanSuccess={handleScanSuccess} />
                             ) : view === 'quiz' ? (
-                                <QuizModule locationId={location.id} content={content} lang={lang} onClear={()=>handlePointGained('quiz')} onFail={()=>setView(null)} />
+                                <QuizModule locationId={location.id} content={content} lang={lang} onClear={()=>handlePointGained('quiz')} />
                             ) : (
                                 <PhotoBooth locationId={location.id} lang={lang} onBack={()=>setView(null)} />
                             )}
@@ -611,7 +606,6 @@
                     alert(t.wrongModeCode);
                 } else {
                     if (userVersion === 'overseas') {
-                        // Overseas players can only activate with their master key
                         alert(t.invalidPin);
                     } else {
                         const loc = LOCATIONS.find(l => l.code === code);
@@ -650,11 +644,10 @@
             const [adminConfig, setAdminConfig] = useState({});
             const [initialized, setInitialized] = useState(false);
 
-            // 2-Step Login state
             const [loginStep, setLoginStep] = useState(1);
             const [loginEmail, setLoginEmail] = useState('');
 
-            // Helper to ensure auth is complete before querying Firestore
+            // Safe async Auth before any DB calls
             const ensureAuth = () => {
                 return new Promise((resolve, reject) => {
                     const { auth } = window.FB;
@@ -663,7 +656,7 @@
                             unsubscribe();
                             resolve(user);
                         }
-                    }, reject);
+                    });
                     auth.signInAnonymously().catch(reject);
                 });
             };
@@ -728,7 +721,7 @@
                         setCleared(fullData.clearedLocations || []);
                         setBonusLocs(fullData.bonusLocations || []);
                     } else {
-                        setLoginStep(2); // Ask for details
+                        setLoginStep(2); 
                     }
                 } catch(err) { 
                     console.error("Login error: ", err);
@@ -758,7 +751,6 @@
                 if (!user) return;
                 
                 let newBonus = [...bonusLocs];
-                // Only grant QR point if they are Local and used a Location PIN
                 if (result.type === 'location' && user.version === 'local' && !bonusLocs.includes(result.locationId)) {
                     newBonus.push(result.locationId);
                     setBonusLocs(newBonus);
@@ -803,12 +795,6 @@
 
             const showNotify = (title, message, type = 'info', customIcon = null) => setNotification({ title, message, type, customIcon });
 
-            const handleGiftSubmit = (e) => {
-                e.preventDefault();
-                setGiftOpen(false);
-                showNotify("Success / 成功", TRANSLATIONS[lang].giftSuccessMsg, "success", "fa-gift");
-            };
-
             const fontClass = lang === 'sc' ? 'lang-sc' : (lang === 'tc' ? 'lang-tc' : 'lang-en');
             const t = TRANSLATIONS[lang];
             const isOverseas = user?.version === 'overseas';
@@ -835,6 +821,7 @@
                             <form onSubmit={handleRegisterDetails} className="space-y-4 fade-in">
                                 <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-bold border border-green-200 mb-2">{t.newAccountPrompt}</div>
                                 <div><label className="text-xs font-bold text-gray-500 ml-1">{t.fullName}</label><input name="name" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium" /></div>
+                                
                                 <div className="grid grid-cols-2 gap-3 mt-4">
                                     <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="local" defaultChecked className="accent-[#A6192E] w-4 h-4" /> {t.local}</label>
                                     <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
@@ -876,14 +863,17 @@
                                     <i className="fa fa-gift text-5xl mb-2 drop-shadow-md"></i>
                                     <h2 className="text-2xl font-bold">{t.giftTitle}</h2>
                                 </div>
-                                
                                 {totalPts >= 10 ? (
-                                    <form onSubmit={handleGiftSubmit} className="p-6 space-y-4 bg-gray-50">
+                                    <form onSubmit={(e)=>{
+                                        e.preventDefault(); 
+                                        setGiftOpen(false);
+                                        showNotify(TRANSLATIONS[lang].giftSuccessTitle, TRANSLATIONS[lang].giftSuccessMsg, "success", "fa-check-circle");
+                                    }} className="p-6 space-y-4 bg-gray-50">
                                         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-sm text-yellow-800 font-bold">
                                             {user.version === 'overseas' ? t.overseasOnly : t.localOnly}
                                         </div>
                                         <textarea className="w-full p-4 mt-1 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-28" required placeholder={t.addressLabel}></textarea>
-                                        <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-purple-700 transition">{t.submitBtn}</button>
+                                        <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg">{t.submitBtn}</button>
                                     </form>
                                 ) : (
                                     <div className="p-8 text-center bg-gray-50">
@@ -955,13 +945,12 @@
                     </header>
 
                     {/* Map Area */}
-                    <main className="flex-grow relative w-full h-full pt-28 pb-4 px-2 bg-gray-50">
-                        <div className="map-container h-full max-h-[800px]">
+                    <main className="flex-grow relative w-full h-full pt-28 pb-10 px-4 bg-gray-50 overflow-y-auto">
+                        <div className="map-container">
                             {LOCATIONS.map(loc => {
                                 const baseDone = cleared.includes(loc.id);
                                 const bonusDone = isOverseas ? false : bonusLocs.includes(loc.id);
                                 const pts = (baseDone?1:0) + (bonusDone?1:0);
-                                // Visual pin state
                                 const pinStateClass = isOverseas ? (baseDone ? 'pin-2' : 'pin-0') : (pts===2?'pin-2':(pts===1?'pin-1':'pin-0'));
                                 const iconClass = isOverseas ? (baseDone?'fa-check':'fa-map-marker-alt') : (pts===2?'fa-check-double':(pts===1?'fa-check':'fa-map-marker-alt'));
 

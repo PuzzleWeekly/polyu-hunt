@@ -5,29 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PolyU Treasure Hunt - Admin Portal</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- FIREBASE COMPAT SETUP -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
@@ -42,14 +32,12 @@
             appId: "1:958809195745:web:1be0bc46e7cdf88a6e63a0",
             measurementId: "G-S3HQ8XDE59"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const appId = "polyu_hunt_game_v6"; // Match main game DB
+        const appId = "polyu_hunt_game_v6"; 
 
-        window.FB = {
-            auth, db, appId,
+        window.FB = { auth, db, appId,
             signInAnonymously: (a) => a.signInAnonymously(),
             onAuthStateChanged: (a, cb) => a.onAuthStateChanged(cb),
             collection: (d, ...paths) => d.collection(paths.join('/')),
@@ -80,19 +68,31 @@
     <script type="text/babel" data-presets="react">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // 10 Locations List 
         const LOCATIONS = [
-            { id: 'alumni_atrium', qrId: 'x7K9pM2v', name: 'Alumni Atrium (校友薈)', code: '4829' },
-            { id: 'core_a', qrId: 'b3N8vC1x', name: 'Main Entrance (主校門)', code: '7153' },
-            { id: 'uni_gallery', qrId: 'p8L4jT6n', name: 'University Gallery (大學展覽館)', code: '8371' },
-            { id: 'logo_square', qrId: 'r2Y7cX5h', name: 'Logo Square (陳瑞球林滿珍伉儷廣場)', code: '5692' },
-            { id: 'va_kiosk', qrId: 'k9F3vB8m', name: 'VA Kiosk', code: '3184' },
-            { id: 'core_w', qrId: 'c2M5nB8k', name: 'Lee Shau Kee Building (李兆基樓)', code: '1892' },
-            { id: 'library', qrId: 'L9p1xZ4m', name: 'Pao Yue-kong Library (包玉剛圖書館)', code: '4017' },
-            { id: 'house_of_innovation', qrId: 'h7J3vC2n', name: 'House of Innovation (創新館)', code: '6351' },
-            { id: 'innovation_tower', qrId: 'T5b8kM1x', name: 'Jockey Club Innovation Tower (賽馬會創新樓)', code: '9274' },
-            { id: 'brick_wall', qrId: 'w2N9cZ5b', name: 'Commemorative Brick Wall (紀念磚牆)', code: '2835' }
+            { id: 'uni_gallery', qrId: 'x7K9pM2v', name: 'University Gallery (大學展覽館)', code: '8371' },
+            { id: 'main_entrance', qrId: 'b3N8vC1x', name: 'Main Entrance (主校門)', code: '7153' },
+            { id: 'alumni_atrium', qrId: 'p8L4jT6n', name: 'Alumni Atrium (校友薈)', code: '4829' },
+            { id: 'u_garden', qrId: 'r2Y7cX5h', name: 'U Garden (U花園)', code: '5692' },
+            { id: 'shaw_amenities', qrId: 'k9F3vB8m', name: 'Shaw Amenities Building (邵逸夫樓)', code: '3184' },
+            { id: 'innovation_tower', qrId: 'c2M5nB8k', name: 'Jockey Club Innovation Tower (賽馬會創新樓)', code: '9274' },
+            { id: 'jc_auditorium', qrId: 'L9p1xZ4m', name: 'Jockey Club Auditorium (賽馬會綜藝館)', code: '4017' },
+            { id: 'alumni_affairs', qrId: 'h7J3vC2n', name: 'Alumni Affairs Office (校友事務及拓展處)', code: '6351' },
+            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: 'Global Student Hub (環球學生中心)', code: '1892' },
+            { id: 'logo_square', qrId: 'w2N9cZ5b', name: 'Logo Square (陳瑞球林滿珍伉儷廣場)', code: '2835' }
         ];
+
+        const DEFAULT_QUESTIONS = {
+            'alumni_atrium': { text: { en: "Which building is the Alumni Atrium located in?", tc: "校友薈坐落於哪一座建築內？", sc: "校友荟坐落于哪一座建筑内？" }, options: { en: ["Li Ka Shing Tower", "Chung Sze Yuen Building", "Jockey Club Innovation Tower", "William M.W. Mong Building"], tc: ["李嘉誠樓", "鍾士元樓", "賽馬會創新樓", "蒙民偉樓"], sc: ["李嘉诚楼", "钟士元楼", "赛马会创新楼", "蒙民伟楼"] }, answer: { en: "Chung Sze Yuen Building", tc: "鍾士元樓", sc: "钟士元楼" } },
+            'main_entrance': { text: { en: "Walking into the current Main Entrance at Block A, what contemporary design feature—showcasing 'vitality'—can be seen alongside the iconic red bricks?", tc: "走進現在的A座主入口，除了經典的紅磚，還能看到哪種展現「生機勃勃」的當代設計？", sc: "走进现在的A座主入口，除了经典的红砖，还能看到哪种展现“生机勃勃”的当代设计？" }, options: { en: ["A giant fountain", "A vertical green wall", "Rainbow-colored floor tiles", "Solar umbrellas"], tc: ["巨大的噴泉", "垂直綠化牆", "彩虹色的地磚", "太陽能雨傘"], sc: ["巨大的喷泉", "垂直绿化墙", "彩虹色的地砖", "太阳能雨伞"] }, answer: { en: "A vertical green wall", tc: "垂直綠化牆", sc: "垂直绿化墙" } },
+            'u_garden': { text: { en: "Which of the following best describes the design feature of PolyU’s new restaurant, U GARDEN?", tc: "以下哪一項最能形容理大新餐廳「U GARDEN 花園 理」的設計特色？", sc: "以下哪一项最能形容理大新餐厅「U GARDEN 花园 理」的设计特色？" }, options: { en: ["An industrial style with metal walls and black lighting", "A blend of old campus elements and modern greenery", "A sports-themed interior with tracks and court patterns", "A pure minimalist white design with no decoration"], tc: ["以工業風為主，設有金屬牆身和黑色燈飾", "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", "以運動主題裝修，設有跑道和球場圖案", "以全白極簡風格為主，沒有任何裝飾"], sc: ["以工业风为主，设有金属墙身和黑色灯饰", "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境", "以运动主题装修，设有跑道和球场图案", "以全白极简风格为主，没有任何装饰"] }, answer: { en: "A blend of old campus elements and modern greenery", tc: "融合舊校園元素與現代綠化空間，營造舒適溫馨的用餐環境", sc: "融合旧校园元素与现代绿化空间，营造舒适温馨的用餐环境" } },
+            'uni_gallery': { text: { en: "The front wall of the University Gallery features a modern twist on PolyU’s iconic red brick identity. What special material, developed by PolyU’s own researchers, is used to make the hollow blocks in this wall?", tc: "大學展覽館的正門外牆以現代手法重新演繹了理大標誌性的紅磚特色。這面牆上的空心磚是由理大研究人員研發的哪種特殊材料製成的？", sc: "大学展览馆的正门外墙以现代手法重新演绎了理大标志性的红砖特色。这面墙上的空心砖是由理大研究人员研发的哪种特殊材料制成的？" }, options: { en: ["Recycled terracotta clay", "Reclaimed red bricks from old campus buildings", "Sustainable cement", "3D-printed environmentally friendly plastic"], tc: ["回收陶土", "從舊校園建築回收的紅磚", "可持續水泥", "3D 打印環保塑料"], sc: ["回收陶土", "从旧校园建筑回收的红砖", "可持续水泥", "3D 打印环保塑料"] }, answer: { en: "Sustainable cement", tc: "可持續水泥", sc: "可持续水泥" } },
+            'logo_square': { text: { en: "Which of the following activities is NOT typically held at Logo Square?", tc: "以下哪一項通常不會在校徽廣場舉辦的活動？", sc: "以下哪一项通常不会在校徽广场举办的活动？" }, options: { en: ["Concerts", "Student markets", "Cultural exhibitions", "Academic seminars"], tc: ["音樂會", "學生市集", "文化展覽", "學術研討會"], sc: ["音乐会", "学生市集", "文化展览", "学术研讨会"] }, answer: { en: "Academic seminars", tc: "學術研討會", sc: "学术研讨会" } },
+            'shaw_amenities': { text: { en: "Which of the following reopened at the VA Podium in 2025?", tc: "以下哪一個於2025年在VA平台重新開幕的？", sc: "以下哪一个于2025年在VA平台重新开幕的？" }, options: { en: ["Above & Beyond", "U Garden", "Gourmet Shop", "U Green"], tc: ["天外天", "花園 理", "Gourmet Shop", "U.Green"], sc: ["天外天", "花园 理", "Gourmet Shop", "U.Green"] }, answer: { en: "Gourmet Shop", tc: "Gourmet Shop", sc: "Gourmet Shop" } },
+            'innovation_tower': { text: { en: "Which world-famous architect designed the Jockey Club Innovation Tower?", tc: "哪位世界著名的建築師設計了賽馬會創新樓？", sc: "哪位世界著名的建筑师设计了赛马会创新楼？" }, options: { en: ["Norman Foster", "Zaha Hadid", "Frank Gehry", "Rem Koolhaas"], tc: ["諾曼·福斯特", "扎哈·哈迪德", "弗蘭克·蓋里", "雷姆·庫哈斯"], sc: ["诺曼·福斯特", "扎哈·哈迪德", "弗兰克·盖里", "雷姆·库哈斯"] }, answer: { en: "Zaha Hadid", tc: "扎哈·哈迪德", sc: "扎哈·哈迪德" } },
+            'alumni_affairs': { text: { en: "Which of the following is NOT an upcoming activity organized or promoted by the PolyU Alumni Affairs Office?", tc: "下列哪一項不是香港理工大學校友事務處即將舉辦或推廣的活動？", sc: "下列哪一项不是香港理工大学校友事务处即将举办或推广的活动？" }, options: { en: ["Virtual Treasure Hunt", "Sai Kung Boat Trip 2026", "Alumni Entrepreneurs Talk", "PolyU Campus Marathon 2026"], tc: ["虛擬校園尋寶遊", "西貢水上樂悠悠", "「生活 x 創業」校友講堂", "理大校園馬拉松"], sc: ["虚拟校园寻宝游", "西贡水上乐悠悠", "「生活 x 创业」校友讲堂", "理大校园马拉松"] }, answer: { en: "PolyU Campus Marathon 2026", tc: "理大校園馬拉松", sc: "理大校园马拉松" } },
+            'global_student_hub': { text: { en: "About how many people can the Wong Man and Tang Kit Wah Global Student Hub accommodate?", tc: "黃民鄧潔華伉儷環球學生薈大約可容納多少人？", sc: "黄民邓洁华伉俪环球学生荟大约可容纳多少人？" }, options: { en: ["50 people", "100 people", "Over 200 people", "Over 500 people"], tc: ["50人", "100人", "超過200人", "超過500人"], sc: ["50人", "100人", "超过200人", "超过500人"] }, answer: { en: "Over 200 people", tc: "超過200人", sc: "超过200人" } },
+            'jc_auditorium': { text: { en: "What kind of activities is the Jockey Club Auditorium mainly used for?", tc: "理大賽馬會綜藝館主要用作舉辦哪類活動？", sc: "理大赛马会综艺馆主要用作举办哪类活动？" }, options: { en: ["Only internal meetings and office work", "Academic ceremonies, cultural performances, and talks", "Residential hall social activities", "Sports competitions and training"], tc: ["只舉辦校內會議和辦公室工作", "學術典禮、文化表演及講座活動", "宿舍聯誼活動", "體育比賽和訓練"], sc: ["只举办校内会议和办公室工作", "学术典礼、文化表演及讲座活动", "宿舍联谊活动", "体育比赛和训练"] }, answer: { en: "Academic ceremonies, cultural performances, and talks", tc: "學術典禮、文化表演及講座活動", sc: "学术典礼、文化表演及讲座活动" } }
+        };
 
         const formatTime = (iso) => iso ? new Date(iso).toLocaleString() : '-';
         const formatDuration = (startIso, endIso) => {
@@ -157,18 +157,15 @@
             const [content, setContent] = useState({ questions: {} });
             const [activeTab, setActiveTab] = useState('dashboard');
             
-            // Edit User State
             const [searchEmail, setSearchEmail] = useState('');
             const [editingUser, setEditingUser] = useState(null);
             const [editedBaseLocs, setEditedBaseLocs] = useState([]);
             const [editedBonusLocs, setEditedBonusLocs] = useState([]);
 
-            // Settings State
             const [newPass, setNewPass] = useState('');
             const [newStartDate, setNewStartDate] = useState('');
             const [tempOrder, setTempOrder] = useState([]);
 
-            // Content Editor State
             const [editLoc, setEditLoc] = useState(LOCATIONS[0].id);
             const [editLang, setEditLang] = useState('en');
             const [qText, setQText] = useState('');
@@ -180,7 +177,6 @@
                     const { auth, signInAnonymously, db, doc, onSnapshot, appId } = window.FB;
                     await signInAnonymously(auth);
                     
-                    // Listen to Config
                     const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'admin_settings_v2');
                     onSnapshot(configRef, (snap) => {
                         if (snap.exists || (typeof snap.exists === 'function' && snap.exists())) {
@@ -191,7 +187,6 @@
                         }
                     });
 
-                    // Listen to Users
                     const usersRef = window.FB.collection(db, 'artifacts', appId, 'public', 'data', 'participants');
                     onSnapshot(usersRef, (snap) => {
                         const users = [];
@@ -199,7 +194,6 @@
                         setAllUsers(users);
                     });
 
-                    // Listen to Content
                     const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'content', 'main');
                     onSnapshot(contentRef, (snap) => {
                         if (snap.exists || (typeof snap.exists === 'function' && snap.exists())) {
@@ -210,20 +204,23 @@
                 init();
             }, []);
 
-            // Handle loading editor content when location/language changes
+            // Handle loading editor content when location/language changes (now with Auto-Fallback to DEFAULT_QUESTIONS)
             useEffect(() => {
+                const defaultQ = DEFAULT_QUESTIONS[editLoc];
                 if (content && content.questions && content.questions[editLoc]) {
                     const dbQ = content.questions[editLoc];
-                    setQText(dbQ.text?.[editLang] || '');
-                    const opts = dbQ.options?.[editLang] || ['','','',''];
+                    setQText(dbQ.text?.[editLang] || defaultQ.text[editLang] || '');
+                    const opts = dbQ.options?.[editLang] || defaultQ.options[editLang] || ['','','',''];
                     setQOptions(opts);
-                    const ans = dbQ.answer?.[editLang] || '';
+                    const ans = dbQ.answer?.[editLang] || defaultQ.answer[editLang] || '';
                     let ansIdx = opts.indexOf(ans);
                     setQAnsIndex(ansIdx !== -1 ? ansIdx : 0);
                 } else {
-                    setQText('');
-                    setQOptions(['','','','']);
-                    setQAnsIndex(0);
+                    setQText(defaultQ.text[editLang] || '');
+                    setQOptions(defaultQ.options[editLang] || ['','','','']);
+                    const ans = defaultQ.answer[editLang] || '';
+                    let ansIdx = (defaultQ.options[editLang] || []).indexOf(ans);
+                    setQAnsIndex(ansIdx !== -1 ? ansIdx : 0);
                 }
             }, [editLoc, editLang, content]);
 
@@ -243,13 +240,13 @@
 
             const handleExport = (type) => {
                 const users = allUsers.filter(u => u.version === type);
-                const headers = ["Name", "Email", "Role", "Version", "Quiz Points", "QR Points", "Total Points", "Joined At", "Completed At", "Duration"];
+                const headers = ["Name", "Email", "Version", "Quiz Points", "QR Points", "Total Points", "Joined At", "Completed At", "Duration"];
                 
                 const rows = [headers, ...users.map(u => {
                     const basePts = (u.clearedLocations || []).length;
                     const bonusPts = (u.bonusLocations || []).length;
                     const baseArr = [
-                        `"${u.name || ''}"`, `"${u.email || ''}"`, `"${u.role || ''}"`, `"${u.version || ''}"`,
+                        `"${u.name || ''}"`, `"${u.email || ''}"`, `"${u.version || ''}"`,
                         basePts, bonusPts, basePts + bonusPts,
                         `"${formatTime(u.joinedAt)}"`, `"${formatTime(u.completedAt)}"`, `"${formatDuration(u.joinedAt, u.completedAt)}"`
                     ];
@@ -351,7 +348,6 @@
 
             return (
                 <div className="flex h-screen overflow-hidden">
-                    {/* Sidebar */}
                     <div className="w-64 bg-white shadow-lg flex flex-col z-20 flex-shrink-0">
                         <div className="p-6 border-b text-center">
                             <h2 className="text-xl font-bold text-[#A6192E]">PolyU Treasure Hunt</h2>
@@ -379,7 +375,6 @@
                         </div>
                     </div>
 
-                    {/* Main Content */}
                     <div className="flex-grow overflow-y-auto bg-gray-50 p-8">
                         <div className="max-w-6xl mx-auto fade-in">
                             
@@ -420,7 +415,6 @@
                                 <div className="space-y-6">
                                     <h2 className="text-2xl font-bold text-gray-800">Manage Users</h2>
                                     
-                                    {/* User Search & Editor */}
                                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                         <div className="flex gap-4 max-w-xl mb-4">
                                             <input type="email" placeholder="Enter full email to edit progress..." className="flex-grow p-3 border rounded-xl outline-none focus:ring-2 focus:ring-[#A6192E]" value={searchEmail} onChange={e=>setSearchEmail(e.target.value)} />
@@ -432,7 +426,7 @@
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div>
                                                         <h3 className="text-xl font-bold text-[#A6192E]">{editingUser.name}</h3>
-                                                        <p className="text-gray-500">{editingUser.email} • {editingUser.role}</p>
+                                                        <p className="text-gray-500">{editingUser.email}</p>
                                                     </div>
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -467,7 +461,6 @@
                                         )}
                                     </div>
 
-                                    {/* All Users Table with Remove Action */}
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
                                             <h3 className="font-bold text-gray-700">All Registered Users</h3>
@@ -545,10 +538,8 @@
                                         <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-black"><i className="fa fa-print mr-2"></i> Print Codes</button>
                                     </div>
 
-                                    {/* MASTER CODES SECTION */}
                                     <h3 className="text-xl font-bold text-[#A6192E] border-b pb-2 mt-4">Master Activation Codes</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                        {/* On Campus Master */}
                                         <div className="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-200 text-center flex flex-col items-center relative overflow-hidden">
                                             <div className="absolute top-0 left-0 w-full h-2 bg-[#A6192E]"></div>
                                             <h3 className="font-black text-[#A6192E] mb-2 h-10 flex items-center justify-center text-lg w-full">On-Campus Master</h3>
@@ -558,7 +549,6 @@
                                             <div className="mt-4 p-3 bg-red-100 text-[#A6192E] font-black text-lg border border-red-200 rounded-lg w-full shadow-sm">Master PIN: 1937</div>
                                         </div>
                                         
-                                        {/* Off Campus Master */}
                                         <div className="bg-blue-50 p-6 rounded-2xl shadow-sm border border-blue-200 text-center flex flex-col items-center relative overflow-hidden">
                                             <div className="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
                                             <h3 className="font-black text-blue-800 mb-2 h-10 flex items-center justify-center text-lg w-full">Off-Campus (Overseas) Master</h3>
