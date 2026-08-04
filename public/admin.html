@@ -174,7 +174,14 @@
                             const data = snap.data();
                             setAdminConfig(data);
                             setNewStartDate(data.startDate || getLocalYYYYMMDD());
-                            setTempOrder(data.locationOrder || LOCATIONS.map(l=>l.id));
+                            
+                            // Automatically clean up old deleted location IDs from previous versions of the database
+                            let savedOrder = data.locationOrder || [];
+                            let validSavedOrder = savedOrder.filter(id => LOCATIONS.some(l => l.id === id));
+                            let missingIds = LOCATIONS.map(l => l.id).filter(id => !validSavedOrder.includes(id));
+                            
+                            // Combine valid saved ones with new missing ones
+                            setTempOrder([...validSavedOrder, ...missingIds]);
                         }
                     });
 
