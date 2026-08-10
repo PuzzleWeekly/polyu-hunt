@@ -124,7 +124,9 @@
                 activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN to unlock the game map!",
                 wrongModeCode: "Incorrect code for your chosen mode (Local Alumni vs Overseas Alumni).",
                 giftSuccessTitle: "Gift Redemption", giftSuccessMsg: "Your address has been saved. The gift will be mailed to the submitted address once your alumni identity has been validated.",
-                giftPointsShort: "Collect 5 Points to redeem a gift!", giftPointsDesc: "You currently have {pts} points. Keep exploring!"
+                giftPointsShort: "Collect 5 Points to redeem a gift!", giftPointsDesc: "You currently have {pts} points. Keep exploring!",
+                earned: "Earned", backBtn: "Back", closeBtn: "Close", rolePlaceholder: "Select Role",
+                activatedLocalMsg: "Game Activated! 1 Point Earned.", activatedOverseasTitle: "Map Unlocked!", activatedOverseasMsg: "Master key used. Game is active."
             },
             tc: {
                 appTitle: "理大尋寶遊戲", subtitle: "理大校友週", 
@@ -142,7 +144,9 @@
                 activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼以解鎖遊戲地圖！",
                 wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（本地校友/海外校友）。",
                 giftSuccessTitle: "禮物換領", giftSuccessMsg: "你的地址已儲存，待你的校友身份驗證通過後，禮品將會送至所提交的地址。",
-                giftPointsShort: "收集 5 分即可換領禮品！", giftPointsDesc: "您目前有 {pts} 分。繼續探索吧！"
+                giftPointsShort: "收集 5 分即可換領禮品！", giftPointsDesc: "您目前有 {pts} 分。繼續探索吧！",
+                earned: "已獲得", backBtn: "返回", closeBtn: "關閉", rolePlaceholder: "請選擇身份",
+                activatedLocalMsg: "遊戲已啟動！獲得 1 分。", activatedOverseasTitle: "地圖已解鎖！", activatedOverseasMsg: "已使用主密碼。遊戲現正進行。"
             },
             sc: {
                 appTitle: "理大寻宝游戏", subtitle: "理大校友周", 
@@ -160,7 +164,9 @@
                 activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码以解锁游戏地图！",
                 wrongModeCode: "此密码/二维码不适用于您选择的参与模式（校内/海外）。",
                 giftSuccessTitle: "礼物换领", giftSuccessMsg: "你的地址已保存，待你的校友身份验证通过后，礼品将会送至所提交的地址。",
-                giftPointsShort: "收集 5 分即可换领礼品！", giftPointsDesc: "您目前有 {pts} 分。继续探索吧！"
+                giftPointsShort: "收集 5 分即可换领礼品！", giftPointsDesc: "您目前有 {pts} 分。继续探索吧！",
+                earned: "已获得", backBtn: "返回", closeBtn: "关闭", rolePlaceholder: "请选择身份",
+                activatedLocalMsg: "游戏已启动！获得 1 分。", activatedOverseasTitle: "地图已解锁！", activatedOverseasMsg: "已使用主密码。游戏现正进行。"
             }
         };
 
@@ -173,8 +179,8 @@
             { id: 'innovation_tower', qrId: 'c2M5nB8k', name: { en: "Innovation Tower", tc: "賽馬會創新樓", sc: "赛马会创新楼" }, icon: 'fa-drafting-compass', pos: { left: '46.96%', top: '28.85%' }, code: '9274' },
             { id: 'jc_auditorium', qrId: 'L9p1xZ4m', name: { en: "Jockey Club Auditorium", tc: "賽馬會綜藝館", sc: "赛马会综艺馆" }, icon: 'fa-theater-masks', pos: { left: '77.89%', top: '37.15%' }, code: '4017' },
             { id: 'library', qrId: 'h7J3vC2n', name: { en: "Pao Yue-Kong Library", tc: "包玉剛圖書館", sc: "包玉刚图书馆" }, icon: 'fa-book', pos: { left: '82.09%', top: '70.48%' }, code: '6351' },
-            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: { en: "Global Student Hub", tc: "黃民鄧潔華伉儷環球學生薈", sc: "黄民邓洁华伉俪环球学生荟" }, icon: 'fa-globe', pos: { left: '90.26%', top: '30.81%' }, code: '1892' },
-            { id: 'logo_square', qrId: 'w2N9cZ5b', name: { en: "Logo Square", tc: "陳瑞球林滿珍伉儷廣場", sc: "陈瑞球林满珍伉俪广场" }, icon: 'fa-cube', pos: { left: '55.21%', top: '46.96%' }, code: '2835' }
+            { id: 'global_student_hub', qrId: 'T5b8kM1x', name: { en: "Wong Man and Tang Kit Wah Global Student Hub", tc: "黃民鄧潔華伉儷環球學生薈", sc: "黄民邓洁华伉俪环球学生荟" }, icon: 'fa-globe', pos: { left: '90.26%', top: '30.81%' }, code: '1892' },
+            { id: 'logo_square', qrId: 'w2N9cZ5b', name: { en: "Chan Sui Kau and Chan Lam Moon Chun Square (Logo Square)", tc: "陳瑞球林滿珍伉儷廣場（校徽廣場）", sc: "陈瑞球林满珍伉俪广场（校徽广场）" }, icon: 'fa-cube', pos: { left: '55.21%', top: '46.96%' }, code: '2835' }
         ];
 
         const DEFAULT_QUESTIONS = {
@@ -810,11 +816,11 @@
                     setUser(prev => ({ ...prev, hasActivated: true }));
                     
                     if (result.type === 'location') {
-                        if(user.version === 'local') showNotify(TRANSLATIONS[lang].stampCollectedTitle, "Game Activated! 1 Point Earned.", "success", "fa-star");
+                        if(user.version === 'local') showNotify(TRANSLATIONS[lang].stampCollectedTitle, TRANSLATIONS[lang].activatedLocalMsg, "success", "fa-star");
                         const loc = LOCATIONS.find(l => l.id === result.locationId);
                         if (loc) setActiveLoc(loc);
                     } else {
-                        showNotify("Map Unlocked!", "Master key used. Game is active.", "success", "fa-unlock");
+                        showNotify(TRANSLATIONS[lang].activatedOverseasTitle, TRANSLATIONS[lang].activatedOverseasMsg, "success", "fa-unlock");
                     }
                 } catch(e) { console.error(e); }
             };
@@ -877,7 +883,7 @@
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 ml-1">{t.role}</label>
                                     <select name="role" required className="w-full p-4 mt-1 border-2 border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:border-[#A6192E] outline-none transition font-medium text-gray-700">
-                                        <option value="" disabled selected>Select Role</option>
+                                        <option value="" disabled selected>{t.rolePlaceholder}</option>
                                         <option value="alumni">{t.alumni}</option>
                                         <option value="student">{t.student}</option>
                                         <option value="staff">{t.staff}</option>
@@ -890,7 +896,7 @@
                                     <label className="flex items-center gap-2 p-3 border rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50"><input type="radio" name="version" value="overseas" className="accent-[#A6192E] w-4 h-4" /> {t.overseas}</label>
                                 </div>
                                 <button type="submit" className="w-full bg-[#A6192E] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition mt-6 text-lg">{t.registerBtn}</button>
-                                <button type="button" onClick={()=>setLoginStep(1)} className="w-full text-sm font-bold text-gray-500 mt-2 hover:text-gray-800">Back</button>
+                                <button type="button" onClick={()=>setLoginStep(1)} className="w-full text-sm font-bold text-gray-500 mt-2 hover:text-gray-800">{t.backBtn}</button>
                             </form>
                         )}
                         <div className="mt-8 text-center border-t pt-4">
@@ -950,7 +956,7 @@
                                         <div className="w-16 h-16 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i className="fa fa-lock"></i></div>
                                         <h3 className="font-black text-gray-800 text-xl mb-2">{t.giftPointsShort}</h3>
                                         <p className="text-gray-500 font-medium mb-6">{t.giftPointsDesc.replace('{pts}', totalPts)}</p>
-                                        <button onClick={()=>setGiftOpen(false)} className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold">Close</button>
+                                        <button onClick={()=>setGiftOpen(false)} className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold">{t.closeBtn}</button>
                                     </div>
                                 )}
                             </div>
@@ -961,7 +967,7 @@
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 fade-in backdrop-blur-sm" onClick={()=>setStampBookOpen(false)}>
                             <div className="bg-white rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative slide-up" onClick={e=>e.stopPropagation()}>
                                 <div className="p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex justify-between items-center shrink-0">
-                                    <div><h2 className="text-2xl font-black">{t.stamps}</h2><p className="text-gray-300 font-bold text-sm mt-1">{totalPts} Earned</p></div>
+                                    <div><h2 className="text-2xl font-black">{t.stamps}</h2><p className="text-gray-300 font-bold text-sm mt-1">{totalPts} {t.earned}</p></div>
                                     <button onClick={()=>setStampBookOpen(false)} className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"><i className="fa fa-times"></i></button>
                                 </div>
                                 <div className="flex-grow overflow-y-auto p-4 bg-gray-50 grid grid-cols-2 gap-3">
