@@ -962,10 +962,10 @@
                                             {user.version === 'overseas' ? t.overseasOnly : t.localOnly}
                                         </div>
                                         
-                                        <input name="recipient" type="text" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.recipient} />
-                                        <textarea name="address" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-24" required placeholder={t.deliveryAddress}></textarea>
-                                        <input name="postalCode" type="text" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.postalCode} />
-                                        <input name="mobile" type="tel" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.mobile} />
+                                        <input name="recipient" type="text" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.recipient} defaultValue={user.giftDetails?.recipient || ''} />
+                                        <textarea name="address" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition resize-none h-24" required placeholder={t.deliveryAddress} defaultValue={user.giftDetails?.address || user.address || ''}></textarea>
+                                        <input name="postalCode" type="text" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.postalCode} defaultValue={user.giftDetails?.postalCode || ''} />
+                                        <input name="mobile" type="tel" className="w-full p-4 border-2 border-gray-200 rounded-xl bg-white focus:border-purple-500 outline-none transition" required placeholder={t.mobile} defaultValue={user.giftDetails?.mobile || ''} />
                                         
                                         <button type="submit" className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold shadow-lg mt-2">{t.submitBtn}</button>
                                     </form>
