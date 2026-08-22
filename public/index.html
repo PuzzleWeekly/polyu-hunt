@@ -119,7 +119,7 @@
                 scanning: "Scanning...", enterPin: "Enter 4-Digit PIN", go: "Unlock", invalidPin: "Invalid PIN", 
                 challenge: "Quiz Challenge", incorrect: "Incorrect!", stampCollectedTitle: "Points Earned!", stampCollectedMsg: "You earned {pts} point(s)!", 
                 wrongLocation: "Wrong Location QR!", logout: "Logout", unlocksOn: "Unlocks on", tryAgain: "Try Again", 
-                saveShare: "Save / Share", manualPin: "Manual PIN", 
+                capture: "Capture", retake: "Retake", share: "Share", manualPin: "Manual PIN", 
                 giftBtn: "Gift", giftTitle: "Gift Redemption", addressLabel: "Delivery Address", localOnly: "⚠️ Please note: Only local Hong Kong addresses are accepted for gift delivery.", overseasOnly: "⚠️ Please note: Only non-Hong Kong addresses are accepted for overseas gift delivery. If you are in Hong Kong, we recommend playing the Local Alumni version.", submitBtn: "Submit Address", 
                 activateTitle: "Activate Game", activateMsgLocal: "Enter a location PIN, Master PIN, or scan a QR code to start!", activateMsgOverseas: "Enter the Master PIN or scan the QR code to unlock the game map!",
                 wrongModeCode: "Incorrect code for your chosen mode (Local Alumni vs Overseas Alumni).",
@@ -141,7 +141,7 @@
                 scanning: "掃描中...", enterPin: "輸入4位數解鎖", go: "解鎖", invalidPin: "無效 PIN", 
                 challenge: "問題挑戰", incorrect: "答錯了！", stampCollectedTitle: "獲得積分！", stampCollectedMsg: "你贏得了 {pts} 分！", 
                 wrongLocation: "錯誤的地點二維碼！", logout: "登出", unlocksOn: "解鎖日期：", tryAgain: "重試", 
-                saveShare: "儲存 / 分享", manualPin: "手動輸入 PIN", 
+                capture: "拍照", retake: "重拍", share: "分享", manualPin: "手動輸入 PIN", 
                 giftBtn: "禮物", giftTitle: "禮物換領", addressLabel: "送貨地址", localOnly: "⚠️ 請注意：僅接受香港本地地址作禮物派送。", overseasOnly: "⚠️ 請注意：僅接受非香港地址作海外禮物派送。如果您身在香港，建議您參與「本地校友」模式。", submitBtn: "提交", 
                 activateTitle: "啟動遊戲", activateMsgLocal: "請輸入地點密碼、主密碼或掃描 QR 碼以開始！", activateMsgOverseas: "請輸入主密碼或掃描 QR 碼以解鎖遊戲地圖！",
                 wrongModeCode: "此密碼/二維碼不適用於您選擇的參與模式（本地校友/海外校友）。",
@@ -163,7 +163,7 @@
                 scanning: "扫描中...", enterPin: "输入4位数解锁", go: "解锁", invalidPin: "无效 PIN", 
                 challenge: "问题挑战", incorrect: "答错了！", stampCollectedTitle: "获得积分！", stampCollectedMsg: "你赢得了 {pts} 分！", 
                 wrongLocation: "错误的地点二维码！", logout: "登出", unlocksOn: "解锁日期：", tryAgain: "重试", 
-                saveShare: "保存 / 分享", manualPin: "手动输入 PIN", 
+                capture: "拍照", retake: "重拍", share: "分享", manualPin: "手动输入 PIN", 
                 giftBtn: "礼物", giftTitle: "礼物换领", addressLabel: "送货地址", localOnly: "⚠️ 请注意：仅接受香港本地地址作礼物派送。", overseasOnly: "⚠️ 请注意：仅接受非香港地址作海外礼物派送。如果您身在香港，建议您参与“本地校友”模式。", submitBtn: "提交", 
                 activateTitle: "启动游戏", activateMsgLocal: "请输入地点密码、主密码或扫描 QR 码以开始！", activateMsgOverseas: "请输入主密码或扫描 QR 码以解锁游戏地图！",
                 wrongModeCode: "此密码/二维码不适用于您选择的参与模式（校内/海外）。",
@@ -428,9 +428,24 @@
                 };
             };
 
-            const download = () => {
-                const link = document.createElement('a'); link.download = `polyu_hunt_${locationId}.png`;
-                link.href = photoData; link.click();
+            const handleShare = async () => {
+                try {
+                    // Convert base64 data to a File object for the native Share API
+                    const res = await fetch(photoData);
+                    const blob = await res.blob();
+                    const file = new File([blob], `polyu_hunt_${locationId}.png`, { type: 'image/png' });
+                    
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'PolyU Treasure Hunt',
+                        });
+                    } else {
+                        alert(lang === 'en' ? "Image sharing is not supported on this browser." : "此瀏覽器不支援圖片分享功能。");
+                    }
+                } catch (e) {
+                    console.log("Share failed or cancelled.", e);
+                }
             };
 
             const retake = () => {
@@ -467,7 +482,7 @@
                             ) : (
                                 <div className="flex gap-4 w-full max-w-sm mx-auto">
                                     <button onClick={retake} className="flex-1 py-3 rounded-xl bg-gray-800 text-white font-bold"><i className="fa fa-redo mr-2"></i> {t.retake}</button>
-                                    <button onClick={download} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-download mr-2"></i> {t.saveShare}</button>
+                                    <button onClick={handleShare} className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/30"><i className="fa fa-share-alt mr-2"></i> {t.share}</button>
                                 </div>
                             )}
                         </div>
